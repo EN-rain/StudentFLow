@@ -34,10 +34,10 @@ Configured GitHub OAuth client ID:
 Ov23lipHaQtpSjuQyWmi
 ```
 
-For Android GitHub login, set the GitHub OAuth app callback URL to:
+For Android GitHub login, set the GitHub OAuth app callback URL to the Laravel backend callback. Laravel exchanges the code and then redirects back into the app:
 
 ```text
-studentflow://oauth/github
+https://studentflow-rbog.onrender.com/api/auth/github/callback
 ```
 
 Keep `GITHUB_CLIENT_SECRET` only in Laravel `.env`; do not put it in Android code.

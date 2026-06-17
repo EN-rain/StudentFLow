@@ -51,17 +51,13 @@ C:\php\php.exe artisan key:generate --show
 
 ## OAuth URLs
 
-Android GitHub callback URL:
-
-```text
-studentflow://oauth/github
-```
-
-Optional backend/browser GitHub callback:
+GitHub OAuth callback URL:
 
 ```text
 https://studentflow-rbog.onrender.com/api/auth/github/callback
 ```
+
+Android uses this HTTPS callback too. Laravel receives GitHub's code, exchanges it using `GITHUB_CLIENT_SECRET`, then redirects into the app with `studentflow://oauth/github`.
 
 Google must use a Web OAuth client ID in `GOOGLE_CLIENT_ID`. Also create a separate Android OAuth client in Google Console for package `com.studentflow.app` and the app signing SHA-1.
 
