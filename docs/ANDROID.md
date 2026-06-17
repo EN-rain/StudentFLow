@@ -20,16 +20,24 @@ Student login is role-aware and uses backend social endpoints:
 
 For local QA only, the backend accepts `test-google:{student_email}` and `test-github:{student_email}`. Real Google/GitHub sign-in requires provider credentials in Laravel `.env`.
 
-Configured Google Android client ID:
+Configured Google Web OAuth client ID used by Android `requestIdToken`:
 
 ```text
 919040220334-psvoce66g4mcim0csum12mujhlmqk6oe.apps.googleusercontent.com
 ```
 
+If Google sign-in returns status code `10`, replace `Constants.GOOGLE_WEB_CLIENT_ID` and Laravel `GOOGLE_CLIENT_ID` with a Google OAuth **Web application** client ID. Keep a separate Google OAuth **Android** client in Google Console for package `com.studentflow.app` and the signing SHA-1, but do not put the Android client ID in `Constants.java`.
+
 Configured GitHub OAuth client ID:
 
 ```text
 Ov23lipHaQtpSjuQyWmi
+```
+
+For Android GitHub login, set the GitHub OAuth app callback URL to:
+
+```text
+studentflow://oauth/github
 ```
 
 Keep `GITHUB_CLIENT_SECRET` only in Laravel `.env`; do not put it in Android code.

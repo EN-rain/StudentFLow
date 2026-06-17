@@ -8,6 +8,9 @@ StudentFlow deploys to Render as a Docker web service. Do not use Render's Node 
 - Runtime: Docker
 - Root directory: blank
 - Instance: Free is acceptable for demos
+- Do not use the auto-detected Node runtime. The repository has `package.json` only for Vite assets; the backend is Laravel/PHP and must deploy with Docker.
+
+You can either create the service manually with **Language = Docker** or deploy from the root `render.yaml` Blueprint.
 
 ## Environment Variables
 
@@ -33,10 +36,12 @@ QUEUE_CONNECTION=database
 
 MAIL_MAILER=log
 
-GOOGLE_CLIENT_ID=919040220334-psvoce66g4mcim0csum12mujhlmqk6oe.apps.googleusercontent.com
+GOOGLE_CLIENT_ID=REPLACE_WITH_GOOGLE_WEB_CLIENT_ID
 GITHUB_CLIENT_ID=Ov23lipHaQtpSjuQyWmi
 GITHUB_CLIENT_SECRET=REPLACE_WITH_GITHUB_SECRET
 ```
+
+`GOOGLE_CLIENT_ID` must be a Google OAuth **Web application** client ID. The Android client ID is only for Google Console package/SHA-1 ownership and causes Android status code `10` if used in the app/server token flow.
 
 Generate `APP_KEY` locally with:
 
@@ -46,11 +51,19 @@ C:\php\php.exe artisan key:generate --show
 
 ## OAuth URLs
 
-GitHub callback:
+Android GitHub callback URL:
+
+```text
+studentflow://oauth/github
+```
+
+Optional backend/browser GitHub callback:
 
 ```text
 https://studentflow-rbog.onrender.com/api/auth/github/callback
 ```
+
+Google must use a Web OAuth client ID in `GOOGLE_CLIENT_ID`. Also create a separate Android OAuth client in Google Console for package `com.studentflow.app` and the app signing SHA-1.
 
 Android API base URL after deployment:
 
