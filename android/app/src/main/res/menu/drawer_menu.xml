@@ -9,6 +9,7 @@
         <item android:id="@+id/nav_announcements" android:title="Announcements" />
         <item android:id="@+id/nav_exams" android:title="Exams" />
         <item android:id="@+id/nav_reports" android:title="Reports" />
+        <item android:id="@+id/nav_qa_tests" android:title="QA Tests" />
         <item android:id="@+id/nav_profile" android:title="Profile" />
     </group>
     <item android:id="@+id/nav_logout" android:title="@string/logout" />

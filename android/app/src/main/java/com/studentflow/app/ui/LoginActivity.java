@@ -1,16 +1,28 @@
 package com.studentflow.app.ui;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.widget.EditText;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.browser.customtabs.CustomTabsIntent;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.studentflow.app.Constants;
 import com.studentflow.app.R;
 import com.studentflow.app.api.ApiClient;
 import com.studentflow.app.data.TokenStore;
@@ -22,11 +34,26 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
+    private static final int GOOGLE_SIGN_IN_REQUEST = 4100;
+    private enum Mode { LOGIN, REGISTER, FORGOT }
+
+    private Mode mode = Mode.LOGIN;
+    private TextInputLayout nameLayout;
+    private TextInputLayout usernameLayout;
+    private TextInputLayout passwordLayout;
+    private TextInputLayout confirmPasswordLayout;
     private TextInputEditText usernameInput;
+    private TextInputEditText nameInput;
     private TextInputEditText passwordInput;
+    private TextInputEditText confirmPasswordInput;
     private TextView message;
+    private TextView forgotPasswordButton;
     private MaterialButton loginButton;
+    private MaterialButton showLoginButton;
+    private MaterialButton showRegisterButton;
+    private LinearLayout socialRow;
     private TokenStore tokenStore;
+    private GoogleSignInClient googleSignInClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,15 +64,58 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
         setContentView(R.layout.activity_login);
+        nameLayout = findViewById(R.id.nameLayout);
+        usernameLayout = findViewById(R.id.usernameLayout);
+        passwordLayout = findViewById(R.id.passwordLayout);
+        confirmPasswordLayout = findViewById(R.id.confirmPasswordLayout);
+        nameInput = findViewById(R.id.nameInput);
         usernameInput = findViewById(R.id.usernameInput);
         passwordInput = findViewById(R.id.passwordInput);
+        confirmPasswordInput = findViewById(R.id.confirmPasswordInput);
         message = findViewById(R.id.loginMessage);
+        forgotPasswordButton = findViewById(R.id.forgotPasswordButton);
         loginButton = findViewById(R.id.loginButton);
-        MaterialButton googleLoginButton = findViewById(R.id.googleLoginButton);
-        MaterialButton githubLoginButton = findViewById(R.id.githubLoginButton);
-        loginButton.setOnClickListener(v -> login());
-        googleLoginButton.setOnClickListener(v -> socialLogin("google"));
-        githubLoginButton.setOnClickListener(v -> socialLogin("github"));
+        showLoginButton = findViewById(R.id.showLoginButton);
+        showRegisterButton = findViewById(R.id.showRegisterButton);
+        socialRow = findViewById(R.id.socialRow);
+        ImageButton googleLoginButton = findViewById(R.id.googleLoginButton);
+        ImageButton githubLoginButton = findViewById(R.id.githubLoginButton);
+        googleSignInClient = GoogleSignIn.getClient(this, new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .requestIdToken(Constants.GOOGLE_CLIENT_ID)
+                .build());
+        loginButton.setOnClickListener(v -> submitPrimary());
+        showLoginButton.setOnClickListener(v -> setMode(Mode.LOGIN));
+        showRegisterButton.setOnClickListener(v -> setMode(Mode.REGISTER));
+        forgotPasswordButton.setOnClickListener(v -> setMode(mode == Mode.FORGOT ? Mode.LOGIN : Mode.FORGOT));
+        googleLoginButton.setOnClickListener(v -> startGoogleLogin());
+        githubLoginButton.setOnClickListener(v -> startGithubLogin());
+        setMode(Mode.LOGIN);
+        handleDeepLink(getIntent());
+    }
+
+    private void setMode(Mode nextMode) {
+        mode = nextMode;
+        message.setText("");
+        nameLayout.setVisibility(mode == Mode.REGISTER ? View.VISIBLE : View.GONE);
+        passwordLayout.setVisibility(mode == Mode.FORGOT ? View.GONE : View.VISIBLE);
+        confirmPasswordLayout.setVisibility(mode == Mode.REGISTER ? View.VISIBLE : View.GONE);
+        socialRow.setVisibility(mode == Mode.FORGOT ? View.GONE : View.VISIBLE);
+        usernameLayout.setHint(mode == Mode.LOGIN ? "Username or email" : "Email");
+        loginButton.setText(mode == Mode.LOGIN ? "Login" : mode == Mode.REGISTER ? "Register" : "Send reset link");
+        forgotPasswordButton.setText(mode == Mode.FORGOT ? "Back to login" : "Forgot password?");
+        showLoginButton.setEnabled(mode != Mode.LOGIN);
+        showRegisterButton.setEnabled(mode != Mode.REGISTER);
+    }
+
+    private void submitPrimary() {
+        if (mode == Mode.REGISTER) {
+            register();
+        } else if (mode == Mode.FORGOT) {
+            forgotPassword();
+        } else {
+            login();
+        }
     }
 
     private void login() {
@@ -67,7 +137,7 @@ public class LoginActivity extends AppCompatActivity {
                     saveAndOpen(body);
                     return;
                 }
-                message.setText("Login failed. Check credentials and API server.");
+                message.setText("Login failed: " + errorMessage(response));
             }
 
             @Override
@@ -78,19 +148,141 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void socialLogin(String provider) {
-        EditText input = new EditText(this);
-        input.setSingleLine(false);
-        input.setHint(provider.equals("google") ? "Paste Google ID token" : "Paste GitHub code or access token");
-        new AlertDialog.Builder(this)
-                .setTitle(provider.equals("google") ? "Student Google sign-in" : "Student GitHub sign-in")
-                .setMessage(provider.equals("google")
-                        ? "Backend verifies the Google ID token and links it to a student email."
-                        : "Backend exchanges a GitHub code or verifies an access token and links it to a student email.")
-                .setView(input)
-                .setNegativeButton("Cancel", null)
-                .setPositiveButton("Continue", (dialog, which) -> submitSocial(provider, input.getText().toString().trim()))
-                .show();
+    private void register() {
+        String name = text(nameInput);
+        String email = text(usernameInput);
+        String password = text(passwordInput);
+        String confirm = text(confirmPasswordInput);
+        if (name.isEmpty() || email.isEmpty() || password.isEmpty() || confirm.isEmpty()) {
+            message.setText("Enter name, email, password, and confirmation.");
+            return;
+        }
+        JsonObject payload = new JsonObject();
+        payload.addProperty("name", name);
+        payload.addProperty("email", email);
+        payload.addProperty("password", password);
+        payload.addProperty("password_confirmation", confirm);
+        loginButton.setEnabled(false);
+        message.setText("Registering...");
+        ApiClient.reset();
+        ApiClient.service(this).register(payload).enqueue(new Callback<LoginResponse>() {
+            @Override
+            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+                loginButton.setEnabled(true);
+                LoginResponse body = response.body();
+                if (response.isSuccessful() && body != null && body.token != null) {
+                    saveAndOpen(body);
+                    return;
+                }
+                message.setText("Register failed: " + errorMessage(response));
+            }
+
+            @Override
+            public void onFailure(Call<LoginResponse> call, Throwable t) {
+                loginButton.setEnabled(true);
+                message.setText("Network error: " + t.getMessage());
+            }
+        });
+    }
+
+    private void forgotPassword() {
+        String email = text(usernameInput);
+        if (email.isEmpty()) {
+            message.setText("Enter your email.");
+            return;
+        }
+        JsonObject payload = new JsonObject();
+        payload.addProperty("email", email);
+        loginButton.setEnabled(false);
+        message.setText("Sending reset link...");
+        ApiClient.reset();
+        ApiClient.service(this).forgotPassword(payload).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                loginButton.setEnabled(true);
+                if (response.isSuccessful() && response.body() != null && response.body().has("message")) {
+                    message.setText(response.body().get("message").getAsString());
+                    return;
+                }
+                message.setText("Reset failed: " + errorMessage(response));
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                loginButton.setEnabled(true);
+                message.setText("Network error: " + t.getMessage());
+            }
+        });
+    }
+
+    private void startGoogleLogin() {
+        message.setText("Opening Google sign-in...");
+        googleSignInClient.signOut().addOnCompleteListener(task ->
+                startActivityForResult(googleSignInClient.getSignInIntent(), GOOGLE_SIGN_IN_REQUEST));
+    }
+
+    private void startGithubLogin() {
+        String callback = Constants.API_BASE_URL + "auth/github/callback";
+        Uri uri = Uri.parse("https://github.com/login/oauth/authorize")
+                .buildUpon()
+                .appendQueryParameter("client_id", Constants.GITHUB_CLIENT_ID)
+                .appendQueryParameter("redirect_uri", callback)
+                .appendQueryParameter("scope", "read:user user:email")
+                .appendQueryParameter("state", "android")
+                .build();
+        message.setText("Opening GitHub sign-in...");
+        new CustomTabsIntent.Builder().build().launchUrl(this, uri);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        handleDeepLink(intent);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode != GOOGLE_SIGN_IN_REQUEST) {
+            return;
+        }
+        Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+        try {
+            GoogleSignInAccount account = task.getResult(ApiException.class);
+            String idToken = account == null ? null : account.getIdToken();
+            if (idToken == null || idToken.trim().isEmpty()) {
+                message.setText("Google sign-in did not return an ID token. Check the OAuth client ID.");
+                return;
+            }
+            submitSocial("google", idToken);
+        } catch (ApiException e) {
+            if (e.getStatusCode() == 10) {
+                message.setText("Google sign-in failed: OAuth client mismatch. Use a Web client ID for Android token login and keep the Android SHA-1 client in Google Console.");
+            } else {
+                message.setText("Google sign-in failed: " + e.getStatusCode());
+            }
+        }
+    }
+
+    private void handleDeepLink(Intent intent) {
+        Uri uri = intent == null ? null : intent.getData();
+        if (uri == null || !"studentflow".equals(uri.getScheme()) || !"oauth".equals(uri.getHost())) {
+            return;
+        }
+        String token = uri.getQueryParameter("token");
+        String user = uri.getQueryParameter("user");
+        if (token == null || token.trim().isEmpty()) {
+            message.setText("GitHub sign-in did not return an app token.");
+            return;
+        }
+        try {
+            tokenStore.saveSession(token, user == null ? "{}" : JsonParser.parseString(user).getAsJsonObject().toString());
+            ApiClient.reset();
+            openMain();
+        } catch (RuntimeException e) {
+            message.setText("GitHub sign-in response was invalid.");
+        }
     }
 
     private void submitSocial(String provider, String value) {
@@ -118,7 +310,7 @@ public class LoginActivity extends AppCompatActivity {
                         if (response.isSuccessful() && body != null && body.token != null) {
                             saveAndOpen(body);
                         } else {
-                            message.setText("Social sign-in failed: HTTP " + response.code());
+                            message.setText("Social sign-in failed: " + errorMessage(response));
                         }
                     }
 
@@ -133,6 +325,31 @@ public class LoginActivity extends AppCompatActivity {
         tokenStore.saveSession(body.token, body.user == null ? "{}" : body.user.toString());
         ApiClient.reset();
         openMain();
+    }
+
+    private String errorMessage(Response<?> response) {
+        String fallback = "HTTP " + response.code();
+        try {
+            if (response.errorBody() == null) {
+                return fallback;
+            }
+            String raw = response.errorBody().string();
+            JsonObject json = JsonParser.parseString(raw).getAsJsonObject();
+            if (json.has("message") && !json.get("message").isJsonNull()) {
+                return json.get("message").getAsString();
+            }
+            if (json.has("errors") && json.get("errors").isJsonObject()) {
+                JsonObject errors = json.getAsJsonObject("errors");
+                for (String key : errors.keySet()) {
+                    if (errors.get(key).isJsonArray() && errors.getAsJsonArray(key).size() > 0) {
+                        return errors.getAsJsonArray(key).get(0).getAsString();
+                    }
+                }
+            }
+        } catch (Exception ignored) {
+            return fallback;
+        }
+        return fallback;
     }
 
     private String text(TextInputEditText input) {

@@ -73,6 +73,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             show("Exams", isStudent() ? StudentExamsFragment.newInstance() : TeacherExamsFragment.newInstance());
         } else if (id == R.id.nav_reports) {
             show("Reports", isStudent() ? StudentEndpointFragment.newInstance("Grades", "Scores synced from teacher gradebook and exams.", "grades") : ReportsFragment.newInstance());
+        } else if (id == R.id.nav_qa_tests) {
+            show("QA Tests", QaTestFragment.newInstance());
         } else if (id == R.id.nav_profile) {
             show("Profile", isStudent() ? StudentEndpointFragment.newInstance("Profile", "Your StudentFlow profile and linked social identity.", "profile") : ProfileFragment.newInstance());
         }

@@ -18,6 +18,9 @@ public interface ApiService {
     @POST("auth/login")
     Call<LoginResponse> login(@Body LoginRequest request);
 
+    @POST("auth/register")
+    Call<LoginResponse> register(@Body JsonObject request);
+
     @POST("auth/google")
     Call<LoginResponse> googleLogin(@Body JsonObject request);
 
@@ -33,8 +36,20 @@ public interface ApiService {
     @POST("auth/change-password")
     Call<JsonObject> changePassword(@Body ChangePasswordRequest request);
 
+    @POST("auth/forgot-password")
+    Call<JsonObject> forgotPassword(@Body JsonObject request);
+
     @GET("classes")
     Call<JsonObject> classes();
+
+    @GET("admin/teachers")
+    Call<JsonObject> adminTeachers();
+
+    @GET("admin/settings")
+    Call<JsonObject> adminSettings();
+
+    @GET("admin/activity-logs")
+    Call<JsonObject> adminActivityLogs();
 
     @POST("classes")
     Call<JsonObject> createClass(@Body JsonObject request);
@@ -158,4 +173,7 @@ public interface ApiService {
 
     @GET("exams/{examId}/audit")
     Call<JsonObject> examAudit(@Path("examId") int examId);
+
+    @GET("reports/{type}")
+    Call<JsonObject> report(@Path("type") String type, @Query("class_id") Integer classId, @Query("student_id") Integer studentId);
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Student;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -13,6 +14,54 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
+    public function register(Request $request): JsonResponse
+    {
+        $payload = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email|unique:students,email',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        [$firstName, $lastName] = $this->splitName($payload['name']);
+
+        $student = Student::create([
+            'student_number' => $this->nextStudentNumber(),
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'email' => strtolower($payload['email']),
+            'status' => 'active',
+        ]);
+
+        $user = User::create([
+            'username' => $student->student_number,
+            'name' => $student->full_name,
+            'email' => $student->email,
+            'password' => Hash::make($payload['password']),
+            'role' => 'student',
+            'status' => 'active',
+            'student_id' => $student->id,
+        ]);
+
+        $token = $user->createToken('android-register')->plainTextToken;
+
+        return response()->json([
+            'message' => 'Student registered.',
+            'token' => $token,
+            'user' => [
+                'id' => $user->id,
+                'username' => $user->username,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role,
+                'student' => [
+                    'id' => $student->id,
+                    'student_number' => $student->student_number,
+                    'full_name' => $student->full_name,
+                ],
+            ],
+        ], 201);
+    }
+
     public function login(Request $request): JsonResponse
     {
         $payload = $request->validate([
@@ -149,5 +198,21 @@ class AuthController extends Controller
         }
 
         return response()->json(['message' => 'Password reset.']);
+    }
+
+    private function splitName(string $name): array
+    {
+        $parts = preg_split('/\s+/', trim($name), 2);
+        return [$parts[0] ?: 'Student', $parts[1] ?? 'User'];
+    }
+
+    private function nextStudentNumber(): string
+    {
+        $year = now()->format('Y');
+        $latest = Student::where('student_number', 'like', $year . '-%')
+            ->orderByDesc('student_number')
+            ->value('student_number');
+        $next = $latest ? ((int) substr($latest, -4)) + 1 : 1;
+        return sprintf('%s-%04d', $year, $next);
     }
 }

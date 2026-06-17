@@ -38,15 +38,24 @@ class StudentSocialAuthController extends Controller
         return $this->tokenResponse($user, 'github');
     }
 
-    public function githubCallback(Request $request): JsonResponse
+    public function githubCallback(Request $request): JsonResponse|\Illuminate\Http\RedirectResponse
     {
         $payload = $request->validate([
             'code' => 'required|string',
+            'state' => 'nullable|string',
         ]);
 
         $token = $this->exchangeGithubCode($payload['code']);
         $profile = $this->githubProfile($token);
         $user = StudentSocialUserResolver::resolve('github', $profile);
+
+        if (($payload['state'] ?? null) === 'android') {
+            $data = $this->tokenPayload($user, 'github');
+            return redirect()->away('studentflow://oauth/github?' . http_build_query([
+                'token' => $data['token'],
+                'user' => json_encode($data['user']),
+            ]));
+        }
 
         return $this->tokenResponse($user, 'github');
     }
@@ -55,7 +64,7 @@ class StudentSocialAuthController extends Controller
     {
         if (app()->environment('local', 'testing') && str_starts_with($idToken, 'test-google:')) {
             $email = substr($idToken, strlen('test-google:'));
-            return ['sub' => 'test-google-' . md5($email), 'email' => $email, 'email_verified' => true];
+            return ['sub' => 'test-google-' . md5($email), 'email' => $email, 'email_verified' => true, 'name' => strtok($email, '@')];
         }
 
         $response = Http::timeout(10)->get('https://oauth2.googleapis.com/tokeninfo', [
@@ -75,7 +84,13 @@ class StudentSocialAuthController extends Controller
             throw ValidationException::withMessages(['email' => ['Google email address is not verified.']]);
         }
 
-        return $data;
+        return [
+            'sub' => $data['sub'] ?? null,
+            'email' => $data['email'] ?? null,
+            'email_verified' => $data['email_verified'] ?? false,
+            'name' => $data['name'] ?? strtok((string) ($data['email'] ?? ''), '@'),
+            'avatar_url' => $data['picture'] ?? null,
+        ];
     }
 
     private function exchangeGithubCode(string $code): string
@@ -131,10 +146,15 @@ class StudentSocialAuthController extends Controller
 
     private function tokenResponse($user, string $provider): JsonResponse
     {
+        return response()->json($this->tokenPayload($user, $provider));
+    }
+
+    private function tokenPayload($user, string $provider): array
+    {
         $user->tokens()->delete();
         $token = $user->createToken('android-' . $provider)->plainTextToken;
 
-        return response()->json([
+        return [
             'message' => 'Student social login successful.',
             'token' => $token,
             'user' => [
@@ -151,6 +171,6 @@ class StudentSocialAuthController extends Controller
                 'github_username' => $user->github_username,
                 'avatar_url' => $user->avatar_url,
             ],
-        ]);
+        ];
     }
 }

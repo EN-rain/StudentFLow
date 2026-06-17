@@ -21,8 +21,14 @@ class StudentSocialUserResolver
 
         $student = Student::whereRaw('lower(email) = ?', [$email])->first();
         if (! $student) {
-            throw ValidationException::withMessages([
-                'email' => ['No StudentFlow student record matches this email address. Ask a teacher or admin to register it first.'],
+            [$firstName, $lastName] = self::splitName((string) ($profile['name'] ?? strtok($email, '@')));
+            $student = Student::create([
+                'student_number' => self::nextStudentNumber(),
+                'first_name' => $firstName,
+                'last_name' => $lastName,
+                'email' => $email,
+                'profile_image' => $profile['avatar_url'] ?? $profile['picture'] ?? null,
+                'status' => 'active',
             ]);
         }
 
@@ -67,5 +73,21 @@ class StudentSocialUserResolver
         $user->forceFill($updates)->save();
 
         return $user->fresh('student');
+    }
+
+    private static function splitName(string $name): array
+    {
+        $parts = preg_split('/\s+/', trim($name), 2);
+        return [$parts[0] ?: 'Student', $parts[1] ?? 'User'];
+    }
+
+    private static function nextStudentNumber(): string
+    {
+        $year = now()->format('Y');
+        $latest = Student::where('student_number', 'like', $year . '-%')
+            ->orderByDesc('student_number')
+            ->value('student_number');
+        $next = $latest ? ((int) substr($latest, -4)) + 1 : 1;
+        return sprintf('%s-%04d', $year, $next);
     }
 }

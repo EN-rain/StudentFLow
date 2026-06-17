@@ -242,4 +242,26 @@ class StudentFlowFeatureTest extends TestCase
             ->assertJsonPath('data.stats.submitted', 1)
             ->assertJsonPath('data.students.0.google_email', $student->email);
     }
+
+    public function test_student_registration_and_new_social_login_create_student_records(): void
+    {
+        $register = $this->postJson('/api/auth/register', [
+            'name' => 'New Mobile Student',
+            'email' => 'new.mobile@studentflow.local',
+            'password' => 'Student123!',
+            'password_confirmation' => 'Student123!',
+        ])->assertCreated();
+
+        $this->assertSame('student', $register->json('user.role'));
+        $this->assertDatabaseHas('students', ['email' => 'new.mobile@studentflow.local']);
+        $this->assertDatabaseHas('users', ['email' => 'new.mobile@studentflow.local', 'role' => 'student']);
+
+        $social = $this->postJson('/api/auth/google', [
+            'id_token' => 'test-google:new.social@studentflow.local',
+        ])->assertOk();
+
+        $this->assertSame('student', $social->json('user.role'));
+        $this->assertDatabaseHas('students', ['email' => 'new.social@studentflow.local']);
+        $this->assertDatabaseHas('users', ['email' => 'new.social@studentflow.local', 'role' => 'student']);
+    }
 }
