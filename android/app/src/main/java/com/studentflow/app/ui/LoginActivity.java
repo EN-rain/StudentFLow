@@ -104,8 +104,10 @@ public class LoginActivity extends AppCompatActivity {
         usernameLayout.setHint(mode == Mode.LOGIN ? "Username or email" : "Email");
         loginButton.setText(mode == Mode.LOGIN ? "Login" : mode == Mode.REGISTER ? "Register" : "Send reset link");
         forgotPasswordButton.setText(mode == Mode.FORGOT ? "Back to login" : "Forgot password?");
-        showLoginButton.setEnabled(mode != Mode.LOGIN);
-        showRegisterButton.setEnabled(mode != Mode.REGISTER);
+        showLoginButton.setEnabled(true);
+        showRegisterButton.setEnabled(true);
+        showLoginButton.setAlpha(mode == Mode.LOGIN ? 1.0f : 0.72f);
+        showRegisterButton.setAlpha(mode == Mode.REGISTER ? 1.0f : 0.72f);
     }
 
     private void submitPrimary() {

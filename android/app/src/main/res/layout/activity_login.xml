@@ -5,10 +5,21 @@
     android:background="@color/studentflow_surface"
     android:fillViewport="true">
 
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:paddingStart="24dp"
+        android:paddingTop="48dp"
+        android:paddingEnd="24dp"
+        android:paddingBottom="24dp"
+        app:cardBackgroundColor="@color/studentflow_field"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="2dp">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:orientation="vertical"
         android:padding="24dp">
 
@@ -29,7 +40,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/showLoginButton"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                style="@style/StudentFlow.AuthToggle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="6dp"
@@ -38,7 +49,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/showRegisterButton"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                style="@style/StudentFlow.AuthToggle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="6dp"
@@ -48,6 +59,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/nameLayout"
+            style="@style/StudentFlow.TextInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -58,11 +70,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Full name"
-                android:inputType="textPersonName" />
+                android:inputType="textPersonName"
+                android:textColor="@color/studentflow_text"
+                android:textColorHint="@color/studentflow_border" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/usernameLayout"
+            style="@style/StudentFlow.TextInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
@@ -72,11 +87,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Username or email"
-                android:inputType="textEmailAddress" />
+                android:inputType="textEmailAddress"
+                android:textColor="@color/studentflow_text"
+                android:textColorHint="@color/studentflow_border" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/passwordLayout"
+            style="@style/StudentFlow.TextInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
@@ -87,11 +105,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Password"
-                android:inputType="textPassword" />
+                android:inputType="textPassword"
+                android:textColor="@color/studentflow_text"
+                android:textColorHint="@color/studentflow_border" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/confirmPasswordLayout"
+            style="@style/StudentFlow.TextInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
@@ -103,7 +124,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Confirm password"
-                android:inputType="textPassword" />
+                android:inputType="textPassword"
+                android:textColor="@color/studentflow_text"
+                android:textColorHint="@color/studentflow_border" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.button.MaterialButton
@@ -160,4 +183,5 @@
             android:layout_marginTop="12dp"
             android:textColor="#B91C1C" />
     </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 </ScrollView>

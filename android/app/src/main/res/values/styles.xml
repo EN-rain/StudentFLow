@@ -6,4 +6,17 @@
         <item name="android:fontFamily">sans</item>
         <item name="android:windowLightStatusBar">false</item>
     </style>
+
+    <style name="StudentFlow.TextInput" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxBackgroundColor">@color/studentflow_field</item>
+        <item name="boxStrokeColor">@color/studentflow_border</item>
+        <item name="hintTextColor">@color/studentflow_border</item>
+        <item name="android:textColorHint">@color/studentflow_border</item>
+    </style>
+
+    <style name="StudentFlow.AuthToggle" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="strokeColor">@color/studentflow_primary</item>
+        <item name="android:textColor">@color/studentflow_primary</item>
+        <item name="backgroundTint">@color/studentflow_field</item>
+    </style>
 </resources>
