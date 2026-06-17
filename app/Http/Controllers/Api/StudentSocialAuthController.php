@@ -38,6 +38,19 @@ class StudentSocialAuthController extends Controller
         return $this->tokenResponse($user, 'github');
     }
 
+    public function githubCallback(Request $request): JsonResponse
+    {
+        $payload = $request->validate([
+            'code' => 'required|string',
+        ]);
+
+        $token = $this->exchangeGithubCode($payload['code']);
+        $profile = $this->githubProfile($token);
+        $user = StudentSocialUserResolver::resolve('github', $profile);
+
+        return $this->tokenResponse($user, 'github');
+    }
+
     private function verifyGoogleToken(string $idToken): array
     {
         if (app()->environment('local', 'testing') && str_starts_with($idToken, 'test-google:')) {

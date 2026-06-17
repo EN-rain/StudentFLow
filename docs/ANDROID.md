@@ -20,6 +20,20 @@ Student login is role-aware and uses backend social endpoints:
 
 For local QA only, the backend accepts `test-google:{student_email}` and `test-github:{student_email}`. Real Google/GitHub sign-in requires provider credentials in Laravel `.env`.
 
+Configured Google Android client ID:
+
+```text
+919040220334-psvoce66g4mcim0csum12mujhlmqk6oe.apps.googleusercontent.com
+```
+
+Configured GitHub OAuth client ID:
+
+```text
+Ov23lipHaQtpSjuQyWmi
+```
+
+Keep `GITHUB_CLIENT_SECRET` only in Laravel `.env`; do not put it in Android code.
+
 Students can use the Android app to view classes, announcements, assignments, grades, attendance, and exams. Teachers can create quick exams, publish per-student magic links, and audit submissions from the Android `Exams` screen.
 
 ## Build

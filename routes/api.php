@@ -22,6 +22,7 @@ Route::prefix('auth')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/google', [StudentSocialAuthController::class, 'google']);
     Route::post('/github', [StudentSocialAuthController::class, 'github']);
+    Route::get('/github/callback', [StudentSocialAuthController::class, 'githubCallback']);
     Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
     Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 

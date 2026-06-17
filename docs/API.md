@@ -18,6 +18,12 @@ Authenticated endpoints require `Authorization: Bearer <token>`.
 
 Student social login links by verified provider email to an existing `students.email`. Configure `GOOGLE_CLIENT_ID`, `GITHUB_CLIENT_ID`, and `GITHUB_CLIENT_SECRET` for real providers.
 
+GitHub callback URL:
+
+```text
+/api/auth/github/callback
+```
+
 ## Student Mobile
 
 - `GET /student/dashboard`
