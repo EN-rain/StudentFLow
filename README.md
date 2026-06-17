@@ -66,6 +66,7 @@ See [docs/ANDROID.md](docs/ANDROID.md).
 - [API Reference](docs/API.md)
 - [User Manual](docs/USER_MANUAL.md)
 - [Deployment Guide](docs/DEPLOYMENT.md)
+- [Render Deployment](docs/RENDER.md)
 - [Android Build Guide](docs/ANDROID.md)
 
 ## Verification

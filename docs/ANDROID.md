@@ -7,9 +7,9 @@ This directory contains a native Java Android scaffold for StudentFlow.
 - UI: XML layouts with Material Components
 - Networking: Retrofit + Gson
 - Auth storage: `SharedPreferences` through `TokenStore`
-- Default API URL: `http://10.0.2.2:8000/api/` in `Constants.java`
+- Default API URL: `https://studentflow-rbog.onrender.com/api/` in `Constants.java`
 
-Open the `android/` directory in Android Studio. Start the Laravel server on port 8000 before logging in from the Android emulator.
+Open the `android/` directory in Android Studio. The default build points to the Render backend. For local emulator testing, temporarily set `Constants.API_BASE_URL` to `http://10.0.2.2:8000/api/`.
 
 Seeded teacher credentials from the backend README work against `/api/auth/login`, for example `john.reyes` / `Teacher123!`.
 
