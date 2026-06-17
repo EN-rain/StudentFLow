@@ -1,0 +1,20 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true">
+        <shape>
+            <solid android:color="#D8F3F8" />
+            <corners android:radius="18dp" />
+            <stroke
+                android:width="1dp"
+                android:color="@color/studentflow_primary" />
+        </shape>
+    </item>
+    <item>
+        <shape>
+            <solid android:color="@color/studentflow_field" />
+            <corners android:radius="18dp" />
+            <stroke
+                android:width="1dp"
+                android:color="#BDECF3" />
+        </shape>
+    </item>
+</selector>

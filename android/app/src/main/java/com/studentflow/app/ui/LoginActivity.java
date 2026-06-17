@@ -1,6 +1,7 @@
 package com.studentflow.app.ui;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -82,7 +83,7 @@ public class LoginActivity extends AppCompatActivity {
         ImageButton githubLoginButton = findViewById(R.id.githubLoginButton);
         googleSignInClient = GoogleSignIn.getClient(this, new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
-                .requestIdToken(Constants.GOOGLE_CLIENT_ID)
+                .requestIdToken(Constants.GOOGLE_WEB_CLIENT_ID)
                 .build());
         loginButton.setOnClickListener(v -> submitPrimary());
         showLoginButton.setOnClickListener(v -> setMode(Mode.LOGIN));
@@ -108,6 +109,15 @@ public class LoginActivity extends AppCompatActivity {
         showRegisterButton.setEnabled(true);
         showLoginButton.setAlpha(mode == Mode.LOGIN ? 1.0f : 0.72f);
         showRegisterButton.setAlpha(mode == Mode.REGISTER ? 1.0f : 0.72f);
+        applyToggleState(showLoginButton, mode == Mode.LOGIN);
+        applyToggleState(showRegisterButton, mode == Mode.REGISTER);
+    }
+
+    private void applyToggleState(MaterialButton button, boolean selected) {
+        int primary = getColor(R.color.studentflow_primary);
+        int field = getColor(R.color.studentflow_field);
+        button.setBackgroundTintList(ColorStateList.valueOf(selected ? primary : field));
+        button.setTextColor(selected ? field : primary);
     }
 
     private void submitPrimary() {
@@ -224,11 +234,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void startGithubLogin() {
-        String callback = Constants.API_BASE_URL + "auth/github/callback";
         Uri uri = Uri.parse("https://github.com/login/oauth/authorize")
                 .buildUpon()
                 .appendQueryParameter("client_id", Constants.GITHUB_CLIENT_ID)
-                .appendQueryParameter("redirect_uri", callback)
+                .appendQueryParameter("redirect_uri", Constants.GITHUB_REDIRECT_URI)
                 .appendQueryParameter("scope", "read:user user:email")
                 .appendQueryParameter("state", "android")
                 .build();
@@ -272,6 +281,19 @@ public class LoginActivity extends AppCompatActivity {
         if (uri == null || !"studentflow".equals(uri.getScheme()) || !"oauth".equals(uri.getHost())) {
             return;
         }
+        String error = uri.getQueryParameter("error_description");
+        if (error == null) {
+            error = uri.getQueryParameter("error");
+        }
+        if (error != null && !error.trim().isEmpty()) {
+            message.setText("GitHub sign-in failed: " + error);
+            return;
+        }
+        String code = uri.getQueryParameter("code");
+        if (code != null && !code.trim().isEmpty()) {
+            submitSocial("github", code, Constants.GITHUB_REDIRECT_URI);
+            return;
+        }
         String token = uri.getQueryParameter("token");
         String user = uri.getQueryParameter("user");
         if (token == null || token.trim().isEmpty()) {
@@ -288,6 +310,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void submitSocial(String provider, String value) {
+        submitSocial(provider, value, null);
+    }
+
+    private void submitSocial(String provider, String value, String redirectUri) {
         if (value.isEmpty()) {
             message.setText("Missing " + provider + " token/code.");
             return;
@@ -299,6 +325,9 @@ public class LoginActivity extends AppCompatActivity {
             payload.addProperty("access_token", value);
         } else {
             payload.addProperty("code", value);
+            if (redirectUri != null && !redirectUri.trim().isEmpty()) {
+                payload.addProperty("redirect_uri", redirectUri);
+            }
         }
         message.setText("Signing in with " + provider + "...");
         ApiClient.reset();

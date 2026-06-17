@@ -29,9 +29,10 @@ class StudentSocialAuthController extends Controller
         $payload = $request->validate([
             'code' => 'required_without:access_token|string',
             'access_token' => 'required_without:code|string',
+            'redirect_uri' => 'nullable|string|max:255',
         ]);
 
-        $token = $payload['access_token'] ?? $this->exchangeGithubCode($payload['code']);
+        $token = $payload['access_token'] ?? $this->exchangeGithubCode($payload['code'], $payload['redirect_uri'] ?? null);
         $profile = $this->githubProfile($token);
         $user = StudentSocialUserResolver::resolve('github', $profile);
 
@@ -93,7 +94,7 @@ class StudentSocialAuthController extends Controller
         ];
     }
 
-    private function exchangeGithubCode(string $code): string
+    private function exchangeGithubCode(string $code, ?string $redirectUri = null): string
     {
         $clientId = config('services.github.client_id');
         $clientSecret = config('services.github.client_secret');
@@ -101,11 +102,17 @@ class StudentSocialAuthController extends Controller
             throw ValidationException::withMessages(['code' => ['GitHub OAuth is not configured on the server.']]);
         }
 
-        $response = Http::asForm()->acceptJson()->post('https://github.com/login/oauth/access_token', [
+        $form = [
             'client_id' => $clientId,
             'client_secret' => $clientSecret,
             'code' => $code,
-        ]);
+        ];
+
+        if ($redirectUri) {
+            $form['redirect_uri'] = $redirectUri;
+        }
+
+        $response = Http::asForm()->acceptJson()->post('https://github.com/login/oauth/access_token', $form);
 
         if (! $response->ok() || ! $response->json('access_token')) {
             throw ValidationException::withMessages(['code' => ['GitHub code exchange failed.']]);

@@ -1,9 +1,13 @@
 <resources>
-    <color name="studentflow_primary">#2563EB</color>
-    <color name="studentflow_primary_dark">#1E40AF</color>
-    <color name="studentflow_accent">#0F766E</color>
-    <color name="studentflow_surface">#E2E8F0</color>
+    <color name="studentflow_primary">#0891B2</color>
+    <color name="studentflow_primary_dark">#164E63</color>
+    <color name="studentflow_accent">#059669</color>
+    <color name="studentflow_surface">#ECFEFF</color>
+    <color name="studentflow_surface_alt">#DFF7FB</color>
     <color name="studentflow_text">#0F172A</color>
+    <color name="studentflow_text_muted">#475569</color>
     <color name="studentflow_field">#FFFFFF</color>
-    <color name="studentflow_border">#64748B</color>
+    <color name="studentflow_border">#94A3B8</color>
+    <color name="studentflow_border_active">#0891B2</color>
+    <color name="studentflow_error">#B91C1C</color>
 </resources>

@@ -3,20 +3,38 @@
         <item name="colorPrimary">@color/studentflow_primary</item>
         <item name="colorPrimaryDark">@color/studentflow_primary_dark</item>
         <item name="colorSecondary">@color/studentflow_accent</item>
+        <item name="android:colorAccent">@color/studentflow_accent</item>
+        <item name="android:navigationBarColor">@color/studentflow_surface</item>
+        <item name="android:statusBarColor">@color/studentflow_primary_dark</item>
         <item name="android:fontFamily">sans</item>
         <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="StudentFlow.TextInput" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="boxBackgroundColor">@color/studentflow_field</item>
-        <item name="boxStrokeColor">@color/studentflow_border</item>
-        <item name="hintTextColor">@color/studentflow_border</item>
-        <item name="android:textColorHint">@color/studentflow_border</item>
+        <item name="boxStrokeColor">@color/studentflow_primary</item>
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="boxStrokeWidthFocused">2dp</item>
+        <item name="boxCornerRadiusTopStart">12dp</item>
+        <item name="boxCornerRadiusTopEnd">12dp</item>
+        <item name="boxCornerRadiusBottomStart">12dp</item>
+        <item name="boxCornerRadiusBottomEnd">12dp</item>
+        <item name="hintTextColor">@color/studentflow_primary_dark</item>
+        <item name="android:textColorHint">@color/studentflow_text_muted</item>
     </style>
 
     <style name="StudentFlow.AuthToggle" parent="Widget.MaterialComponents.Button.OutlinedButton">
         <item name="strokeColor">@color/studentflow_primary</item>
         <item name="android:textColor">@color/studentflow_primary</item>
         <item name="backgroundTint">@color/studentflow_field</item>
+        <item name="cornerRadius">14dp</item>
+        <item name="android:minHeight">48dp</item>
+    </style>
+
+    <style name="StudentFlow.PrimaryButton" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">@color/studentflow_primary</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="cornerRadius">14dp</item>
+        <item name="android:minHeight">52dp</item>
     </style>
 </resources>
