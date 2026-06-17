@@ -1,0 +1,21 @@
+=== Announcements Module Smoke Test ===
+Base: http://127.0.0.1:8000
+
+[reset] migrate:fresh --seed
+[PASS] 1. admin list announcements — code=200, count=3
+[PASS] 2. teacher list (own only)
+[PASS] 3. show announcement 1 (own)
+[PASS] 4. teacher creates Smoke Announcement — code=201
+[PASS] 5. teacher forbidden from class 2
+[PASS] 6. validation rejects expiration < publish
+[PASS] 7. update announcement
+[PASS] 8. delete announcement
+[PASS] 9. admin posts on behalf of Cruz
+[PASS] 10. Cruz sees the admin-posted announcement
+
+--- Web routes ---
+[PASS] web GET /announcements — code=200
+[PASS] web GET /announcements/1 — code=200
+[PASS] web GET /announcements/create — code=200
+
+=== Results: 13 PASS / 0 FAIL ===

@@ -1,0 +1,7 @@
+<resources>
+    <color name="studentflow_primary">#2563EB</color>
+    <color name="studentflow_primary_dark">#1E40AF</color>
+    <color name="studentflow_accent">#0F766E</color>
+    <color name="studentflow_surface">#F8FAFC</color>
+    <color name="studentflow_text">#0F172A</color>
+</resources>

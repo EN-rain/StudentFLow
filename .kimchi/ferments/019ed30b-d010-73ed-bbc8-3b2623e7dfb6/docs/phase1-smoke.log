@@ -1,0 +1,36 @@
+==========================================
+Phase 1 Final Smoke Test — StudentFlow
+Base URL: http://127.0.0.1:8000
+Date: 2026-06-17 02:05:22
+==========================================
+
+--- API Authentication ---
+[PASS] 1. POST /api/auth/login admin — code=200, token=4|EjTEl3N5YIqkV2t0b0ZUwGm...
+[PASS] 2. POST /api/auth/login teacher — code=200, role=teacher
+[PASS] 3. GET /api/auth/me admin token
+[PASS] 4. GET /api/auth/me teacher token
+[PASS] 5. POST /api/auth/login wrong password — code=422
+[PASS] 6. disabled admin rejected — code=422
+[PASS] 7. POST /api/auth/logout — code=200
+[PASS] 8. GET /me after logout — code=401
+[PASS] 9. forgot-password generic msg
+
+--- Web Dashboard ---
+[PASS] 10. GET /login — code=200
+[PASS] 11. Web login admin -> /dashboard 200 — code=200
+[PASS] 12. admin dashboard shows "Administrator Dashboard"
+[PASS] 13. admin dashboard shows "Maria Santos"
+[PASS] 14. admin dashboard shows stat "Total Students"
+[PASS] 15. admin dashboard shows "Total Teachers"
+[PASS] 16. admin dashboard shows stat value 20
+[PASS] 17. admin dashboard shows stat value 3 (classes)
+[PASS] 18. Web login teacher -> /dashboard 200 — code=200
+[PASS] 19. teacher dashboard shows "Teacher Dashboard"
+[PASS] 20. teacher dashboard shows "John Michael Reyes"
+[PASS] 21. teacher dashboard shows "My Classes"
+[PASS] 22. GET /up health — code=200
+[PASS] 23. GET /api/auth/me no token -> 401 — code=401
+
+==========================================
+Results: 23 PASS, 0 FAIL
+==========================================

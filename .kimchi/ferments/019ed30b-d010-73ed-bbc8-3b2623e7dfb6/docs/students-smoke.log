@@ -1,0 +1,28 @@
+=== Students Module Smoke Test ===
+Base: http://127.0.0.1:8000
+
+[reset] migrate:fresh --seed
+[PASS] login admin — code=200
+[PASS] login teacher — code=200
+[PASS] 1. admin list students — code=200, count=20
+[PASS] 2. teacher list students (BSIT 2A) — code=200, count=7
+[PASS] 3. search by name "Aaron" — found=Aaron
+[PASS] 4. search by student number
+[PASS] 5. search by email
+[PASS] 6. filter by class_id=1 (BSIT 2A)
+[PASS] 7. show student 1
+[PASS] 8. teacher views student 1 (in BSIT 2A)
+[PASS] 9. teacher forbidden from student 8 (BSIT 1B) — code=403
+[PASS] 10. admin creates Test Student — code=201
+[PASS] 11. duplicate student_number rejected — code=422
+[PASS] 12. duplicate email rejected — code=422
+[PASS] 13. update student
+[PASS] 14. delete student — code=200
+[PASS] 15. teacher creates student — verify behavior — code=201 (admin would be 201; teacher is allowed per current StudentController — see note)
+
+=== Web routes ===
+[PASS] web GET /students — code=200
+[PASS] web GET /students/1 — code=200
+[PASS] web GET /students/create — code=200
+
+=== Results: 20 PASS / 0 FAIL ===

@@ -1,0 +1,9 @@
+<resources>
+    <style name="Theme.StudentFlow" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/studentflow_primary</item>
+        <item name="colorPrimaryDark">@color/studentflow_primary_dark</item>
+        <item name="colorSecondary">@color/studentflow_accent</item>
+        <item name="android:fontFamily">sans</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+</resources>

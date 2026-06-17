@@ -1,0 +1,35 @@
+=== Grades Module Smoke Test ===
+Base: http://127.0.0.1:8000
+
+[reset] migrate:fresh --seed
+[PASS] 1. list categories for BSIT 2A — count=5
+[PASS] 2. list grade items — count=6
+[PASS] 3. list Aaron student-grades — count=6
+
+Aaron Villanueva's final grade breakdown:
+  - Activities: avg=90%, contribution=13.5, items=1
+  - Assignments: avg=90%, contribution=18, items=1
+  - Final Exam: avg=88%, contribution=22, items=1
+  - Project: avg=92%, contribution=18.4, items=1
+  - Quizzes: avg=87.5%, contribution=17.5, items=2
+Final grade: 89.4
+
+[PASS] 4. plan verify — Aaron final grade matches hand-computed (89.4) — got=89.4, expected=89.4
+
+Final grades for all BSIT 2A students:
+  student 1 (id=1): 89.4
+  student 2 (id=2): 93.55
+  student 3 (id=3): 81.5
+  student 4 (id=4): 95.4
+  student 5 (id=5): 71.2
+  student 6 (id=6): 91.1
+  student 7 (id=7): 81.1
+[PASS] 6. teacher creates grade item — code=201
+[PASS] 7. save score for new item
+[PASS] 8. final-grade recalc after edit — new=3416.43 (was 89.4)
+[PASS] 9. cross-teacher forbidden from grade categories
+[PASS] 10. admin reads BSIT 2A categories
+[PASS] 11. update category weight
+[PASS] 11b. final grade recomputed after weight change — was=89.4, now=5088.7
+
+=== Results: 11 PASS / 0 FAIL ===

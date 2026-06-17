@@ -1,0 +1,45 @@
+=== Phase 2 Blade UI Smoke Test ===
+Base: http://127.0.0.1:8000
+
+[reset] migrate:fresh --seed
+logged in as admin
+
+--- Classes UI ---
+[PASS] classes index
+[PASS] classes create form
+[PASS] classes show (BSIT 2A)
+[PASS] classes edit form
+
+--- Students UI ---
+[PASS] students index
+[PASS] students create form
+[PASS] students show (Aaron profile)
+[PASS] students edit form
+[PASS] students search q=bianca
+[PASS] students filter class_id=2
+
+--- Attendance UI ---
+[PASS] attendance index (class chooser)
+[PASS] attendance form for BSIT 2A
+[PASS] attendance history
+[PASS] attendance history with date filter
+
+--- Grades UI ---
+[PASS] grades index (class chooser)
+[PASS] grades entry for BSIT 2A
+[PASS] grades entry shows score inputs
+[PASS] grades view shows student Aaron
+[PASS] grades view shows student Bianca
+[PASS] grades view shows student Carlo
+[PASS] grades view shows student Denise
+[PASS] grades view shows student Ethan
+[PASS] grades view shows student Faith
+[PASS] grades view shows student Gabriel
+
+--- Teacher access ---
+[PASS] teacher /classes (BSIT 2A only)
+[PASS] teacher /students (7 only)
+[PASS] teacher /grades/1 (own class)
+[PASS] teacher forbidden from /grades/2 (other teacher)
+
+=== Results: 28 PASS / 0 FAIL ===
