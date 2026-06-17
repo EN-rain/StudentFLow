@@ -1,11 +1,11 @@
 @extends('layouts.app')
-@section('title', $assignment->title . ' — StudentFlow')
+@section('title', $assignment->title . ' - StudentFlow')
 @section('content')
     <div class="d-flex justify-content-between align-items-start mb-3">
         <div>
             <h2 class="mb-1"><i class="bi bi-journal-text"></i> {{ $assignment->title }}</h2>
             <p class="text-muted mb-0">
-                <a href="/classes/{{ $assignment->class_id }}">{{ $assignment->class->class_name ?? '—' }}</a>
+                <a href="/classes/{{ $assignment->class_id }}">{{ $assignment->class->class_name ?? '-' }}</a>
                 · {{ $assignment->class->subject ?? '' }}
             </p>
         </div>

@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'New Class — StudentFlow')
+@section('title', 'New Class - StudentFlow')
 @section('content')
     <h2 class="mb-4"><i class="bi bi-plus-circle"></i> New Class</h2>
 

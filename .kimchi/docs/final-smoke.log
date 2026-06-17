@@ -1,5 +1,5 @@
 ====================================================
-StudentFlow Laravel Build — FINAL SMOKE
+StudentFlow Laravel Build - FINAL SMOKE
 Base URL: http://127.0.0.1:8000
 Started: 2026-06-17 03:28:01
 ====================================================
@@ -8,8 +8,8 @@ Started: 2026-06-17 03:28:01
 [setup] done
 
 --- Authentication ---
-[PASS] login admin — code=200
-[PASS] login john.reyes — code=200
+[PASS] login admin - code=200
+[PASS] login john.reyes - code=200
 [PASS] login angela.cruz
 [PASS] login roberto.delapena
 
@@ -20,17 +20,17 @@ Started: 2026-06-17 03:28:01
 [PASS] me roberto.delapena
 
 --- List endpoints (admin) ---
-[PASS] list classes — code=200, count=3
-[PASS] list students — code=200, count=20
-[PASS] list attendance — code=200, count=14
-[PASS] list assignments — code=200, count=3
-[PASS] list announcements — code=200, count=3
-[PASS] list grade-categories (BSIT 2A) — code=200, count=5
-[PASS] list grade-items (BSIT 2A) — code=200, count=6
-[PASS] list student-grades (Aaron in BSIT 2A) — code=200, count=6
+[PASS] list classes - code=200, count=3
+[PASS] list students - code=200, count=20
+[PASS] list attendance - code=200, count=14
+[PASS] list assignments - code=200, count=3
+[PASS] list announcements - code=200, count=3
+[PASS] list grade-categories (BSIT 2A) - code=200, count=5
+[PASS] list grade-items (BSIT 2A) - code=200, count=6
+[PASS] list student-grades (Aaron in BSIT 2A) - code=200, count=6
 
 --- Final-grade calculation ---
-[PASS] Aaron Villanueva final grade — got=89.4, expected=89.4
+[PASS] Aaron Villanueva final grade - got=89.4, expected=89.4
   Per-category contributions:
     - Activities: avg=90%, contribution=13.5
     - Assignments: avg=90%, contribution=18
@@ -49,8 +49,8 @@ Started: 2026-06-17 03:28:01
 [PASS] teacher creates announcement
 
 --- Report downloads (PDF + CSV) ---
-[PASS] attendance PDF download — code=200, size=1272511 bytes
-[PASS] grades CSV download — code=200, size=356 bytes
+[PASS] attendance PDF download - code=200, size=1272511 bytes
+[PASS] grades CSV download - code=200, size=356 bytes
 
 ====================================================
 Results: 27 PASS, 0 FAIL

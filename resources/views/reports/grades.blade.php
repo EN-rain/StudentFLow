@@ -4,8 +4,8 @@
 @section('content')
     <h1>Grade Report</h1>
     <div class="meta">
-        <strong>{{ $class->class_name }}</strong> — {{ $class->subject }}<br>
-        Teacher: {{ $class->teacher->full_name ?? '—' }}<br>
+        <strong>{{ $class->class_name }}</strong> - {{ $class->subject }}<br>
+        Teacher: {{ $class->teacher->full_name ?? '-' }}<br>
         Generated: {{ now()->format('M d, Y H:i') }}
     </div>
 

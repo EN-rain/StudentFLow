@@ -1,18 +1,18 @@
-# Step 1: Classes Module — Verification Notes
+# Step 1: Classes Module - Verification Notes
 
 ## What was done
-1. Created `app/Http/Requests/StoreClassRequest.php` — FormRequest validation (class_name, subject, teacher_id required; others optional).
-2. Created `app/Http/Controllers/Api/ClassController.php` — REST endpoints (index/show/store/update/destroy) with role-based authorization:
+1. Created `app/Http/Requests/StoreClassRequest.php` - FormRequest validation (class_name, subject, teacher_id required; others optional).
+2. Created `app/Http/Controllers/Api/ClassController.php` - REST endpoints (index/show/store/update/destroy) with role-based authorization:
    - Teacher sees/manages only their own classes
    - Teacher cannot create classes for other teachers
    - Admin sees/can create for any teacher
-3. Created `app/Http/Controllers/Web/ClassWebController.php` — web CRUD (index/create/store/show/edit/update/destroy) with the same authorization.
+3. Created `app/Http/Controllers/Web/ClassWebController.php` - web CRUD (index/create/store/show/edit/update/destroy) with the same authorization.
 4. Created Blade views: `classes/index.blade.php`, `classes/_form.blade.php` (shared form partial), `classes/create.blade.php`, `classes/edit.blade.php`, `classes/show.blade.php` (with enrolled students + assignments + announcements panels).
 5. Updated `routes/api.php` with REST endpoints under Sanctum auth.
 6. Updated `routes/web.php` with web CRUD routes under session auth.
-7. Fixed Student + SchoolClass models' `belongsToMany('class_students', ...)` to explicitly specify `class_id` and `student_id` foreign keys — Laravel's pivot auto-inference was looking for `school_class_id` which doesn't exist (the migration used `class_id` per plan.md).
+7. Fixed Student + SchoolClass models' `belongsToMany('class_students', ...)` to explicitly specify `class_id` and `student_id` foreign keys - Laravel's pivot auto-inference was looking for `school_class_id` which doesn't exist (the migration used `class_id` per plan.md).
 
-## Verification — 15-case smoke (all pass)
+## Verification - 15-case smoke (all pass)
 Run via `php C:\Users\LENOVO\Downloads\classes-smoke.php` against the live server after `migrate:fresh --seed`:
 
 | # | Case | Result |
@@ -37,4 +37,4 @@ Run via `php C:\Users\LENOVO\Downloads\classes-smoke.php` against the live serve
 - Smoke test polluted by leftover state from prior runs → added `migrate:fresh --seed` reset at start of test
 
 ## Plan verify command
-The plan verify (POST /api/classes with teacher token + new class payload) is covered by smoke test case #5 — passes with HTTP 201.
+The plan verify (POST /api/classes with teacher token + new class payload) is covered by smoke test case #5 - passes with HTTP 201.

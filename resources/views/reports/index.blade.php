@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Reports — StudentFlow')
+@section('title', 'Reports - StudentFlow')
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="mb-0"><i class="bi bi-file-earmark-bar-graph"></i> Reports</h2>

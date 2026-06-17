@@ -26,6 +26,15 @@ class EnrollmentController extends Controller
             'status' => 'nullable|in:enrolled,dropped,completed',
         ]);
 
+        if ($class->students()->where('students.id', $payload['student_id'])->exists()) {
+            return response()->json([
+                'message' => 'Student is already enrolled in this class.',
+                'errors' => [
+                    'student_id' => ['Student is already enrolled in this class.'],
+                ],
+            ], 422);
+        }
+
         $class->students()->syncWithoutDetaching([
             $payload['student_id'] => [
                 'date_enrolled' => $payload['date_enrolled'] ?? now()->toDateString(),

@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class ReportController extends Controller
 {
     /**
-     * Reports landing page — class picker.
+     * Reports landing page - class picker.
      */
     public function index(Request $request)
     {

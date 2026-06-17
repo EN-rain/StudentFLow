@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', $class->class_name . ' — StudentFlow')
+@section('title', $class->class_name . ' - StudentFlow')
 @section('content')
     <div class="d-flex justify-content-between align-items-start mb-3">
         <div>
@@ -21,20 +21,20 @@
         <div class="col-md-3">
             <div class="card stat-card"><div class="card-body">
                 <div class="stat-label">Teacher</div>
-                <div>{{ $class->teacher->full_name ?? '—' }}</div>
+                <div>{{ $class->teacher->full_name ?? '-' }}</div>
                 <small class="text-muted">{{ $class->teacher->department ?? '' }}</small>
             </div></div>
         </div>
         <div class="col-md-3">
             <div class="card stat-card"><div class="card-body">
                 <div class="stat-label">Schedule</div>
-                <div>{{ $class->schedule ?? '—' }}</div>
+                <div>{{ $class->schedule ?? '-' }}</div>
             </div></div>
         </div>
         <div class="col-md-2">
             <div class="card stat-card"><div class="card-body">
                 <div class="stat-label">Room</div>
-                <div>{{ $class->room ?? '—' }}</div>
+                <div>{{ $class->room ?? '-' }}</div>
             </div></div>
         </div>
         <div class="col-md-2">

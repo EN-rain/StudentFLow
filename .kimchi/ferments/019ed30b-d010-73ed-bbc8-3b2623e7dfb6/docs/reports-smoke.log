@@ -6,8 +6,8 @@ Base: http://127.0.0.1:8000
 
 --- Attendance Report ---
 [PASS] attendance HTML
-[PASS] attendance CSV — ctype=text/csv; charset=utf-8
-[PASS] attendance PDF — ctype=application/pdf, body starts with %PDF-
+[PASS] attendance CSV - ctype=text/csv; charset=utf-8
+[PASS] attendance PDF - ctype=application/pdf, body starts with %PDF-
 
 --- Grades Report ---
 [PASS] grades HTML
@@ -18,8 +18,8 @@ Base: http://127.0.0.1:8000
 [PASS] class-performance HTML
 [PASS] class-performance CSV
 [PASS] class-performance PDF
-[PASS] attendance PDF saved — size=883528 bytes
-[PASS] grades CSV saved — size=356 bytes
+[PASS] attendance PDF saved - size=883528 bytes
+[PASS] grades CSV saved - size=356 bytes
 [PASS] unknown report type returns 404
 [PASS] missing class_id returns 400
 [PASS] teacher forbidden from class 2 report

@@ -2,22 +2,22 @@
 Base: http://127.0.0.1:8000
 
 [reset] migrate:fresh --seed
-[PASS] login teacher — code=200
-[PASS] login admin — code=200
-[PASS] 1. teacher list classes — code=200, count=1, first=BSIT 2A
-[PASS] 2. admin list classes — code=200, count=3
+[PASS] login teacher - code=200
+[PASS] login admin - code=200
+[PASS] 1. teacher list classes - code=200, count=1, first=BSIT 2A
+[PASS] 2. admin list classes - code=200, count=3
 [PASS] 3. show class 1 as teacher
-[PASS] 4. teacher 1 forbidden from class 2 — code=403
-[PASS] 5. teacher creates BSIT 2C — code=201, class_name=BSIT 2C
-[PASS] 6. teacher forbidden from creating for another teacher — code=403
-[PASS] 7. admin creates BSIT 4A — code=201
+[PASS] 4. teacher 1 forbidden from class 2 - code=403
+[PASS] 5. teacher creates BSIT 2C - code=201, class_name=BSIT 2C
+[PASS] 6. teacher forbidden from creating for another teacher - code=403
+[PASS] 7. admin creates BSIT 4A - code=201
 [PASS] 8. update class
-[PASS] 9. delete class — code=200
-[PASS] 10. validation rejects missing fields — code=422
+[PASS] 9. delete class - code=200
+[PASS] 10. validation rejects missing fields - code=422
 
 === Web routes ===
-[PASS] web GET /classes — code=200
-[PASS] web GET /classes/1 — code=200
-[PASS] web GET /classes/create — code=200
+[PASS] web GET /classes - code=200
+[PASS] web GET /classes/1 - code=200
+[PASS] web GET /classes/create - code=200
 
 === Results: 15 PASS / 0 FAIL ===

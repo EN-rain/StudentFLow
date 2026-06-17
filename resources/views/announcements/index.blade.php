@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Announcements — StudentFlow')
+@section('title', 'Announcements - StudentFlow')
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="mb-0"><i class="bi bi-megaphone"></i> Announcements</h2>
@@ -27,7 +27,7 @@
                     </div>
                     <div class="text-end">
                         <small class="text-muted d-block">{{ $a->publish_date->format('M d, Y') }}</small>
-                        <small class="text-muted">{{ $a->teacher->full_name ?? '—' }}</small>
+                        <small class="text-muted">{{ $a->teacher->full_name ?? '-' }}</small>
                     </div>
                 </div>
                 <p class="mb-1">{{ Str::limit($a->message, 200) }}</p>

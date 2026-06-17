@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Assignments — StudentFlow')
+@section('title', 'Assignments - StudentFlow')
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="mb-0"><i class="bi bi-journal-text"></i> Assignments</h2>
@@ -31,7 +31,7 @@
                                 <a href="/assignments/{{ $a->id }}"><strong>{{ $a->title }}</strong></a>
                                 @if ($a->description)<br><small class="text-muted">{{ Str::limit($a->description, 80) }}</small>@endif
                             </td>
-                            <td>{{ $a->class->class_name ?? '—' }}</td>
+                            <td>{{ $a->class->class_name ?? '-' }}</td>
                             <td>{{ $a->date_assigned->format('M d, Y') }}</td>
                             <td>{{ $a->deadline->format('M d, Y') }}</td>
                             <td>{{ $a->maximum_score }}</td>

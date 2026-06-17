@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\DB;
 class GradeWebController extends Controller
 {
     /**
-     * Class chooser — landing page for grades module.
+     * Class chooser - landing page for grades module.
      */
     public function index(Request $request)
     {
@@ -72,11 +72,19 @@ class GradeWebController extends Controller
         ]);
 
         $scores = $payload['scores'] ?? [];
+        $items = $class->gradeItems()->get()->keyBy('id');
         $rows = [];
         $now = now();
         foreach ($scores as $itemId => $studentScores) {
+            $item = $items->get((int) $itemId);
+            if (! $item) {
+                return back()->withErrors(['scores' => 'Grade item does not belong to this class.']);
+            }
             foreach ($studentScores as $studentId => $score) {
                 if ($score === null || $score === '') continue;
+                if ((float) $score > (float) $item->maximum_score) {
+                    return back()->withErrors(['scores' => "Score cannot exceed maximum score for {$item->title}."]);
+                }
                 $rows[] = [
                     'student_id' => (int) $studentId,
                     'grade_item_id' => (int) $itemId,

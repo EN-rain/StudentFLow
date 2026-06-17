@@ -4,8 +4,8 @@
 @section('content')
     <h1>Attendance Report</h1>
     <div class="meta">
-        <strong>{{ $class->class_name }}</strong> — {{ $class->subject }}<br>
-        Teacher: {{ $class->teacher->full_name ?? '—' }}<br>
+        <strong>{{ $class->class_name }}</strong> - {{ $class->subject }}<br>
+        Teacher: {{ $class->teacher->full_name ?? '-' }}<br>
         Generated: {{ now()->format('M d, Y H:i') }}
     </div>
 
@@ -35,7 +35,7 @@
                     <td class="num">{{ $r['absent'] }}</td>
                     <td class="num">{{ $r['late'] }}</td>
                     <td class="num">{{ $r['excused'] }}</td>
-                    <td class="num">{{ $r['percentage'] !== null ? $r['percentage'] . '%' : '—' }}</td>
+                    <td class="num">{{ $r['percentage'] !== null ? $r['percentage'] . '%' : '-' }}</td>
                 </tr>
             @empty
                 <tr><td colspan="9" style="text-align:center;">No attendance records.</td></tr>

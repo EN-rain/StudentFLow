@@ -86,6 +86,13 @@ class ClassWebController extends Controller
             'date_enrolled' => 'nullable|date',
             'status' => 'nullable|in:enrolled,dropped,completed',
         ]);
+
+        if ($class->students()->where('students.id', $payload['student_id'])->exists()) {
+            return back()->withErrors([
+                'student_id' => 'Student is already enrolled in this class.',
+            ])->withInput();
+        }
+
         $class->students()->syncWithoutDetaching([
             $payload['student_id'] => [
                 'date_enrolled' => $payload['date_enrolled'] ?? now()->toDateString(),

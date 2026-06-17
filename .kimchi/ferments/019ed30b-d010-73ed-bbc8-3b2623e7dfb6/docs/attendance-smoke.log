@@ -3,24 +3,24 @@ Base: http://127.0.0.1:8000
 
 [reset] migrate:fresh --seed
 [PASS] login admin + teacher
-[PASS] 1. teacher lists BSIT 2A attendance — code=200, count=14
-[PASS] 2. filter by date 2026-06-15 — count=7
-[PASS] 3. bulk create attendance for 2026-06-18 — code=201, count=4
-[PASS] 4. upsert updates existing records — code=201, count=4
-[PASS] 4b. student 1 status updated to Late — status=Late
-[PASS] 5. mark-all-present for 2026-06-19 — code=200, count=7
+[PASS] 1. teacher lists BSIT 2A attendance - code=200, count=14
+[PASS] 2. filter by date 2026-06-15 - count=7
+[PASS] 3. bulk create attendance for 2026-06-18 - code=201, count=4
+[PASS] 4. upsert updates existing records - code=201, count=4
+[PASS] 4b. student 1 status updated to Late - status=Late
+[PASS] 5. mark-all-present for 2026-06-19 - code=200, count=7
 [PASS] 6. missing records rejected
 [PASS] 7. invalid status rejected
 [PASS] 8. teacher forbidden from class 2 (BSIT 1B)
 [PASS] 9. admin marks attendance for class 2
-[PASS] 10. student 1 stats — total=4, pct=100
+[PASS] 10. student 1 stats - total=4, pct=100
 [PASS] 11. update single attendance
 [PASS] 12. delete attendance
 [PASS] 13. history date range
 
 === Web routes ===
-[PASS] web GET /attendance — code=200
-[PASS] web GET /attendance/1 (mark form) — code=200
-[PASS] web GET /attendance/1/history — code=200
+[PASS] web GET /attendance - code=200
+[PASS] web GET /attendance/1 (mark form) - code=200
+[PASS] web GET /attendance/1/history - code=200
 
 === Results: 18 PASS / 0 FAIL ===

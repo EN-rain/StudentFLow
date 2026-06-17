@@ -2,10 +2,10 @@
 Base: http://127.0.0.1:8000
 
 [reset] migrate:fresh --seed
-[PASS] 1. admin list assignments — code=200, count=3
-[PASS] 2. teacher list assignments (own only) — count=1
+[PASS] 1. admin list assignments - code=200, count=3
+[PASS] 2. teacher list assignments (own only) - count=1
 [PASS] 3. show assignment 1 (own)
-[PASS] 4. teacher creates Test Assignment — code=201, title=Test Assignment
+[PASS] 4. teacher creates Test Assignment - code=201, title=Test Assignment
 [PASS] 5. teacher forbidden from class 2
 [PASS] 6. validation rejects deadline < date_assigned
 [PASS] 7. update assignment
@@ -13,8 +13,8 @@ Base: http://127.0.0.1:8000
 [PASS] 9. admin creates for any class
 
 --- Web routes ---
-[PASS] web GET /assignments — code=200
-[PASS] web GET /assignments/1 — code=200
-[PASS] web GET /assignments/create — code=200
+[PASS] web GET /assignments - code=200
+[PASS] web GET /assignments/1 - code=200
+[PASS] web GET /assignments/create - code=200
 
 === Results: 12 PASS / 0 FAIL ===

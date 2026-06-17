@@ -1,10 +1,10 @@
 @extends('layouts.app')
-@section('title', 'Attendance History — ' . $class->class_name)
+@section('title', 'Attendance History - ' . $class->class_name)
 @section('content')
     <div class="d-flex justify-content-between align-items-start mb-3">
         <div>
             <h2 class="mb-1"><i class="bi bi-clock-history"></i> Attendance History</h2>
-            <p class="text-muted mb-0">{{ $class->class_name }} — {{ $class->subject }}</p>
+            <p class="text-muted mb-0">{{ $class->class_name }} - {{ $class->subject }}</p>
         </div>
         <div>
             <a href="/attendance/{{ $class->id }}" class="btn btn-primary"><i class="bi bi-pencil-square"></i> Mark Attendance</a>
@@ -31,10 +31,10 @@
             <div class="col-md-4 col-lg-3">
                 <div class="card stat-card">
                     <div class="card-body">
-                        <div class="fw-bold">{{ $row['student']->full_name ?? '—' }}</div>
+                        <div class="fw-bold">{{ $row['student']->full_name ?? '-' }}</div>
                         <small class="text-muted">{{ $row['student']->student_number ?? '' }}</small>
                         <div class="stat-value text-{{ $row['percentage'] !== null && $row['percentage'] >= 75 ? 'success' : 'warning' }}">
-                            {{ $row['percentage'] !== null ? $row['percentage'] . '%' : '—' }}
+                            {{ $row['percentage'] !== null ? $row['percentage'] . '%' : '-' }}
                         </div>
                         <small class="text-muted">{{ $row['present'] }} of {{ $row['total'] }} records</small>
                     </div>
@@ -54,7 +54,7 @@
                     @forelse ($records as $r)
                         <tr>
                             <td>{{ $r->attendance_date->format('M d, Y') }}</td>
-                            <td>{{ $r->student->full_name ?? '—' }}</td>
+                            <td>{{ $r->student->full_name ?? '-' }}</td>
                             <td>
                                 <span class="badge bg-{{ $r->status === 'Present' ? 'success' : ($r->status === 'Late' ? 'warning' : ($r->status === 'Excused' ? 'info' : 'danger')) }}">
                                     {{ $r->status }}

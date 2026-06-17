@@ -1,4 +1,4 @@
-# Step 7: Web Dashboard + Auth Views — Verification Notes
+# Step 7: Web Dashboard + Auth Views - Verification Notes
 
 ## What was done
 1. Created `app/Http/Controllers/Web/AuthWebController.php` with 6 actions: `showLogin`, `login`, `logout`, `showForgotPassword`, `forgotPassword`, `showChangePassword`, `changePassword`. Uses Laravel's session guard (Auth::login + session regeneration).
@@ -6,17 +6,17 @@
    - Admin: total students/classes/teachers, absent today, pending assignments, recent announcements.
    - Teacher: own classes count, own students count, absent today (own classes), own pending assignments, own recent announcements + recent grade updates.
 3. Created Blade views with Bootstrap 5 (CDN):
-   - `resources/views/layouts/app.blade.php` — base layout with sidebar nav, Bootstrap 5 + Bootstrap Icons from CDN
-   - `resources/views/auth/login.blade.php` — login form with CSRF + demo credentials displayed
-   - `resources/views/auth/forgot-password.blade.php` — password-reset request
-   - `resources/views/auth/change-password.blade.php` — change password (current + new + confirm)
-   - `resources/views/dashboard/admin.blade.php` — admin stats grid + recent announcements
-   - `resources/views/dashboard/teacher.blade.php` — teacher stats grid + own announcements + recent grades
+   - `resources/views/layouts/app.blade.php` - base layout with sidebar nav, Bootstrap 5 + Bootstrap Icons from CDN
+   - `resources/views/auth/login.blade.php` - login form with CSRF + demo credentials displayed
+   - `resources/views/auth/forgot-password.blade.php` - password-reset request
+   - `resources/views/auth/change-password.blade.php` - change password (current + new + confirm)
+   - `resources/views/dashboard/admin.blade.php` - admin stats grid + recent announcements
+   - `resources/views/dashboard/teacher.blade.php` - teacher stats grid + own announcements + recent grades
 4. Updated `routes/web.php`: public auth routes + protected `/dashboard` and `/change-password`.
 5. Generated APP_KEY (`php artisan key:generate`) since scaffold didn't include one.
-6. Fixed `Attendance` model — added `protected $table = 'attendance';` because Laravel's default plural inference (`attendances`) didn't match the migration's singular table name from plan.md §17.
+6. Fixed `Attendance` model - added `protected $table = 'attendance';` because Laravel's default plural inference (`attendances`) didn't match the migration's singular table name from plan.md §17.
 
-## Verification — web smoke test
+## Verification - web smoke test
 | Case | Expected | Got |
 |------|----------|-----|
 | GET /login | 200, CSRF token | 200 ✓, CSRF token extracted ✓ |

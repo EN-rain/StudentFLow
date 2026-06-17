@@ -18,6 +18,9 @@ public class GradesFragment extends BaseDataFragment {
     protected void configure() {
         setHeader("Grades", "Loads classes first, then grade categories for the first class.");
         addAction("Refresh", v -> loadClasses());
+        addAction("Category", v -> createCategory());
+        addAction("Item", v -> createItem());
+        addAction("Score", v -> saveScore());
         loadClasses();
     }
 
@@ -59,6 +62,78 @@ public class GradesFragment extends BaseDataFragment {
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
                 addCard("Grade categories network error: " + t.getMessage());
+            }
+        });
+    }
+
+    private void createCategory() {
+        FormDialog.show(requireContext(), "Create Grade Category", new FormDialog.Field[] {
+                FormDialog.number("class_id", "Class ID", true),
+                FormDialog.text("category_name", "Category name", true),
+                FormDialog.number("percentage_weight", "Weight percent", true)
+        }, null, payload -> {
+            int classId = payload.get("class_id").getAsInt();
+            payload.remove("class_id");
+            submit(ApiClient.service(requireContext()).createGradeCategory(classId, payload));
+        });
+    }
+
+    private void createItem() {
+        FormDialog.show(requireContext(), "Create Grade Item", new FormDialog.Field[] {
+                FormDialog.number("class_id", "Class ID", true),
+                FormDialog.number("category_id", "Category ID", true),
+                FormDialog.text("title", "Title", true),
+                FormDialog.number("maximum_score", "Maximum score", true),
+                FormDialog.text("date_given", "Date given: YYYY-MM-DD", false)
+        }, null, payload -> {
+            int classId = payload.get("class_id").getAsInt();
+            payload.remove("class_id");
+            submit(ApiClient.service(requireContext()).createGradeItem(classId, payload));
+        });
+    }
+
+    private void saveScore() {
+        FormDialog.show(requireContext(), "Save Student Score", new FormDialog.Field[] {
+                FormDialog.number("class_id", "Class ID", true),
+                FormDialog.number("student_id", "Student ID", true),
+                FormDialog.number("grade_item_id", "Grade item ID", true),
+                FormDialog.number("score", "Score", true),
+                FormDialog.text("remarks", "Remarks", false)
+        }, null, payload -> {
+            JsonObject score = new JsonObject();
+            score.addProperty("grade_item_id", payload.get("grade_item_id").getAsInt());
+            score.addProperty("score", payload.get("score").getAsDouble());
+            if (payload.has("remarks")) {
+                score.addProperty("remarks", payload.get("remarks").getAsString());
+            }
+            JsonArray scores = new JsonArray();
+            scores.add(score);
+            JsonObject request = new JsonObject();
+            request.add("scores", scores);
+            submit(ApiClient.service(requireContext()).saveStudentGrades(
+                    payload.get("class_id").getAsInt(),
+                    payload.get("student_id").getAsInt(),
+                    request
+            ));
+        });
+    }
+
+    private void submit(Call<JsonObject> call) {
+        statusView.setText("Saving...");
+        call.enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (response.isSuccessful()) {
+                    addCard(response.body() == null ? "Saved." : response.body().toString());
+                    statusView.setText("Saved.");
+                } else {
+                    showError("Save failed: HTTP " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                showError("Network error: " + t.getMessage());
             }
         });
     }

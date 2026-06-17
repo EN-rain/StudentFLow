@@ -1,19 +1,19 @@
-# Step 3: Reports Module — Verification Notes
+# Step 3: Reports Module - Verification Notes
 
 ## What was done
 1. Installed `barryvdh/laravel-dompdf` via composer require (with `--no-security-blocking` because the package was blocked by advisories).
 2. Ran `composer dump-autoload` to register the new package.
 3. Created `app/Http/Controllers/Web/ReportController.php` with:
-   - `index()` — class chooser
-   - `show($type)` — printable HTML view
-   - `pdf($type)` — PDF via DomPDF
-   - `csv($type)` — CSV stream download
+   - `index()` - class chooser
+   - `show($type)` - printable HTML view
+   - `pdf($type)` - PDF via DomPDF
+   - `csv($type)` - CSV stream download
    - Three report types: `attendance`, `grades`, `class-performance`
    - Role-based access: teacher sees only own classes; admin sees all
 4. Created 4 Blade views: `reports/index.blade.php` (cards with HTML/CSV/PDF buttons per report type), `reports/_pdf.blade.php` (PDF base layout with CSS), `reports/attendance.blade.php`, `reports/grades.blade.php`, `reports/class-performance.blade.php`.
 5. Updated `routes/web.php` with 4 report routes (index + 3 types × {show, pdf, csv} = 9 routes total, but with `where('type', ...)` regex constraint).
 
-## Verification — 16-case smoke (all pass)
+## Verification - 16-case smoke (all pass)
 After `migrate:fresh --seed`:
 
 | # | Case | Result |
@@ -43,7 +43,7 @@ curl -s -o grades.csv -w "%{http_code} %{size_download}" http://127.0.0.1:8000/r
 Covered by smoke tests #4 (attendance PDF, 200) and #6 (grades CSV, 200) plus file size checks #11-12. Files are non-empty (883KB PDF and 356-byte CSV).
 
 ## Edge cases handled
-- Initial bug: `array_merge` on attendance + grades data overwrote `rows` key — replaced with explicit join by student_number
+- Initial bug: `array_merge` on attendance + grades data overwrote `rows` key - replaced with explicit join by student_number
 - Single curl handle reused across requests (otherwise method/cookie state can be confused across handles)
 - Header/body split via CURLINFO_HEADER_SIZE
 - Teacher cross-class access returns 403

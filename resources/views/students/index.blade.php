@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Students — StudentFlow')
+@section('title', 'Students - StudentFlow')
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="mb-0"><i class="bi bi-people"></i> Students</h2>
@@ -22,7 +22,7 @@
                     <select name="class_id" class="form-select">
                         <option value="">All classes</option>
                         @foreach ($classes as $c)
-                            <option value="{{ $c->id }}" {{ (string) request('class_id') === (string) $c->id ? 'selected' : '' }}>{{ $c->class_name }} — {{ $c->subject }}</option>
+                            <option value="{{ $c->id }}" {{ (string) request('class_id') === (string) $c->id ? 'selected' : '' }}>{{ $c->class_name }} - {{ $c->subject }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -55,7 +55,7 @@
                             <td>{{ $i + 1 }}</td>
                             <td>{{ $s->student_number }}</td>
                             <td><a href="/students/{{ $s->id }}">{{ $s->full_name }}</a></td>
-                            <td>{{ $s->gender ?? '—' }}</td>
+                            <td>{{ $s->gender ?? '-' }}</td>
                             <td><small>{{ $s->email }}</small></td>
                             <td>{{ $s->classes->count() }}</td>
                             <td><span class="badge bg-{{ $s->status === 'active' ? 'success' : 'secondary' }}">{{ ucfirst($s->status) }}</span></td>

@@ -1,10 +1,10 @@
 @extends('layouts.app')
-@section('title', 'Grades — ' . $class->class_name)
+@section('title', 'Grades - ' . $class->class_name)
 @section('content')
     <div class="d-flex justify-content-between align-items-start mb-3">
         <div>
             <h2 class="mb-1"><i class="bi bi-clipboard-data"></i> Grade Entry: {{ $class->class_name }}</h2>
-            <p class="text-muted mb-0">{{ $class->subject }} · {{ $class->schedule ?? '—' }}</p>
+            <p class="text-muted mb-0">{{ $class->subject }} · {{ $class->schedule ?? '-' }}</p>
         </div>
         <a href="/grades" class="btn btn-outline-secondary">Back</a>
     </div>
@@ -169,7 +169,7 @@
                             <td>{{ $i + 1 }}</td>
                             <td><a href="/students/{{ $s->id }}">{{ $s->full_name }}</a></td>
                             <td>{{ $s->student_number }}</td>
-                            <td class="text-center"><strong class="text-{{ $color }}">{{ $g ?? '—' }}</strong></td>
+                            <td class="text-center"><strong class="text-{{ $color }}">{{ $g ?? '-' }}</strong></td>
                             <td class="text-center"><span class="badge bg-{{ $color }}">{{ $status }}</span></td>
                         </tr>
                     @empty

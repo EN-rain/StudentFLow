@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', $announcement->title . ' — StudentFlow')
+@section('title', $announcement->title . ' - StudentFlow')
 @section('content')
     <div class="d-flex justify-content-between align-items-start mb-3">
         <div>
@@ -11,7 +11,7 @@
             <span class="badge bg-{{ $color }} mb-2">{{ $announcement->priority }}</span>
             <h2 class="mb-1">{{ $announcement->title }}</h2>
             <p class="text-muted mb-0">
-                Posted by {{ $announcement->teacher->full_name ?? '—' }}
+                Posted by {{ $announcement->teacher->full_name ?? '-' }}
                 on {{ $announcement->publish_date->format('M d, Y') }}
                 @if ($announcement->schoolClass) · for <strong>{{ $announcement->schoolClass->class_name }}</strong> @else · for <strong>All my classes</strong> @endif
             </p>

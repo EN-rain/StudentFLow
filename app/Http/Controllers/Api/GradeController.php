@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\GradeCategory;
 use App\Models\GradeItem;
 use App\Models\SchoolClass;
+use App\Models\Student;
 use App\Models\StudentGrade;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -113,14 +114,30 @@ class GradeController extends Controller
         $this->authorizeClass($request, $class);
         $payload = $request->validate([
             'scores' => 'required|array',
-            'scores.*.grade_item_id' => 'required|integer',
+            'scores.*.grade_item_id' => 'required|integer|exists:grade_items,id',
             'scores.*.score' => 'required|numeric|min:0',
             'scores.*.remarks' => 'nullable|string|max:255',
         ]);
 
+        if (! $class->students()->where('students.id', $studentId)->exists()) {
+            abort(422, 'Student is not enrolled in this class.');
+        }
+
+        $items = GradeItem::where('class_id', $class->id)
+            ->whereIn('id', collect($payload['scores'])->pluck('grade_item_id'))
+            ->get()
+            ->keyBy('id');
+
         $now = now();
         $rows = [];
         foreach ($payload['scores'] as $s) {
+            $item = $items->get($s['grade_item_id']);
+            if (! $item) {
+                abort(422, 'Grade item does not belong to this class.');
+            }
+            if ((float) $s['score'] > (float) $item->maximum_score) {
+                abort(422, "Score cannot exceed maximum score for {$item->title}.");
+            }
             $rows[] = [
                 'student_id' => $studentId,
                 'grade_item_id' => $s['grade_item_id'],

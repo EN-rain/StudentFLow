@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Login — StudentFlow')
+@section('title', 'Login - StudentFlow')
 @section('content')
 <div class="login-card">
     <div class="card shadow-sm">

@@ -10,7 +10,7 @@
             <option value="">Select class</option>
             @foreach ($classes as $c)
                 <option value="{{ $c->id }}" {{ (string) old('class_id', $assignment->class_id ?? '') === (string) $c->id ? 'selected' : '' }}>
-                    {{ $c->class_name }} — {{ $c->subject }}
+                    {{ $c->class_name }} - {{ $c->subject }}
                 </option>
             @endforeach
         </select>

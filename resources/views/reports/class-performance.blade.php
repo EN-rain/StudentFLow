@@ -4,8 +4,8 @@
 @section('content')
     <h1>Class Performance Report</h1>
     <div class="meta">
-        <strong>{{ $class->class_name }}</strong> — {{ $class->subject }}<br>
-        Teacher: {{ $class->teacher->full_name ?? '—' }}<br>
+        <strong>{{ $class->class_name }}</strong> - {{ $class->subject }}<br>
+        Teacher: {{ $class->teacher->full_name ?? '-' }}<br>
         Generated: {{ now()->format('M d, Y H:i') }}
     </div>
 
@@ -32,7 +32,7 @@
                     <td>{{ $r['rank'] }}</td>
                     <td>{{ $r['student_number'] }}</td>
                     <td>{{ $r['name'] }}</td>
-                    <td class="num">{{ $r['percentage'] !== null ? $r['percentage'] . '%' : '—' }}</td>
+                    <td class="num">{{ $r['percentage'] !== null ? $r['percentage'] . '%' : '-' }}</td>
                     <td class="num"><strong>{{ $r['final_grade'] }}</strong></td>
                     <td>
                         <span class="{{ $r['status'] === 'Pass' ? 'badge-pass' : 'badge-fail' }}">{{ $r['status'] }}</span>

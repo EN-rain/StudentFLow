@@ -1,10 +1,10 @@
 @extends('layouts.app')
-@section('title', 'Mark Attendance — ' . $class->class_name)
+@section('title', 'Mark Attendance - ' . $class->class_name)
 @section('content')
     <div class="d-flex justify-content-between align-items-start mb-3">
         <div>
             <h2 class="mb-1"><i class="bi bi-pencil-square"></i> Mark Attendance</h2>
-            <p class="text-muted mb-0">{{ $class->class_name }} — {{ $class->subject }}</p>
+            <p class="text-muted mb-0">{{ $class->class_name }} - {{ $class->subject }}</p>
         </div>
         <div>
             <a href="/attendance/{{ $class->id }}/history" class="btn btn-outline-secondary"><i class="bi bi-clock-history"></i> History</a>
@@ -57,7 +57,7 @@
                                     </td>
                                     <td>
                                         <select name="records[{{ $s->id }}][status]" class="form-select form-select-sm status-select" data-student-id="{{ $s->id }}">
-                                            <option value="">—</option>
+                                            <option value="">-</option>
                                             <option value="Present" {{ ($rec->status ?? '') === 'Present' ? 'selected' : '' }}>Present</option>
                                             <option value="Absent" {{ ($rec->status ?? '') === 'Absent' ? 'selected' : '' }}>Absent</option>
                                             <option value="Late" {{ ($rec->status ?? '') === 'Late' ? 'selected' : '' }}>Late</option>

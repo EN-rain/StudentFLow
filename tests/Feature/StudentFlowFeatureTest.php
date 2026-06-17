@@ -99,6 +99,11 @@ class StudentFlowFeatureTest extends TestCase
         ])->assertCreated();
         $this->assertTrue($johnClass->students()->where('students.id', $student->id)->exists());
 
+        $this->postJson("/api/classes/{$johnClass->id}/enrollments", [
+            'student_id' => $student->id,
+            'date_enrolled' => '2026-06-17',
+        ])->assertUnprocessable();
+
         $this->deleteJson("/api/classes/{$johnClass->id}/enrollments/{$student->id}")->assertOk();
         $this->assertFalse($johnClass->students()->where('students.id', $student->id)->exists());
 
@@ -131,6 +136,13 @@ class StudentFlowFeatureTest extends TestCase
             ]],
         ])->assertOk();
         $this->assertSame('Submitted', AssignmentSubmission::where('assignment_id', $assignment->id)->where('student_id', $student->id)->first()->status);
+
+        $this->postJson("/api/classes/{$class->id}/students/{$student->id}/student-grades", [
+            'scores' => [[
+                'grade_item_id' => 1,
+                'score' => 25,
+            ]],
+        ])->assertUnprocessable();
 
         $this->getJson("/api/reports/missing-assignments?class_id={$class->id}")
             ->assertOk()

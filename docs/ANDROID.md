@@ -28,4 +28,18 @@ Seeded teacher credentials from the backend README work against `/api/auth/login
 
 To change the backend URL, edit `android/app/src/main/java/com/studentflow/app/Constants.java`.
 
-This workspace currently has Java available, but no Gradle command or Android SDK environment variable on PATH, so APK generation must be done from Android Studio or a configured Android SDK machine.
+This workspace has been verified with a temporary Gradle 8.7 distribution and Android Studio's bundled JBR:
+
+```powershell
+$env:JAVA_HOME='C:\Program Files\Android\Android Studio1\jbr'
+$env:PATH="$env:JAVA_HOME\bin;$env:PATH"
+gradle :app:assembleDebug
+```
+
+The debug APK is generated at:
+
+```text
+android/app/build/outputs/apk/debug/app-debug.apk
+```
+
+Use Android Studio's Gradle sync/build buttons if `gradle` is not on PATH.

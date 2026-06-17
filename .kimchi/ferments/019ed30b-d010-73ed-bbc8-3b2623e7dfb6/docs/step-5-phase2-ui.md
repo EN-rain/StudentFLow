@@ -1,13 +1,13 @@
-# Step 5: Phase 2 Blade UI Smoke — Verification Notes
+# Step 5: Phase 2 Blade UI Smoke - Verification Notes
 
 ## What was done
 Built Blade UI for the Grades module (classes, students, attendance already had views from steps 1-3):
 - `app/Http/Controllers/Web/GradeWebController.php` with `index` (class chooser), `show` (per-class grade entry with category accordion + computed finals per student), `save` (bulk save all scores via upsert).
-- `resources/views/grades/index.blade.php` — class chooser with cards
-- `resources/views/grades/show.blade.php` — Bootstrap 5 accordion with one panel per category; each panel shows items as tables with score inputs per student; below the accordion a "Computed Final Grades" table lists each student's final grade + Pass/Fail badge.
+- `resources/views/grades/index.blade.php` - class chooser with cards
+- `resources/views/grades/show.blade.php` - Bootstrap 5 accordion with one panel per category; each panel shows items as tables with score inputs per student; below the accordion a "Computed Final Grades" table lists each student's final grade + Pass/Fail badge.
 - `routes/web.php` updated with `/grades`, `/grades/{class}`, `POST /grades/{class}`.
 
-## Verification — 28-case UI smoke (all pass)
+## Verification - 28-case UI smoke (all pass)
 After `migrate:fresh --seed`, login as admin via web, exercise every route:
 
 | Module | Routes verified |
@@ -29,7 +29,7 @@ This requires a pre-existing cookies.txt from a web login. The test was rewritte
 ## Edge cases handled
 - Filter by class_id correctly shows only students in that class (BSIT 1B students shown, BSIT 2A excluded)
 - Teacher role scoping verified across all four modules
-- Initial test assertions were overly strict (looking for "Hannah Lim" instead of "Hannah" since full name is "Hannah Grace Lim") — fixed
+- Initial test assertions were overly strict (looking for "Hannah Lim" instead of "Hannah" since full name is "Hannah Grace Lim") - fixed
 
 ## Result
 Phase 2 fully built: every CRUD module (classes, students, attendance, grades) has API + Web + Blade UI with role-based authorization and seeded-data rendering.

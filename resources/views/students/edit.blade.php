@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Edit Student — StudentFlow')
+@section('title', 'Edit Student - StudentFlow')
 @section('content')
     <h2 class="mb-4"><i class="bi bi-pencil"></i> Edit Student: {{ $student->full_name }}</h2>
 

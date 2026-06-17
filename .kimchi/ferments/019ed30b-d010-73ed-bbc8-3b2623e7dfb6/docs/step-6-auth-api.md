@@ -1,17 +1,17 @@
-# Step 6: Auth API — Verification Notes
+# Step 6: Auth API - Verification Notes
 
 ## What was done
 1. Created `app/Http/Controllers/Api/AuthController.php` with 5 endpoints:
-   - `login()` — accepts username OR email + password, issues Sanctum token, rejects disabled accounts, invalidates any prior tokens
-   - `logout()` — revokes the current access token
-   - `me()` — returns the authenticated user + teacher relation (if any)
-   - `changePassword()` — validates current password, updates hash, invalidates other tokens
-   - `forgotPassword()` — issues a random 64-char token, logs to `storage/logs/laravel.log` (no SMTP), returns generic message to prevent email enumeration
-2. Created `app/Http/Middleware/EnsureUserRole.php` — parameterized role gate (`role:admin` or `role:admin,teacher`).
+   - `login()` - accepts username OR email + password, issues Sanctum token, rejects disabled accounts, invalidates any prior tokens
+   - `logout()` - revokes the current access token
+   - `me()` - returns the authenticated user + teacher relation (if any)
+   - `changePassword()` - validates current password, updates hash, invalidates other tokens
+   - `forgotPassword()` - issues a random 64-char token, logs to `storage/logs/laravel.log` (no SMTP), returns generic message to prevent email enumeration
+2. Created `app/Http/Middleware/EnsureUserRole.php` - parameterized role gate (`role:admin` or `role:admin,teacher`).
 3. Registered `role` middleware alias in `bootstrap/app.php`.
-4. Wired `routes/api.php` — public `/login` and `/forgot-password`; Sanctum-protected `/logout`, `/me`, `/change-password`.
+4. Wired `routes/api.php` - public `/login` and `/forgot-password`; Sanctum-protected `/logout`, `/me`, `/change-password`.
 
-## Verification — 13-case smoke test
+## Verification - 13-case smoke test
 Run via `C:\php\php.exe C:\Users\LENOVO\Downloads\api-smoke.php` (PHP curl, properly JSON-encodes body + Accept header):
 
 | # | Case | Expected | Got |

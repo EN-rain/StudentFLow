@@ -19,7 +19,7 @@
     <div class="col-md-2">
         <label class="form-label">Gender</label>
         <select name="gender" class="form-select">
-            <option value="">—</option>
+            <option value="">-</option>
             <option value="Male" {{ old('gender', $student->gender ?? '') === 'Male' ? 'selected' : '' }}>Male</option>
             <option value="Female" {{ old('gender', $student->gender ?? '') === 'Female' ? 'selected' : '' }}>Female</option>
             <option value="Other" {{ old('gender', $student->gender ?? '') === 'Other' ? 'selected' : '' }}>Other</option>

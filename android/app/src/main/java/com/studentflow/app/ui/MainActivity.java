@@ -56,17 +56,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.nav_dashboard) {
             show("Dashboard", DashboardFragment.newInstance());
         } else if (id == R.id.nav_classes) {
-            show("Classes", EndpointFragment.newInstance("Classes", "Teacher-owned classes", "classes"));
+            show("Classes", CrudFragment.newInstance("classes"));
         } else if (id == R.id.nav_students) {
-            show("Students", StudentsFragment.newInstance());
+            show("Students", CrudFragment.newInstance("students"));
         } else if (id == R.id.nav_attendance) {
-            show("Attendance", EndpointFragment.newInstance("Attendance", "Recent attendance records", "attendance"));
+            show("Attendance", AttendanceFragment.newInstance());
         } else if (id == R.id.nav_grades) {
             show("Grades", GradesFragment.newInstance());
         } else if (id == R.id.nav_assignments) {
-            show("Assignments", EndpointFragment.newInstance("Assignments", "Upcoming and active assignments", "assignments"));
+            show("Assignments", CrudFragment.newInstance("assignments"));
         } else if (id == R.id.nav_announcements) {
-            show("Announcements", EndpointFragment.newInstance("Announcements", "Class and school announcements", "announcements"));
+            show("Announcements", CrudFragment.newInstance("announcements"));
         } else if (id == R.id.nav_reports) {
             show("Reports", ReportsFragment.newInstance());
         } else if (id == R.id.nav_profile) {

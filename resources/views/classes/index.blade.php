@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Classes — StudentFlow')
+@section('title', 'Classes - StudentFlow')
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="mb-0"><i class="bi bi-collection"></i> Classes</h2>
@@ -34,9 +34,9 @@
                         <tr>
                             <td><strong>{{ $c->class_name }}</strong><br><small class="text-muted">{{ $c->grade_level }} · {{ $c->semester }} · {{ $c->school_year }}</small></td>
                             <td>{{ $c->subject }}</td>
-                            <td>{{ $c->teacher->full_name ?? '—' }}</td>
-                            <td><small>{{ $c->schedule ?? '—' }}</small></td>
-                            <td>{{ $c->room ?? '—' }}</td>
+                            <td>{{ $c->teacher->full_name ?? '-' }}</td>
+                            <td><small>{{ $c->schedule ?? '-' }}</small></td>
+                            <td>{{ $c->room ?? '-' }}</td>
                             <td>{{ $c->students->count() }}</td>
                             <td><span class="badge bg-{{ $c->status === 'active' ? 'success' : 'secondary' }}">{{ ucfirst($c->status) }}</span></td>
                             <td>

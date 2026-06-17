@@ -16,7 +16,7 @@
       "confirmedAt": "2026-06-17T01:11:53.472Z"
     },
     "constraints": {
-      "answer": "Single ferment — execute plan.md end-to-end in one run., All commands run via Windows cmd.exe (native), no WSL, no apt-get, no Linux paths., Project root and runtime root are both C:\\Users\\LENOVO\\Desktop\\StudentFlow., Laravel 11 (chosen during interview)., Web dashboard: Laravel Blade + Bootstrap 5., API auth: Laravel Sanctum (token-based, matches plan.md §2)., Web auth: Laravel session-based., PDF export: barryvdh/laravel-dompdf., Skip the Android app entirely (out of scope, deferred to follow-up ferment)., plan.md is the source of truth for schema, sample data, and feature list., No production deployment required — runs locally via `php artisan serve`.",
+      "answer": "Single ferment - execute plan.md end-to-end in one run., All commands run via Windows cmd.exe (native), no WSL, no apt-get, no Linux paths., Project root and runtime root are both C:\\Users\\LENOVO\\Desktop\\StudentFlow., Laravel 11 (chosen during interview)., Web dashboard: Laravel Blade + Bootstrap 5., API auth: Laravel Sanctum (token-based, matches plan.md §2)., Web auth: Laravel session-based., PDF export: barryvdh/laravel-dompdf., Skip the Android app entirely (out of scope, deferred to follow-up ferment)., plan.md is the source of truth for schema, sample data, and feature list., No production deployment required - runs locally via `php artisan serve`.",
       "confirmedAt": "2026-06-17T01:11:53.472Z"
     },
     "phases": {
@@ -24,7 +24,7 @@
       "confirmedAt": "2026-06-17T01:11:53.472Z"
     },
     "assumptions": {
-      "answer": "PHP 8.2 portable will be downloaded from windows.php.net (Visual Studio Threadsafe zip) and extracted to C:\\php; php.exe is added to PATH for the current cmd session. Composer will be invoked as `php C:\\composer\\composer.phar` after downloading the standalone phar — no separate Composer installer required. The dev database is SQLite (Laravel default, zero-install, built into PHP's ext-sqlite); schema mirrors plan.md §17 exactly using Laravel migrations, so swapping to MariaDB later is a one-line .env change documented in the README. If the PHP portable download fails or runs into anti-virus blocks, the fallback is to download the NTS zip instead or use a different mirror (windows.php.net/download/, phpsource.org). Sample seed passwords (Admin123!, Teacher123!) are hashed via Laravel's `Hash::make()` (bcrypt); login uses `Hash::check()`. Forgot-password issues a reset token printed to `storage/logs/laravel.log` since no SMTP provider is configured. curl.exe and tar.exe are available on Windows (already verified). The teacher dashboard for `john.reyes` shows BSIT 2A data; `angela.cruz` shows BSIT 1B; `roberto.delapena` shows BSIT 3A — assignments, attendance, grades, and announcements are scoped to the logged-in teacher's classes. The reports module covers attendance, grade, and class-performance reports with PDF + CSV + printable HTML; the other sub-reports listed in plan.md §4.9 (missing assignments, failing grades, frequent absences) are deferred unless naturally produced by these three. Smoke verification uses curl against `php artisan serve` running on 127.0.0.1:8000, plus a note that the user can open the same URL in their browser to verify the Blade UI. Total runtime downloads are roughly PHP (~30MB) + composer.phar (~2MB); SQLite is bundled with PHP, no extra download.",
+      "answer": "PHP 8.2 portable will be downloaded from windows.php.net (Visual Studio Threadsafe zip) and extracted to C:\\php; php.exe is added to PATH for the current cmd session. Composer will be invoked as `php C:\\composer\\composer.phar` after downloading the standalone phar - no separate Composer installer required. The dev database is SQLite (Laravel default, zero-install, built into PHP's ext-sqlite); schema mirrors plan.md §17 exactly using Laravel migrations, so swapping to MariaDB later is a one-line .env change documented in the README. If the PHP portable download fails or runs into anti-virus blocks, the fallback is to download the NTS zip instead or use a different mirror (windows.php.net/download/, phpsource.org). Sample seed passwords (Admin123!, Teacher123!) are hashed via Laravel's `Hash::make()` (bcrypt); login uses `Hash::check()`. Forgot-password issues a reset token printed to `storage/logs/laravel.log` since no SMTP provider is configured. curl.exe and tar.exe are available on Windows (already verified). The teacher dashboard for `john.reyes` shows BSIT 2A data; `angela.cruz` shows BSIT 1B; `roberto.delapena` shows BSIT 3A - assignments, attendance, grades, and announcements are scoped to the logged-in teacher's classes. The reports module covers attendance, grade, and class-performance reports with PDF + CSV + printable HTML; the other sub-reports listed in plan.md §4.9 (missing assignments, failing grades, frequent absences) are deferred unless naturally produced by these three. Smoke verification uses curl against `php artisan serve` running on 127.0.0.1:8000, plus a note that the user can open the same URL in their browser to verify the Blade UI. Total runtime downloads are roughly PHP (~30MB) + composer.phar (~2MB); SQLite is bundled with PHP, no extra download.",
       "confirmedAt": "2026-06-17T01:11:53.472Z"
     }
   },
@@ -394,7 +394,7 @@
         {
           "id": "step-3",
           "index": 3,
-          "description": "Reports module: install barryvdh/laravel-dompdf, build three reports — attendance report (per class, with per-student %), grade report (per class, with final grades + class average + rankings), class performance report (combined attendance + grades summary). Each available as PDF (/reports/{type}/pdf), CSV (/reports/{type}/csv), and printable HTML (/reports/{type}). Verify a real PDF and CSV download for each type.",
+          "description": "Reports module: install barryvdh/laravel-dompdf, build three reports - attendance report (per class, with per-student %), grade report (per class, with final grades + class average + rankings), class performance report (combined attendance + grades summary). Each available as PDF (/reports/{type}/pdf), CSV (/reports/{type}/csv), and printable HTML (/reports/{type}). Verify a real PDF and CSV download for each type.",
           "status": "verified",
           "verification": {
             "command": "curl -s -o attendance.pdf -w \"%{http_code} %{size_download}\" http://127.0.0.1:8000/reports/attendance/pdf?class_id=1 -b cookies.txt && curl -s -o grades.csv -w \"%{http_code} %{size_download}\" http://127.0.0.1:8000/reports/grades/csv?class_id=1 -b cookies.txt",
@@ -483,7 +483,7 @@
     "Smoke verification: `php artisan serve` is launched in the background, the login + dashboard + at least one CRUD round-trip per module is exercised against the live database via curl + a browser, and at least one PDF and one CSV export download successfully. The artisan process exits cleanly when stopped. This step must produce real request/response output, not just a file-existence check."
   ],
   "constraints": [
-    "Single ferment — execute plan.md end-to-end in one run.",
+    "Single ferment - execute plan.md end-to-end in one run.",
     "All commands run via Windows cmd.exe (native), no WSL, no apt-get, no Linux paths.",
     "Project root and runtime root are both C:\\Users\\LENOVO\\Desktop\\StudentFlow.",
     "Laravel 11 (chosen during interview).",
@@ -493,7 +493,7 @@
     "PDF export: barryvdh/laravel-dompdf.",
     "Skip the Android app entirely (out of scope, deferred to follow-up ferment).",
     "plan.md is the source of truth for schema, sample data, and feature list.",
-    "No production deployment required — runs locally via `php artisan serve`."
+    "No production deployment required - runs locally via `php artisan serve`."
   ],
   "lastActiveAt": "2026-06-17T02:41:45.660Z"
 }

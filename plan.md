@@ -1,4 +1,4 @@
-# StudentFlow — Student Management System
+# StudentFlow - Student Management System
 
 ## 1. Project Overview
 

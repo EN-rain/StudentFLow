@@ -1,4 +1,4 @@
-# Step 8: Phase 1 Final Smoke — Verification Notes
+# Step 8: Phase 1 Final Smoke - Verification Notes
 
 ## What was done
 Ran a comprehensive 23-case smoke test against the live `php artisan serve` instance, exercising every Phase 1 deliverable end-to-end. Captured full output to `.kimchi/ferments/.../docs/phase1-smoke.log`.
@@ -35,7 +35,7 @@ Ran a comprehensive 23-case smoke test against the live `php artisan serve` inst
 23. GET /api/auth/me with no token → 401
 
 ## Plan verify command (literal)
-The plan's verify was: `php artisan serve & sleep 2; curl -s -X POST .../api/auth/login -d "{...}"; pkill -f "artisan serve"`. The same shell-quoting limitation from step 6 applies (curl.exe over cmd.exe over bash strips the JSON body's backslashes), but the API works correctly — the smoke output shows admin login returning HTTP 200 with a real token. The artisan serve process was running on 127.0.0.1:8000 for the duration of the smoke test and was killed cleanly afterward (TCP TIME_WAIT entries in netstat are normal connection cleanup).
+The plan's verify was: `php artisan serve & sleep 2; curl -s -X POST .../api/auth/login -d "{...}"; pkill -f "artisan serve"`. The same shell-quoting limitation from step 6 applies (curl.exe over cmd.exe over bash strips the JSON body's backslashes), but the API works correctly - the smoke output shows admin login returning HTTP 200 with a real token. The artisan serve process was running on 127.0.0.1:8000 for the duration of the smoke test and was killed cleanly afterward (TCP TIME_WAIT entries in netstat are normal connection cleanup).
 
 ## Conclusion for Phase 1
 All eight phase-1 steps completed and verified. The app boots from a clean `migrate:fresh --seed`, serves a working API and web dashboard, and the seeded admin and teacher accounts log in successfully against both surfaces.

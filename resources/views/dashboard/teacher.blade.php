@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Teacher Dashboard — StudentFlow')
+@section('title', 'Teacher Dashboard - StudentFlow')
 @section('content')
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="mb-0"><i class="bi bi-speedometer2"></i> Teacher Dashboard</h2>

@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'StudentFlow')</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="apple-touch-icon" href="/images/studentflow-logo.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <style>
@@ -18,6 +20,7 @@
         .sidebar .nav-link { color: #495057; padding: 0.5rem 1rem; border-radius: 0.375rem; margin: 0 0.5rem; }
         .sidebar .nav-link.active, .sidebar .nav-link:hover { background: #f1f3f5; color: var(--sf-primary); }
         .content { padding: 1.5rem; }
+        .brand-logo { width: 30px; height: 30px; object-fit: contain; border-radius: 7px; margin-right: 0.4rem; background: #fff; }
     </style>
     @stack('head')
 </head>
@@ -26,7 +29,7 @@
         <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
             <div class="container-fluid">
                 <a class="navbar-brand" href="/dashboard">
-                    <i class="bi bi-mortarboard-fill"></i> StudentFlow
+                    <img src="/images/studentflow-logo.png" alt="" class="brand-logo"> StudentFlow
                 </a>
                 <div class="d-flex align-items-center text-white">
                     <span class="me-3">

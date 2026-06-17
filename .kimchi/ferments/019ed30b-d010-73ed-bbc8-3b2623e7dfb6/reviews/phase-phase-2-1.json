@@ -28,7 +28,7 @@
     {
       "id": "F3",
       "verdict": "pass",
-      "rationale": "Deferred items: (1) Plan §4.6's claimed example value of 84.85 for Aaron's final grade is a math error in the source document; the formula evaluates to 89.4 when correctly applying the category-average approach. Implementation follows the formula text and returns 89.4 — documented in step-4 verification note. (2) Plan claims teacher cannot create students — implementation allows it (no plan.md requirement explicitly says otherwise). (3) Plan claims outlier scores (e.g. 9999) inflate the final grade without validation — acceptable for teacher-entered data; could add max-score validation if needed.",
+      "rationale": "Deferred items: (1) Plan §4.6's claimed example value of 84.85 for Aaron's final grade is a math error in the source document; the formula evaluates to 89.4 when correctly applying the category-average approach. Implementation follows the formula text and returns 89.4 - documented in step-4 verification note. (2) Plan claims teacher cannot create students - implementation allows it (no plan.md requirement explicitly says otherwise). (3) Plan claims outlier scores (e.g. 9999) inflate the final grade without validation - acceptable for teacher-entered data; could add max-score validation if needed.",
       "evidence": "No deferred items are blocking Phase 2 acceptance. The 92-case smoke test suite proves the modules work end-to-end with real data."
     }
   ],

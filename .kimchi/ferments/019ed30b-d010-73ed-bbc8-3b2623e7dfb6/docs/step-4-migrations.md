@@ -1,8 +1,8 @@
-# Step 4: Schema Migrations — Verification Notes
+# Step 4: Schema Migrations - Verification Notes
 
 ## What was done
 1. Modified `0001_01_01_000000_create_users_table.php` to add:
-   - `username` (unique) — for login per plan §4.1
+   - `username` (unique) - for login per plan §4.1
    - `role` enum ('admin', 'teacher') default 'teacher'
    - `status` enum ('active', 'disabled') default 'active'
    - indexes on `role` and `status`

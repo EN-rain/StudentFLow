@@ -1,4 +1,4 @@
-# Step 1: Runtime Provisioning — Verification Notes
+# Step 1: Runtime Provisioning - Verification Notes
 
 ## What was done
 1. Downloaded PHP 8.2.31 portable (TS, VS16, x64) from windows.php.net → `C:\php\`
@@ -29,6 +29,6 @@
 - All Laravel 11 required extensions are loaded.
 
 ## Tooling conventions for subsequent steps
-- PHP always invoked as `C:\php\php.exe` (absolute path; PATH change via `setx` was attempted but is not reliable from this shell — use absolute paths instead).
+- PHP always invoked as `C:\php\php.exe` (absolute path; PATH change via `setx` was attempted but is not reliable from this shell - use absolute paths instead).
 - Composer always invoked as `C:\php\php.exe C:\composer\composer.phar <args>`.
 - All work runs via `cmd.exe /c "..."` from the WSL bash; actual files live on the Windows filesystem under `C:\Users\LENOVO\Desktop\StudentFlow` (mounted at `/mnt/c/Users/LENOVO/Desktop/StudentFlow`).

@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', $student->full_name . ' — StudentFlow')
+@section('title', $student->full_name . ' - StudentFlow')
 @section('content')
     <div class="d-flex justify-content-between align-items-start mb-3">
         <div>
@@ -21,19 +21,19 @@
         <div class="col-md-3">
             <div class="card stat-card"><div class="card-body">
                 <div class="stat-label">Gender</div>
-                <div>{{ $student->gender ?? '—' }}</div>
+                <div>{{ $student->gender ?? '-' }}</div>
             </div></div>
         </div>
         <div class="col-md-3">
             <div class="card stat-card"><div class="card-body">
                 <div class="stat-label">Birth Date</div>
-                <div>{{ $student->birth_date ? $student->birth_date->format('M d, Y') : '—' }}</div>
+                <div>{{ $student->birth_date ? $student->birth_date->format('M d, Y') : '-' }}</div>
             </div></div>
         </div>
         <div class="col-md-3">
             <div class="card stat-card"><div class="card-body">
                 <div class="stat-label">Contact</div>
-                <div>{{ $student->contact_number ?? '—' }}</div>
+                <div>{{ $student->contact_number ?? '-' }}</div>
             </div></div>
         </div>
         <div class="col-md-3">
@@ -48,13 +48,13 @@
         <div class="col-md-6">
             <div class="card stat-card"><div class="card-body">
                 <div class="stat-label">Address</div>
-                <div>{{ $student->address ?? '—' }}</div>
+                <div>{{ $student->address ?? '-' }}</div>
             </div></div>
         </div>
         <div class="col-md-3">
             <div class="card stat-card"><div class="card-body">
                 <div class="stat-label">Guardian</div>
-                <div>{{ $student->guardian_name ?? '—' }}</div>
+                <div>{{ $student->guardian_name ?? '-' }}</div>
                 <small class="text-muted">{{ $student->guardian_contact ?? '' }}</small>
             </div></div>
         </div>
@@ -62,7 +62,7 @@
             <div class="card stat-card"><div class="card-body">
                 <div class="stat-label">Attendance</div>
                 <div class="stat-value text-{{ $attendancePct !== null && $attendancePct >= 75 ? 'success' : 'warning' }}">
-                    {{ $attendancePct !== null ? $attendancePct . '%' : '—' }}
+                    {{ $attendancePct !== null ? $attendancePct . '%' : '-' }}
                 </div>
                 <small class="text-muted">{{ $attendancePresent }} of {{ $attendanceTotal }} records</small>
             </div></div>
@@ -81,8 +81,8 @@
                         <tr>
                             <td><a href="/classes/{{ $c->id }}">{{ $c->class_name }}</a></td>
                             <td>{{ $c->subject }}</td>
-                            <td>{{ $c->teacher->full_name ?? '—' }}</td>
-                            <td><small>{{ $c->schedule ?? '—' }}</small></td>
+                            <td>{{ $c->teacher->full_name ?? '-' }}</td>
+                            <td><small>{{ $c->schedule ?? '-' }}</small></td>
                             <td>{{ $c->pivot->date_enrolled }}</td>
                             <td><span class="badge bg-{{ $c->pivot->status === 'enrolled' ? 'success' : 'secondary' }}">{{ ucfirst($c->pivot->status) }}</span></td>
                         </tr>

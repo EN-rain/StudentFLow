@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Change Password — StudentFlow')
+@section('title', 'Change Password - StudentFlow')
 @section('content')
 <div class="row">
     <div class="col-md-6 offset-md-3">
