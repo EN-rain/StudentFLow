@@ -18,6 +18,12 @@ class User extends Authenticatable
         'password',
         'role',
         'status',
+        'student_id',
+        'google_id',
+        'github_id',
+        'github_username',
+        'avatar_url',
+        'social_verified_at',
     ];
 
     protected $hidden = [
@@ -29,6 +35,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'social_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
@@ -43,6 +50,11 @@ class User extends Authenticatable
         return $this->hasMany(ActivityLog::class);
     }
 
+    public function student()
+    {
+        return $this->belongsTo(Student::class);
+    }
+
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
@@ -51,5 +63,10 @@ class User extends Authenticatable
     public function isTeacher(): bool
     {
         return $this->role === 'teacher';
+    }
+
+    public function isStudent(): bool
+    {
+        return $this->role === 'student';
     }
 }

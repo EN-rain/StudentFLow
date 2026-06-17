@@ -39,7 +39,9 @@ Open `http://127.0.0.1:8000`.
 
 - Authentication: login, logout, change password, disabled account checks, Laravel password reset links.
 - Admin: teacher CRUD, enable/disable/reactivate accounts, activity logs with CSV export, school settings with history.
-- Teacher workflows: classes, student records, class enrollment, attendance, grades/categories/items, assignments/submissions, announcements.
+- Teacher workflows: classes, student records, class enrollment, attendance, grades/categories/items, assignments/submissions, announcements with enrolled-student email notifications.
+- Student workflows: Google/GitHub-backed student account linking, student mobile APIs, student Android dashboard, exam taking through Android or same-domain magic links.
+- Exams: teacher-created quizzes/exams, per-student magic links, submissions, audit stats, and automatic score sync to grade items.
 - Reports: student profile, attendance, grades, class performance, missing assignments, failing grades, frequent absences; web/PDF/CSV plus JSON report API.
 - Android: Java client scaffold with login, dashboard, classes, students, attendance, grades, assignments, announcements, reports, profile, and change password.
 
@@ -67,6 +69,21 @@ See [docs/ANDROID.md](docs/ANDROID.md).
 - [Android Build Guide](docs/ANDROID.md)
 
 ## Verification
+
+Run the full local QA suite:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\qa-all.ps1
+```
+
+Focused checks:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\qa-api.ps1
+powershell -ExecutionPolicy Bypass -File .\scripts\qa-web.ps1
+```
+
+The full script runs a fresh migration/seed, Laravel tests, API smoke checks, web smoke checks, and the Android debug build when the local Gradle/JDK paths are available.
 
 ```cmd
 C:\php\php.exe artisan migrate:fresh --seed

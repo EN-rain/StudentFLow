@@ -34,8 +34,8 @@
                     @forelse ($settings->flatMap->histories->sortByDesc('created_at')->take(15) as $history)
                         <li class="list-group-item">
                             <strong>{{ $history->setting->label ?? $history->setting->setting_key }}</strong>
-                            <small class="text-muted d-block">{{ $history->user->username ?? 'system' }} · {{ $history->created_at->format('Y-m-d H:i') }}</small>
-                            <small>{{ $history->old_value ?? 'blank' }} → {{ $history->new_value ?? 'blank' }}</small>
+                            <small class="text-muted d-block">{{ $history->user->username ?? 'system' }} - {{ $history->created_at->format('Y-m-d H:i') }}</small>
+                            <small>{{ $history->old_value ?? 'blank' }} -> {{ $history->new_value ?? 'blank' }}</small>
                         </li>
                     @empty
                         <li class="list-group-item text-muted">No setting changes yet.</li>

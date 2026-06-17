@@ -55,6 +55,22 @@
             android:layout_marginTop="20dp"
             android:text="@string/login" />
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/googleLoginButton"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Student Google sign-in" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/githubLoginButton"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Student GitHub sign-in" />
+
         <TextView
             android:id="@+id/loginMessage"
             android:layout_width="match_parent"

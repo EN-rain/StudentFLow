@@ -7,6 +7,7 @@ use App\Http\Requests\StoreAnnouncementRequest;
 use App\Models\Announcement;
 use App\Models\SchoolClass;
 use App\Models\Teacher;
+use App\Support\AnnouncementMailer;
 use Illuminate\Http\Request;
 
 class AnnouncementWebController extends Controller
@@ -44,11 +45,12 @@ class AnnouncementWebController extends Controller
             $teacher = Teacher::find($request->teacher_id) ?? null;
         }
 
-        Announcement::create(array_merge($request->validated(), [
+        $announcement = Announcement::create(array_merge($request->validated(), [
             'teacher_id' => $teacher?->id ?? $request->teacher_id,
         ]));
+        $sent = AnnouncementMailer::sendToEnrolledStudents($announcement);
 
-        return redirect('/announcements')->with('status', 'Announcement posted.');
+        return redirect('/announcements')->with('status', "Announcement posted. Email notifications sent to {$sent} enrolled student(s).");
     }
 
     public function show(Request $request, Announcement $announcement)

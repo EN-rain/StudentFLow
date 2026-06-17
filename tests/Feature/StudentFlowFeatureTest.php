@@ -3,17 +3,22 @@
 namespace Tests\Feature;
 
 use App\Models\ActivityLog;
+use App\Mail\ClassAnnouncementMail;
 use App\Models\Assignment;
 use App\Models\AssignmentSubmission;
+use App\Models\ExamAttempt;
 use App\Models\GradeCategory;
+use App\Models\GradeItem;
 use App\Models\SchoolClass;
 use App\Models\SchoolSetting;
 use App\Models\Student;
+use App\Models\StudentGrade;
 use App\Models\Teacher;
 use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Mail;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
@@ -151,5 +156,90 @@ class StudentFlowFeatureTest extends TestCase
         $this->getJson("/api/reports/student-profile?student_id={$student->id}")
             ->assertOk()
             ->assertJsonPath('data.student_number', '2026-0007');
+    }
+
+    public function test_class_announcement_emails_enrolled_students(): void
+    {
+        Mail::fake();
+
+        $john = User::where('username', 'john.reyes')->first();
+        $class = SchoolClass::where('class_name', 'BSIT 2A')->first();
+        $enrolledCount = $class->students()->wherePivot('status', 'enrolled')->count();
+
+        $this->actingAs($john)->post('/announcements', [
+            'class_id' => $class->id,
+            'title' => 'Bring your project draft',
+            'message' => 'Please bring your Java project draft next meeting.',
+            'priority' => 'Important',
+            'publish_date' => '2026-06-18',
+            'expiration_date' => null,
+        ])->assertRedirect('/announcements');
+
+        Mail::assertSent(ClassAnnouncementMail::class, $enrolledCount);
+        Mail::assertSent(ClassAnnouncementMail::class, function (ClassAnnouncementMail $mail) use ($class) {
+            return $mail->announcement->class_id === $class->id;
+        });
+    }
+
+    public function test_student_social_login_student_api_exam_submission_and_teacher_audit(): void
+    {
+        $student = Student::where('student_number', '2026-0001')->first();
+        $class = SchoolClass::where('class_name', 'BSIT 2A')->first();
+        $john = User::where('username', 'john.reyes')->first();
+        $gradeItem = GradeItem::where('class_id', $class->id)->first();
+
+        $login = $this->postJson('/api/auth/google', [
+            'id_token' => 'test-google:' . $student->email,
+        ])->assertOk();
+
+        $this->assertSame('student', $login->json('user.role'));
+        $studentUser = User::where('student_id', $student->id)->first();
+        $this->assertNotNull($studentUser);
+        $this->assertNotNull($studentUser->google_id);
+
+        Sanctum::actingAs($studentUser);
+        $this->getJson('/api/student/dashboard')
+            ->assertOk()
+            ->assertJsonPath('data.student.student_number', '2026-0001');
+        $this->getJson('/api/classes')->assertForbidden();
+
+        Sanctum::actingAs($john);
+        $examResponse = $this->postJson('/api/exams', [
+            'class_id' => $class->id,
+            'grade_item_id' => $gradeItem->id,
+            'title' => 'OOP Quiz',
+            'instructions' => 'Answer all questions.',
+            'maximum_score' => 20,
+            'status' => 'published',
+            'questions' => [
+                [
+                    'prompt' => 'What keyword creates a class in Java?',
+                    'type' => 'multiple_choice',
+                    'choices' => ['class', 'def', 'function'],
+                    'correct_answer' => 'class',
+                    'points' => 20,
+                ],
+            ],
+        ])->assertCreated();
+
+        $examId = $examResponse->json('data.id');
+        $attempt = ExamAttempt::where('exam_id', $examId)->where('student_id', $student->id)->first();
+        $this->assertNotNull($attempt);
+
+        $this->postJson("/api/exam/magic/{$attempt->magic_token}/submit", [
+            'answers' => [[
+                'question_id' => $examResponse->json('data.questions.0.id'),
+                'answer' => 'class',
+            ]],
+        ])->assertOk()->assertJsonPath('score', 20);
+
+        $this->assertSame('submitted', $attempt->fresh()->status);
+        $this->assertEquals(20.0, (float) StudentGrade::where('grade_item_id', $gradeItem->id)->where('student_id', $student->id)->first()->score);
+
+        Sanctum::actingAs($john);
+        $this->getJson("/api/exams/{$examId}/audit")
+            ->assertOk()
+            ->assertJsonPath('data.stats.submitted', 1)
+            ->assertJsonPath('data.students.0.google_email', $student->email);
     }
 }

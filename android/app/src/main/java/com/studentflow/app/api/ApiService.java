@@ -18,6 +18,12 @@ public interface ApiService {
     @POST("auth/login")
     Call<LoginResponse> login(@Body LoginRequest request);
 
+    @POST("auth/google")
+    Call<LoginResponse> googleLogin(@Body JsonObject request);
+
+    @POST("auth/github")
+    Call<LoginResponse> githubLogin(@Body JsonObject request);
+
     @POST("auth/logout")
     Call<JsonObject> logout();
 
@@ -107,4 +113,49 @@ public interface ApiService {
 
     @GET("classes/{classId}/students/{studentId}/final-grade")
     Call<JsonObject> finalGrade(@Path("classId") int classId, @Path("studentId") int studentId);
+
+    @GET("student/dashboard")
+    Call<JsonObject> studentDashboard();
+
+    @GET("student/profile")
+    Call<JsonObject> studentProfile();
+
+    @GET("student/classes")
+    Call<JsonObject> studentClasses();
+
+    @GET("student/announcements")
+    Call<JsonObject> studentAnnouncements();
+
+    @GET("student/assignments")
+    Call<JsonObject> studentAssignments();
+
+    @GET("student/grades")
+    Call<JsonObject> studentGrades();
+
+    @GET("student/attendance")
+    Call<JsonObject> studentAttendance();
+
+    @GET("student/exams")
+    Call<JsonObject> studentExams();
+
+    @POST("student/exams/{attemptId}/submit")
+    Call<JsonObject> submitStudentExam(@Path("attemptId") int attemptId, @Body JsonObject request);
+
+    @GET("exam/magic/{token}")
+    Call<JsonObject> magicExam(@Path("token") String token);
+
+    @POST("exam/magic/{token}/submit")
+    Call<JsonObject> submitMagicExam(@Path("token") String token, @Body JsonObject request);
+
+    @GET("exams")
+    Call<JsonObject> exams();
+
+    @POST("exams")
+    Call<JsonObject> createExam(@Body JsonObject request);
+
+    @POST("exams/{examId}/publish")
+    Call<JsonObject> publishExam(@Path("examId") int examId);
+
+    @GET("exams/{examId}/audit")
+    Call<JsonObject> examAudit(@Path("examId") int examId);
 }

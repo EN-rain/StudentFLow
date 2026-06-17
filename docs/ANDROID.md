@@ -13,6 +13,15 @@ Open the `android/` directory in Android Studio. Start the Laravel server on por
 
 Seeded teacher credentials from the backend README work against `/api/auth/login`, for example `john.reyes` / `Teacher123!`.
 
+Student login is role-aware and uses backend social endpoints:
+
+- Google: `POST /api/auth/google`
+- GitHub: `POST /api/auth/github`
+
+For local QA only, the backend accepts `test-google:{student_email}` and `test-github:{student_email}`. Real Google/GitHub sign-in requires provider credentials in Laravel `.env`.
+
+Students can use the Android app to view classes, announcements, assignments, grades, attendance, and exams. Teachers can create quick exams, publish per-student magic links, and audit submissions from the Android `Exams` screen.
+
 ## Build
 
 1. Install Android Studio with Android SDK 35.

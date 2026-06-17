@@ -26,6 +26,10 @@ class DatabaseSeeder extends Seeder
         // Disable FK checks for SQLite to allow truncate-cascade
         DB::statement('PRAGMA foreign_keys = OFF');
 
+        DB::table('exam_answers')->truncate();
+        DB::table('exam_attempts')->truncate();
+        DB::table('exam_questions')->truncate();
+        DB::table('exams')->truncate();
         DB::table('activity_logs')->truncate();
         $this->seedUsers();
         $this->seedTeachers();

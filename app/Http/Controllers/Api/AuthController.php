@@ -30,6 +30,12 @@ class AuthController extends Controller
             ]);
         }
 
+        if ($user->role === 'student') {
+            throw ValidationException::withMessages([
+                'username' => ['Students must sign in with Google or GitHub.'],
+            ]);
+        }
+
         if ($user->status !== 'active') {
             throw ValidationException::withMessages([
                 'username' => ['This account has been disabled. Contact an administrator.'],
@@ -63,7 +69,7 @@ class AuthController extends Controller
 
     public function me(Request $request): JsonResponse
     {
-        $user = $request->user()->load('teacher');
+        $user = $request->user()->load('teacher', 'student');
 
         return response()->json([
             'id' => $user->id,
@@ -77,6 +83,13 @@ class AuthController extends Controller
                 'employee_number' => $user->teacher->employee_number,
                 'full_name' => $user->teacher->full_name,
                 'department' => $user->teacher->department,
+            ] : null,
+            'student' => $user->student ? [
+                'id' => $user->student->id,
+                'student_number' => $user->student->student_number,
+                'full_name' => $user->student->full_name,
+                'google_email' => $user->google_id ? $user->email : null,
+                'github_username' => $user->github_username,
             ] : null,
         ]);
     }

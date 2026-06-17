@@ -10,13 +10,18 @@ use App\Http\Controllers\Api\AttendanceController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClassController;
 use App\Http\Controllers\Api\EnrollmentController;
+use App\Http\Controllers\Api\ExamController;
 use App\Http\Controllers\Api\GradeController;
 use App\Http\Controllers\Api\ReportController;
+use App\Http\Controllers\Api\StudentPortalController;
+use App\Http\Controllers\Api\StudentSocialAuthController;
 use App\Http\Controllers\Api\StudentController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/google', [StudentSocialAuthController::class, 'google']);
+    Route::post('/github', [StudentSocialAuthController::class, 'github']);
     Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
     Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
@@ -27,7 +32,22 @@ Route::prefix('auth')->group(function () {
     });
 });
 
+Route::get('/exam/magic/{token}', [ExamController::class, 'magicShow']);
+Route::post('/exam/magic/{token}/submit', [ExamController::class, 'magicSubmit']);
+
 Route::middleware('auth:sanctum')->group(function () {
+    Route::prefix('student')->middleware('role:student')->group(function () {
+        Route::get('/dashboard', [StudentPortalController::class, 'dashboard']);
+        Route::get('/profile', [StudentPortalController::class, 'profile']);
+        Route::get('/classes', [StudentPortalController::class, 'classes']);
+        Route::get('/announcements', [StudentPortalController::class, 'announcements']);
+        Route::get('/assignments', [StudentPortalController::class, 'assignments']);
+        Route::get('/grades', [StudentPortalController::class, 'grades']);
+        Route::get('/attendance', [StudentPortalController::class, 'attendance']);
+        Route::get('/exams', [StudentPortalController::class, 'exams']);
+        Route::post('/exams/{attempt}/submit', [ExamController::class, 'submitAttempt']);
+    });
+
     Route::prefix('admin')->middleware('role:admin')->group(function () {
         Route::get('/teachers', [AdminTeacherController::class, 'index']);
         Route::post('/teachers', [AdminTeacherController::class, 'store']);
@@ -39,6 +59,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/activity-logs', [AdminActivityLogController::class, 'index']);
     });
 
+    Route::middleware('role:admin,teacher')->group(function () {
     Route::get('/classes', [ClassController::class, 'index']);
     Route::post('/classes', [ClassController::class, 'store']);
     Route::get('/classes/{class}', [ClassController::class, 'show']);
@@ -88,6 +109,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/assignments/{assignment}/submissions', [AssignmentSubmissionController::class, 'index']);
     Route::post('/assignments/{assignment}/submissions', [AssignmentSubmissionController::class, 'store']);
 
+    Route::get('/exams', [ExamController::class, 'index']);
+    Route::post('/exams', [ExamController::class, 'store']);
+    Route::get('/exams/{exam}', [ExamController::class, 'show']);
+    Route::post('/exams/{exam}/publish', [ExamController::class, 'publish']);
+    Route::get('/exams/{exam}/audit', [ExamController::class, 'audit']);
+
     Route::get('/announcements', [AnnouncementController::class, 'index']);
     Route::post('/announcements', [AnnouncementController::class, 'store']);
     Route::get('/announcements/{announcement}', [AnnouncementController::class, 'show']);
@@ -95,4 +122,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/announcements/{announcement}', [AnnouncementController::class, 'destroy']);
 
     Route::get('/reports/{type}', [ReportController::class, 'show']);
+    });
 });

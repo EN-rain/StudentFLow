@@ -8,11 +8,27 @@ Authenticated endpoints require `Authorization: Bearer <token>`.
 ## Authentication
 
 - `POST /auth/login` with `{ "username": "...", "password": "..." }`
+- `POST /auth/google` with `{ "id_token": "..." }` for student Google sign-in.
+- `POST /auth/github` with `{ "code": "..." }` or `{ "access_token": "..." }` for student GitHub sign-in.
 - `POST /auth/forgot-password` with `{ "email": "..." }`
 - `POST /auth/reset-password` with `{ "email": "...", "token": "...", "password": "...", "password_confirmation": "..." }`
 - `GET /auth/me`
 - `POST /auth/change-password`
 - `POST /auth/logout`
+
+Student social login links by verified provider email to an existing `students.email`. Configure `GOOGLE_CLIENT_ID`, `GITHUB_CLIENT_ID`, and `GITHUB_CLIENT_SECRET` for real providers.
+
+## Student Mobile
+
+- `GET /student/dashboard`
+- `GET /student/profile`
+- `GET /student/classes`
+- `GET /student/announcements`
+- `GET /student/assignments`
+- `GET /student/grades`
+- `GET /student/attendance`
+- `GET /student/exams`
+- `POST /student/exams/{attempt}/submit`
 
 ## Admin
 
@@ -33,6 +49,8 @@ Admin-only endpoints:
 - Grades: category, item, score, and final-grade routes under `/classes/{class}/...`
 - Assignments: `GET|POST /assignments`, `GET|PUT|DELETE /assignments/{assignment}`, `GET|POST /assignments/{assignment}/submissions`
 - Announcements: `GET|POST /announcements`, `GET|PUT|DELETE /announcements/{announcement}`
+- Exams: `GET|POST /exams`, `GET /exams/{exam}`, `POST /exams/{exam}/publish`, `GET /exams/{exam}/audit`
+- Magic exams: `GET /exam/magic/{token}`, `POST /exam/magic/{token}/submit`; browser links use `/exam/magic/{token}`.
 
 ## Reports
 

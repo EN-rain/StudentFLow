@@ -10,11 +10,14 @@ use App\Http\Controllers\Web\AuthWebController;
 use App\Http\Controllers\Web\ClassWebController;
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\GradeWebController;
+use App\Http\Controllers\Web\MagicExamWebController;
 use App\Http\Controllers\Web\ReportController;
 use App\Http\Controllers\Web\StudentWebController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => redirect('/dashboard'));
+Route::get('/exam/magic/{token}', [MagicExamWebController::class, 'show']);
+Route::post('/exam/magic/{token}', [MagicExamWebController::class, 'submit']);
 
 // Public auth routes
 Route::get('/login', [AuthWebController::class, 'showLogin'])->name('login');

@@ -51,6 +51,16 @@ class Student extends Model
         return $this->hasMany(AssignmentSubmission::class);
     }
 
+    public function user()
+    {
+        return $this->hasOne(User::class);
+    }
+
+    public function examAttempts()
+    {
+        return $this->hasMany(ExamAttempt::class);
+    }
+
     public function getFullNameAttribute(): string
     {
         $middle = $this->middle_name ? ' ' . $this->middle_name : '';

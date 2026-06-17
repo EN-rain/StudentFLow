@@ -7,6 +7,7 @@ use App\Http\Requests\StoreAnnouncementRequest;
 use App\Models\Announcement;
 use App\Models\SchoolClass;
 use App\Models\Teacher;
+use App\Support\AnnouncementMailer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -52,8 +53,9 @@ class AnnouncementController extends Controller
         $announcement = Announcement::create(array_merge($request->validated(), [
             'teacher_id' => $teacher?->id ?? $request->teacher_id,
         ]));
+        $sent = AnnouncementMailer::sendToEnrolledStudents($announcement);
 
-        return response()->json(['data' => $announcement], 201);
+        return response()->json(['data' => $announcement, 'emails_sent' => $sent], 201);
     }
 
     public function update(StoreAnnouncementRequest $request, Announcement $announcement): JsonResponse

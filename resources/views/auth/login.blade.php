@@ -4,7 +4,10 @@
 <div class="login-card">
     <div class="card shadow-sm">
         <div class="card-body p-4">
-            <h3 class="mb-1 text-center"><i class="bi bi-mortarboard-fill text-primary"></i> StudentFlow</h3>
+            <div class="text-center mb-2">
+                <img src="/images/studentflow-logo.png" alt="" width="48" height="48" class="mb-2">
+                <h3 class="mb-0">StudentFlow</h3>
+            </div>
             <p class="text-muted text-center mb-4">Sign in to continue</p>
 
             @if ($errors->any())
