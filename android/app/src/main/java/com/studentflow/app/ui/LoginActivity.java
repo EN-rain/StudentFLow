@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -22,7 +23,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes;
 import com.google.android.gms.tasks.Task;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -97,13 +97,19 @@ public class LoginActivity extends AppCompatActivity {
         forgotPasswordButton.setOnClickListener(v -> setMode(mode == Mode.FORGOT ? Mode.LOGIN : Mode.FORGOT));
         googleLoginButton.setOnClickListener(v -> startGoogleLogin());
         githubLoginButton.setOnClickListener(v -> startGithubLogin());
+        addPressMotion(loginButton);
+        addPressMotion(showLoginButton);
+        addPressMotion(showRegisterButton);
+        addPressMotion(forgotPasswordButton);
+        addPressMotion(googleLoginButton);
+        addPressMotion(githubLoginButton);
         setMode(Mode.LOGIN);
         handleDeepLink(getIntent());
     }
 
     private void setMode(Mode nextMode) {
         mode = nextMode;
-        message.setText("");
+        clearMessage();
         nameLayout.setVisibility(mode == Mode.REGISTER ? View.VISIBLE : View.GONE);
         passwordLayout.setVisibility(mode == Mode.FORGOT ? View.GONE : View.VISIBLE);
         confirmPasswordLayout.setVisibility(mode == Mode.REGISTER ? View.VISIBLE : View.GONE);
@@ -137,6 +143,54 @@ public class LoginActivity extends AppCompatActivity {
         authPanel.setLayoutTransition(transition);
     }
 
+    private void addPressMotion(View view) {
+        view.setOnTouchListener((target, event) -> {
+            if (!target.isEnabled()) {
+                return false;
+            }
+            if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                target.animate().scaleX(0.96f).scaleY(0.96f).alpha(0.88f).setDuration(90).start();
+            } else if (event.getActionMasked() == MotionEvent.ACTION_UP
+                    || event.getActionMasked() == MotionEvent.ACTION_CANCEL) {
+                target.animate().scaleX(1f).scaleY(1f).alpha(1f).setDuration(140).start();
+            }
+            return false;
+        });
+    }
+
+    private void clearMessage() {
+        message.animate().cancel();
+        message.setText("");
+        message.setTranslationX(0f);
+        message.setAlpha(1f);
+    }
+
+    private void showStatus(String text) {
+        message.animate().cancel();
+        message.setTextColor(getColor(R.color.studentflow_text_muted));
+        message.setText(text);
+        message.setAlpha(0f);
+        message.setTranslationX(0f);
+        message.animate().alpha(1f).setDuration(180).start();
+    }
+
+    private void showError(String text) {
+        message.animate().cancel();
+        message.setTextColor(getColor(R.color.studentflow_error));
+        message.setText(text);
+        message.setAlpha(1f);
+        message.setTranslationX(0f);
+        message.animate()
+                .translationX(12f)
+                .setDuration(55)
+                .withEndAction(() -> message.animate()
+                        .translationX(-12f)
+                        .setDuration(55)
+                        .withEndAction(() -> message.animate().translationX(0f).setDuration(70).start())
+                        .start())
+                .start();
+    }
+
     private void submitPrimary() {
         if (mode == Mode.REGISTER) {
             register();
@@ -151,11 +205,11 @@ public class LoginActivity extends AppCompatActivity {
         String username = text(usernameInput);
         String password = text(passwordInput);
         if (username.isEmpty() || password.isEmpty()) {
-            message.setText("Enter username and password.");
+            showError("Enter username and password.");
             return;
         }
         loginButton.setEnabled(false);
-        message.setText("Signing in...");
+        showStatus("Signing in...");
         ApiClient.reset();
         ApiClient.service(this).login(new LoginRequest(username, password)).enqueue(new Callback<LoginResponse>() {
             @Override
@@ -166,13 +220,13 @@ public class LoginActivity extends AppCompatActivity {
                     saveAndOpen(body);
                     return;
                 }
-                message.setText("Login failed: " + errorMessage(response));
+                showError("Login failed. " + errorMessage(response));
             }
 
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
                 loginButton.setEnabled(true);
-                message.setText("Network error: " + t.getMessage());
+                showError("Connection problem. Please try again.");
             }
         });
     }
@@ -183,7 +237,7 @@ public class LoginActivity extends AppCompatActivity {
         String password = text(passwordInput);
         String confirm = text(confirmPasswordInput);
         if (name.isEmpty() || email.isEmpty() || password.isEmpty() || confirm.isEmpty()) {
-            message.setText("Enter name, email, password, and confirmation.");
+            showError("Enter name, email, password, and confirmation.");
             return;
         }
         JsonObject payload = new JsonObject();
@@ -192,7 +246,7 @@ public class LoginActivity extends AppCompatActivity {
         payload.addProperty("password", password);
         payload.addProperty("password_confirmation", confirm);
         loginButton.setEnabled(false);
-        message.setText("Registering...");
+        showStatus("Registering...");
         ApiClient.reset();
         ApiClient.service(this).register(payload).enqueue(new Callback<LoginResponse>() {
             @Override
@@ -203,13 +257,13 @@ public class LoginActivity extends AppCompatActivity {
                     saveAndOpen(body);
                     return;
                 }
-                message.setText("Register failed: " + errorMessage(response));
+                showError("Registration failed. " + errorMessage(response));
             }
 
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
                 loginButton.setEnabled(true);
-                message.setText("Network error: " + t.getMessage());
+                showError("Connection problem. Please try again.");
             }
         });
     }
@@ -217,35 +271,35 @@ public class LoginActivity extends AppCompatActivity {
     private void forgotPassword() {
         String email = text(usernameInput);
         if (email.isEmpty()) {
-            message.setText("Enter your email.");
+            showError("Enter your email.");
             return;
         }
         JsonObject payload = new JsonObject();
         payload.addProperty("email", email);
         loginButton.setEnabled(false);
-        message.setText("Sending reset link...");
+        showStatus("Sending reset link...");
         ApiClient.reset();
         ApiClient.service(this).forgotPassword(payload).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 loginButton.setEnabled(true);
                 if (response.isSuccessful() && response.body() != null && response.body().has("message")) {
-                    message.setText(response.body().get("message").getAsString());
+                    showStatus(response.body().get("message").getAsString());
                     return;
                 }
-                message.setText("Reset failed: " + errorMessage(response));
+                showError("Reset failed. " + errorMessage(response));
             }
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
                 loginButton.setEnabled(true);
-                message.setText("Network error: " + t.getMessage());
+                showError("Connection problem. Please try again.");
             }
         });
     }
 
     private void startGoogleLogin() {
-        message.setText("Opening Google sign-in...");
+        showStatus("Opening Google sign-in...");
         googleSignInClient.signOut().addOnCompleteListener(task ->
                 startActivityForResult(googleSignInClient.getSignInIntent(), GOOGLE_SIGN_IN_REQUEST));
     }
@@ -260,7 +314,7 @@ public class LoginActivity extends AppCompatActivity {
                 .appendQueryParameter("scope", "read:user user:email")
                 .appendQueryParameter("state", state)
                 .build();
-        message.setText("Opening GitHub sign-in...");
+        showStatus("Opening GitHub sign-in...");
         new CustomTabsIntent.Builder().build().launchUrl(this, uri);
     }
 
@@ -282,18 +336,12 @@ public class LoginActivity extends AppCompatActivity {
             GoogleSignInAccount account = task.getResult(ApiException.class);
             String idToken = account == null ? null : account.getIdToken();
             if (idToken == null || idToken.trim().isEmpty()) {
-                message.setText("Google sign-in did not return an ID token. Check the OAuth client ID.");
+                showError("Google sign-in could not be completed. Please try again.");
                 return;
             }
             submitSocial("google", idToken);
         } catch (ApiException e) {
-            int statusCode = e.getStatusCode();
-            String statusName = GoogleSignInStatusCodes.getStatusCodeString(statusCode);
-            if (statusCode == 10 || statusCode == GoogleSignInStatusCodes.SIGN_IN_FAILED) {
-                message.setText("Google sign-in failed (" + statusCode + " " + statusName + "). Check package com.studentflow.app, the Android OAuth SHA-1, and that GOOGLE_WEB_CLIENT_ID is the Web client from the same Google Cloud project.");
-            } else {
-                message.setText("Google sign-in failed (" + statusCode + " " + statusName + ").");
-            }
+            showError("Google sign-in failed. Please try again.");
         }
     }
 
@@ -307,19 +355,19 @@ public class LoginActivity extends AppCompatActivity {
             error = uri.getQueryParameter("error");
         }
         if (error != null && !error.trim().isEmpty()) {
-            message.setText("GitHub sign-in failed: " + error);
+            showError("GitHub sign-in failed. Please try again.");
             return;
         }
         String returnedState = uri.getQueryParameter("state");
         String expectedState = tokenStore.consumeOauthState();
         if (expectedState == null || returnedState == null || !expectedState.equals(returnedState)) {
-            message.setText("GitHub sign-in state validation failed.");
+            showError("GitHub sign-in could not be verified. Please try again.");
             return;
         }
 
         String exchangeCode = uri.getQueryParameter("exchange_code");
         if (exchangeCode == null || exchangeCode.trim().isEmpty()) {
-            message.setText("GitHub sign-in did not return an exchange code.");
+            showError("GitHub sign-in could not be completed. Please try again.");
             return;
         }
 
@@ -333,13 +381,13 @@ public class LoginActivity extends AppCompatActivity {
                 if (response.isSuccessful() && body != null && body.token != null) {
                     saveAndOpen(body);
                 } else {
-                    message.setText("GitHub sign-in failed: " + errorMessage(response));
+                    showError("GitHub sign-in failed. " + errorMessage(response));
                 }
             }
 
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
-                message.setText("Network error: " + t.getMessage());
+                showError("Connection problem. Please try again.");
             }
         });
     }
@@ -350,7 +398,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void submitSocial(String provider, String value, String redirectUri) {
         if (value.isEmpty()) {
-            message.setText("Missing " + provider + " token/code.");
+            showError("Could not complete sign-in. Please try again.");
             return;
         }
         JsonObject payload = new JsonObject();
@@ -364,7 +412,7 @@ public class LoginActivity extends AppCompatActivity {
                 payload.addProperty("redirect_uri", redirectUri);
             }
         }
-        message.setText("Signing in with " + provider + "...");
+        showStatus("Signing in with " + provider + "...");
         ApiClient.reset();
         (provider.equals("google")
                 ? ApiClient.service(this).googleLogin(payload)
@@ -376,13 +424,13 @@ public class LoginActivity extends AppCompatActivity {
                         if (response.isSuccessful() && body != null && body.token != null) {
                             saveAndOpen(body);
                         } else {
-                            message.setText("Social sign-in failed: " + errorMessage(response));
+                            showError("Sign-in failed. " + errorMessage(response));
                         }
                     }
 
                     @Override
                     public void onFailure(Call<LoginResponse> call, Throwable t) {
-                        message.setText("Network error: " + t.getMessage());
+                        showError("Connection problem. Please try again.");
                     }
                 });
     }
@@ -394,7 +442,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private String errorMessage(Response<?> response) {
-        String fallback = "HTTP " + response.code();
+        String fallback = "Please try again.";
         try {
             if (response.errorBody() == null) {
                 return fallback;
