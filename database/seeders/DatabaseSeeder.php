@@ -22,6 +22,12 @@ use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
+    private array $seededUsers = [];
+
+    private array $seededTeachers = [];
+
+    private array $seededClasses = [];
+
     public function run(): void
     {
         $driver = DB::connection()->getDriverName();
@@ -93,7 +99,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'username' => 'roberto.delapena',
-                'name' => 'Roberto Dela Peña',
+                'name' => 'Roberto Dela PeÃƒÂ±a',
                 'email' => 'roberto.delapena@studentflow.local',
                 'password' => Hash::make('Teacher123!'),
                 'role' => 'teacher',
@@ -111,19 +117,17 @@ class DatabaseSeeder extends Seeder
         if ($missing !== []) {
             throw new \RuntimeException('Seeder failed to persist expected users: ' . implode(', ', $missing));
         }
+
+        $this->seededUsers = User::whereIn('username', $expected)->pluck('id', 'username')->all();
     }
 
     private function seedTeachers(): void
     {
         DB::table('teachers')->truncate();
 
-        $john = $this->requiredUser('john.reyes');
-        $angela = $this->requiredUser('angela.cruz');
-        $roberto = $this->requiredUser('roberto.delapena');
-
         $teachers = [
             [
-                'user_id' => $john->id,
+                'username' => 'john.reyes',
                 'employee_number' => 'TCH-2026-001',
                 'first_name' => 'John Michael',
                 'middle_name' => null,
@@ -135,7 +139,7 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'user_id' => $angela->id,
+                'username' => 'angela.cruz',
                 'employee_number' => 'TCH-2026-002',
                 'first_name' => 'Angela Marie',
                 'middle_name' => null,
@@ -147,11 +151,11 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'user_id' => $roberto->id,
+                'username' => 'roberto.delapena',
                 'employee_number' => 'TCH-2026-003',
                 'first_name' => 'Roberto',
                 'middle_name' => null,
-                'last_name' => 'Dela Peña',
+                'last_name' => 'Dela PeÃƒÂ±a',
                 'department' => 'General Education',
                 'contact_number' => '09191234567',
                 'profile_image' => null,
@@ -160,14 +164,27 @@ class DatabaseSeeder extends Seeder
             ],
         ];
 
-        DB::table('teachers')->insert($teachers);
+        foreach ($teachers as $teacher) {
+            $record = Teacher::create([
+                'user_id' => $this->requiredUserId($teacher['username']),
+                'employee_number' => $teacher['employee_number'],
+                'first_name' => $teacher['first_name'],
+                'middle_name' => $teacher['middle_name'],
+                'last_name' => $teacher['last_name'],
+                'department' => $teacher['department'],
+                'contact_number' => $teacher['contact_number'],
+                'profile_image' => $teacher['profile_image'],
+            ]);
+
+            $this->seededTeachers[$teacher['employee_number']] = $record->id;
+        }
     }
 
     private function seedStudents(): void
     {
         DB::table('students')->truncate();
 
-        // Per plan §9 + §10 (only first 3 are detailed in §10; others use defaults)
+        // Per plan Ã‚Section 9 + Ã‚Section 10 (only first 3 are detailed in Ã‚Section 10; others use defaults)
         $students = [
             ['2026-0001', 'Aaron', 'Miguel', 'Villanueva', 'Male', '2006-03-12', 'aaron.villanueva@studentflow.local', '09911234567', 'Cebu City', 'Roberto Villanueva', '09171112222'],
             ['2026-0002', 'Bianca', 'Marie', 'Ramos', 'Female', '2006-07-21', 'bianca.ramos@studentflow.local', '09921234567', 'Mandaue City', 'Elena Ramos', '09182223333'],
@@ -220,13 +237,9 @@ class DatabaseSeeder extends Seeder
     {
         DB::table('classes')->truncate();
 
-        $john = $this->requiredTeacher('TCH-2026-001');
-        $angela = $this->requiredTeacher('TCH-2026-002');
-        $roberto = $this->requiredTeacher('TCH-2026-003');
-
         $classes = [
             [
-                'teacher_id' => $john->id,
+                'teacher_id' => $this->requiredTeacherId('TCH-2026-001'),
                 'class_name' => 'BSIT 2A',
                 'section' => 'A',
                 'subject' => 'Object-Oriented Programming',
@@ -240,7 +253,7 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'teacher_id' => $angela->id,
+                'teacher_id' => $this->requiredTeacherId('TCH-2026-002'),
                 'class_name' => 'BSIT 1B',
                 'section' => 'B',
                 'subject' => 'Mathematics in the Modern World',
@@ -254,7 +267,7 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'teacher_id' => $roberto->id,
+                'teacher_id' => $this->requiredTeacherId('TCH-2026-003'),
                 'class_name' => 'BSIT 3A',
                 'section' => 'A',
                 'subject' => 'Ethics',
@@ -269,7 +282,10 @@ class DatabaseSeeder extends Seeder
             ],
         ];
 
-        DB::table('classes')->insert($classes);
+        foreach ($classes as $class) {
+            $record = SchoolClass::create($class);
+            $this->seededClasses[$class['class_name']] = $record->id;
+        }
     }
 
     private function seedEnrollments(): void
@@ -292,13 +308,13 @@ class DatabaseSeeder extends Seeder
 
         $rows = [];
         foreach ($bsit2aStudents as $s) {
-            $rows[] = ['class_id' => $bsit2a->id, 'student_id' => $s->id, 'date_enrolled' => $enrolledDate, 'status' => 'enrolled', 'created_at' => $now, 'updated_at' => $now];
+            $rows[] = ['class_id' => $this->requiredClassId('BSIT 2A'), 'student_id' => $s->id, 'date_enrolled' => $enrolledDate, 'status' => 'enrolled', 'created_at' => $now, 'updated_at' => $now];
         }
         foreach ($bsit1bStudents as $s) {
-            $rows[] = ['class_id' => $bsit1b->id, 'student_id' => $s->id, 'date_enrolled' => $enrolledDate, 'status' => 'enrolled', 'created_at' => $now, 'updated_at' => $now];
+            $rows[] = ['class_id' => $this->requiredClassId('BSIT 1B'), 'student_id' => $s->id, 'date_enrolled' => $enrolledDate, 'status' => 'enrolled', 'created_at' => $now, 'updated_at' => $now];
         }
         foreach ($bsit3aStudents as $s) {
-            $rows[] = ['class_id' => $bsit3a->id, 'student_id' => $s->id, 'date_enrolled' => $enrolledDate, 'status' => 'enrolled', 'created_at' => $now, 'updated_at' => $now];
+            $rows[] = ['class_id' => $this->requiredClassId('BSIT 3A'), 'student_id' => $s->id, 'date_enrolled' => $enrolledDate, 'status' => 'enrolled', 'created_at' => $now, 'updated_at' => $now];
         }
 
         DB::table('class_students')->insert($rows);
@@ -311,7 +327,7 @@ class DatabaseSeeder extends Seeder
         $bsit2a = SchoolClass::where('class_name', 'BSIT 2A')->first();
         $john = User::where('username', 'john.reyes')->first();
 
-        // Per plan §11: BSIT 2A attendance for June 15 and June 17, 2026
+        // Per plan Ã‚Section 11: BSIT 2A attendance for June 15 and June 17, 2026
         $attendanceData = [
             // June 15, 2026
             ['2026-0001', 'Present', null],
@@ -342,7 +358,7 @@ class DatabaseSeeder extends Seeder
             foreach ($entries as $entry) {
                 $student = Student::where('student_number', $entry[0])->first();
                 $rows[] = [
-                    'class_id' => $bsit2a->id,
+                    'class_id' => $this->requiredClassId('BSIT 2A'),
                     'student_id' => $student->id,
                     'attendance_date' => $date,
                     'status' => $entry[1],
@@ -363,7 +379,7 @@ class DatabaseSeeder extends Seeder
 
         $bsit2a = SchoolClass::where('class_name', 'BSIT 2A')->first();
 
-        // Per plan §12: Quizzes 20, Activities 15, Assignments 20, Project 20, Final Exam 25
+        // Per plan Ã‚Section 12: Quizzes 20, Activities 15, Assignments 20, Project 20, Final Exam 25
         $categories = [
             ['Quizzes', 20.00],
             ['Activities', 15.00],
@@ -376,7 +392,7 @@ class DatabaseSeeder extends Seeder
         $rows = [];
         foreach ($categories as $c) {
             $rows[] = [
-                'class_id' => $bsit2a->id,
+                'class_id' => $this->requiredClassId('BSIT 2A'),
                 'category_name' => $c[0],
                 'percentage_weight' => $c[1],
                 'created_at' => $now,
@@ -399,7 +415,7 @@ class DatabaseSeeder extends Seeder
         $project = GradeCategory::where('class_id', $bsit2a->id)->where('category_name', 'Project')->first();
         $finalExam = GradeCategory::where('class_id', $bsit2a->id)->where('category_name', 'Final Exam')->first();
 
-        // Per plan §13: 6 grade items
+        // Per plan Ã‚Section 13: 6 grade items
         $items = [
             [$quizzes->id, 'Quiz 1: Java Basics', 20.00, '2026-06-12'],
             [$quizzes->id, 'Quiz 2: Classes and Objects', 20.00, '2026-06-19'],
@@ -413,7 +429,7 @@ class DatabaseSeeder extends Seeder
         $rows = [];
         foreach ($items as $it) {
             $rows[] = [
-                'class_id' => $bsit2a->id,
+                'class_id' => $this->requiredClassId('BSIT 2A'),
                 'category_id' => $it[0],
                 'title' => $it[1],
                 'maximum_score' => $it[2],
@@ -433,7 +449,7 @@ class DatabaseSeeder extends Seeder
         $bsit2a = SchoolClass::where('class_name', 'BSIT 2A')->first();
         $items = GradeItem::where('class_id', $bsit2a->id)->orderBy('id')->get();
 
-        // Per plan §14: scores per student per item (rows: students, columns: items in order)
+        // Per plan Ã‚Section 14: scores per student per item (rows: students, columns: items in order)
         // Columns order: Quiz 1, Quiz 2, Activity 1, Assignment 1, Project, Final Exam
         $scores = [
             '2026-0001' => [18, 17, 27, 45, 92, 88], // Aaron Villanueva
@@ -472,10 +488,10 @@ class DatabaseSeeder extends Seeder
         $bsit1b = SchoolClass::where('class_name', 'BSIT 1B')->first();
         $bsit3a = SchoolClass::where('class_name', 'BSIT 3A')->first();
 
-        // Per plan §15
+        // Per plan Ã‚Section 15
         $rows = [
             [
-                'class_id' => $bsit2a->id,
+                'class_id' => $this->requiredClassId('BSIT 2A'),
                 'title' => 'Java Student Record Program',
                 'description' => 'Create a console application that stores and displays student records using classes and objects.',
                 'date_assigned' => '2026-06-10',
@@ -487,7 +503,7 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'class_id' => $bsit1b->id,
+                'class_id' => $this->requiredClassId('BSIT 1B'),
                 'title' => 'Percentage and Interest Worksheet',
                 'description' => 'Complete the worksheet involving percentages, simple interest, and compound interest.',
                 'date_assigned' => '2026-06-12',
@@ -499,7 +515,7 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'class_id' => $bsit3a->id,
+                'class_id' => $this->requiredClassId('BSIT 3A'),
                 'title' => 'Ethical Case Analysis',
                 'description' => 'Write a short analysis of an ethical issue involving privacy and technology.',
                 'date_assigned' => '2026-06-13',
@@ -557,11 +573,11 @@ class DatabaseSeeder extends Seeder
         $bsit1b = SchoolClass::where('class_name', 'BSIT 1B')->first();
         $bsit3a = SchoolClass::where('class_name', 'BSIT 3A')->first();
 
-        // Per plan §16
+        // Per plan Ã‚Section 16
         $rows = [
             [
-                'teacher_id' => $john->id,
-                'class_id' => $bsit2a->id,
+                'teacher_id' => $this->requiredTeacherId('TCH-2026-001'),
+                'class_id' => $this->requiredClassId('BSIT 2A'),
                 'title' => 'Java Project Consultation',
                 'message' => 'Project consultation will be held after class on June 22. Bring your source code and project outline.',
                 'priority' => 'Important',
@@ -571,8 +587,8 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'teacher_id' => $angela->id,
-                'class_id' => $bsit1b->id,
+                'teacher_id' => $this->requiredTeacherId('TCH-2026-002'),
+                'class_id' => $this->requiredClassId('BSIT 1B'),
                 'title' => 'Quiz Schedule',
                 'message' => 'Quiz 1 will be held on June 23. Review percentages, ratios, and interest calculations.',
                 'priority' => 'Normal',
@@ -582,8 +598,8 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'teacher_id' => $roberto->id,
-                'class_id' => $bsit3a->id,
+                'teacher_id' => $this->requiredTeacherId('TCH-2026-003'),
+                'class_id' => $this->requiredClassId('BSIT 3A'),
                 'title' => 'Classroom Change',
                 'message' => "Friday's Ethics class will be held in Room 305 instead of Room 301.",
                 'priority' => 'Urgent',
@@ -619,23 +635,35 @@ class DatabaseSeeder extends Seeder
         }
     }
 
-    private function requiredUser(string $username): User
+    private function requiredUserId(string $username): int
     {
-        $user = User::where('username', $username)->first();
-        if (! $user) {
+        $userId = $this->seededUsers[$username] ?? User::where('username', $username)->value('id');
+        if (! $userId) {
             throw new ModelNotFoundException("Seeder expected user [{$username}] to exist.");
         }
 
-        return $user;
+        return (int) $userId;
     }
 
-    private function requiredTeacher(string $employeeNumber): Teacher
+    private function requiredTeacherId(string $employeeNumber): int
     {
-        $teacher = Teacher::where('employee_number', $employeeNumber)->first();
-        if (! $teacher) {
+        $teacherId = $this->seededTeachers[$employeeNumber] ?? Teacher::where('employee_number', $employeeNumber)->value('id');
+        if (! $teacherId) {
             throw new ModelNotFoundException("Seeder expected teacher [{$employeeNumber}] to exist.");
         }
 
-        return $teacher;
+        return (int) $teacherId;
+    }
+
+    private function requiredClassId(string $className): int
+    {
+        $classId = $this->seededClasses[$className] ?? SchoolClass::where('class_name', $className)->value('id');
+        if (! $classId) {
+            throw new ModelNotFoundException("Seeder expected class [{$className}] to exist.");
+        }
+
+        return (int) $classId;
     }
 }
+
+
