@@ -41,11 +41,13 @@ public class CrudFragment extends BaseDataFragment {
     }
 
     private void load() {
-        statusView.setText("Loading...");
+        setLoading(true);
+        setStatus("", false);
         listContainer.removeAllViews();
         listCall().enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                setLoading(false);
                 if (!response.isSuccessful()) {
                     showError(title() + " request failed: HTTP " + response.code());
                     return;
@@ -55,6 +57,7 @@ public class CrudFragment extends BaseDataFragment {
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
+                setLoading(false);
                 showError("Network error: " + t.getMessage());
             }
         });
@@ -64,12 +67,12 @@ public class CrudFragment extends BaseDataFragment {
         listContainer.removeAllViews();
         JsonElement data = body == null ? null : body.get("data");
         if (data == null || !data.isJsonArray()) {
-            statusView.setText("Loaded.");
+            setStatus("Loaded.", false);
             addCard(body == null ? "No data returned." : summarize(body));
             return;
         }
         JsonArray rows = data.getAsJsonArray();
-        statusView.setText(rows.size() + " records loaded.");
+        setStatus(rows.size() + " records loaded.", false);
         if (rows.size() == 0) {
             addCard("No records found.");
             return;
@@ -113,6 +116,7 @@ public class CrudFragment extends BaseDataFragment {
     }
 
     private void openJoinRequests(int classId) {
+        setLoading(true);
         setStatus("Loading join requests...", false);
         ApiClient.service(requireContext()).classJoinRequests(classId).enqueue(new Callback<JsonObject>() {
             @Override
@@ -120,6 +124,7 @@ public class CrudFragment extends BaseDataFragment {
                 if (!isAdded() || getView() == null) {
                     return;
                 }
+                setLoading(false);
                 if (!response.isSuccessful() || response.body() == null) {
                     setStatus("Join requests failed: HTTP " + response.code(), true);
                     return;
@@ -160,8 +165,8 @@ public class CrudFragment extends BaseDataFragment {
                             MaterialButton reject = new MaterialButton(requireContext());
                             reject.setText("Reject");
                             Integer requestId = intValue(request, "id");
-                            approve.setOnClickListener(v -> reviewJoinRequest(requestId, "approved", classId));
-                            reject.setOnClickListener(v -> reviewJoinRequest(requestId, "rejected", classId));
+                            approve.setOnClickListener(v -> reviewJoinRequest(requestId, "approved", classId, approve, reject));
+                            reject.setOnClickListener(v -> reviewJoinRequest(requestId, "rejected", classId, approve, reject));
                             actions.addView(approve);
                             actions.addView(reject);
                             row.addView(actions);
@@ -183,16 +188,21 @@ public class CrudFragment extends BaseDataFragment {
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
                 if (isAdded() && getView() != null) {
+                    setLoading(false);
                     setStatus("Network error: " + t.getMessage(), true);
                 }
             }
         });
     }
 
-    private void reviewJoinRequest(Integer requestId, String decision, int classId) {
+    private void reviewJoinRequest(Integer requestId, String decision, int classId, MaterialButton approveButton, MaterialButton rejectButton) {
         if (requestId == null) {
             return;
         }
+        approveButton.setEnabled(false);
+        rejectButton.setEnabled(false);
+        setLoading(true);
+        setStatus("Reviewing join request...", false);
         JsonObject payload = new JsonObject();
         payload.addProperty("decision", decision);
         ApiClient.service(requireContext()).reviewClassJoinRequest(requestId, payload).enqueue(new Callback<JsonObject>() {
@@ -201,10 +211,13 @@ public class CrudFragment extends BaseDataFragment {
                 if (!isAdded() || getView() == null) {
                     return;
                 }
+                setLoading(false);
                 if (response.isSuccessful()) {
                     setStatus("Join request " + decision + ".", false);
                     load();
                 } else {
+                    approveButton.setEnabled(true);
+                    rejectButton.setEnabled(true);
                     setStatus("Review failed: HTTP " + response.code(), true);
                 }
             }
@@ -212,6 +225,9 @@ public class CrudFragment extends BaseDataFragment {
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
                 if (isAdded() && getView() != null) {
+                    setLoading(false);
+                    approveButton.setEnabled(true);
+                    rejectButton.setEnabled(true);
                     setStatus("Network error: " + t.getMessage(), true);
                 }
             }
@@ -236,10 +252,12 @@ public class CrudFragment extends BaseDataFragment {
     }
 
     private void submit(Call<JsonObject> call) {
-        statusView.setText("Saving...");
+        setLoading(true);
+        setStatus("Saving...", false);
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                setLoading(false);
                 if (response.isSuccessful()) {
                     load();
                 } else {
@@ -249,16 +267,19 @@ public class CrudFragment extends BaseDataFragment {
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
+                setLoading(false);
                 showError("Network error: " + t.getMessage());
             }
         });
     }
 
     private void delete(int id) {
-        statusView.setText("Deleting...");
+        setLoading(true);
+        setStatus("Deleting...", false);
         deleteCall(id).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                setLoading(false);
                 if (response.isSuccessful()) {
                     load();
                 } else {
@@ -268,6 +289,7 @@ public class CrudFragment extends BaseDataFragment {
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
+                setLoading(false);
                 showError("Network error: " + t.getMessage());
             }
         });

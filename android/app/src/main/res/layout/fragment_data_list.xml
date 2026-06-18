@@ -8,7 +8,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:paddingLeft="20dp"
-        android:paddingTop="18dp"
+        android:paddingTop="24dp"
         android:paddingRight="20dp"
         android:paddingBottom="28dp">
 
@@ -19,21 +19,54 @@
             android:orientation="vertical"
             android:padding="20dp">
 
-            <TextView
-                android:id="@+id/screenTitle"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/studentflow_text"
-                android:textSize="28sp"
-                android:textStyle="bold" />
+                android:baselineAligned="false"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/screenSubtitle"
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/screenTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/studentflow_text"
+                        android:textSize="28sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/screenSubtitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:textColor="@color/studentflow_text_muted"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/topActionRow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:gravity="center"
+                    android:orientation="horizontal" />
+            </LinearLayout>
+
+            <ProgressBar
+                android:id="@+id/loadingLine"
+                style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:textColor="@color/studentflow_text_muted"
-                android:textSize="14sp" />
+                android:layout_height="3dp"
+                android:layout_marginTop="14dp"
+                android:indeterminate="true"
+                android:indeterminateTint="@color/studentflow_accent"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/statusText"

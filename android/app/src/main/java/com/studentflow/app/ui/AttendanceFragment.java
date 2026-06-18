@@ -34,10 +34,12 @@ public class AttendanceFragment extends BaseDataFragment {
     }
 
     private void load(Integer classId, String date) {
-        statusView.setText("Loading attendance...");
+        setLoading(true);
+        setStatus("", false);
         ApiClient.service(requireContext()).attendance(classId, date).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                setLoading(false);
                 if (response.isSuccessful()) {
                     renderData(response.body(), "No attendance records found.");
                 } else {
@@ -47,6 +49,7 @@ public class AttendanceFragment extends BaseDataFragment {
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
+                setLoading(false);
                 showError("Network error: " + t.getMessage());
             }
         });

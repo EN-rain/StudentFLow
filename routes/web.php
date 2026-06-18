@@ -16,20 +16,20 @@ use App\Http\Controllers\Web\StudentWebController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn () => redirect('/dashboard'));
-Route::get('/exam/magic/{token}', [MagicExamWebController::class, 'show']);
-Route::post('/exam/magic/{token}/start', [MagicExamWebController::class, 'start']);
-Route::post('/exam/magic/{token}', [MagicExamWebController::class, 'submit']);
+Route::get('/exam/magic/{token}', [MagicExamWebController::class, 'show'])->middleware('throttle:60,1');
+Route::post('/exam/magic/{token}/start', [MagicExamWebController::class, 'start'])->middleware('throttle:20,1');
+Route::post('/exam/magic/{token}', [MagicExamWebController::class, 'submit'])->middleware('throttle:20,1');
 
 // Public auth routes
 Route::get('/login', [AuthWebController::class, 'showLogin'])->name('login');
-Route::post('/login', [AuthWebController::class, 'login']);
+Route::post('/login', [AuthWebController::class, 'login'])->middleware('throttle:10,1');
 Route::post('/logout', [AuthWebController::class, 'logout'])->name('logout');
-Route::get('/teacher/setup/{token}', [AuthWebController::class, 'showTeacherSetup'])->name('teacher.setup');
-Route::post('/teacher/setup', [AuthWebController::class, 'completeTeacherSetup']);
+Route::get('/teacher/setup/{token}', [AuthWebController::class, 'showTeacherSetup'])->name('teacher.setup')->middleware('throttle:30,1');
+Route::post('/teacher/setup', [AuthWebController::class, 'completeTeacherSetup'])->middleware('throttle:5,1');
 Route::get('/forgot-password', [AuthWebController::class, 'showForgotPassword']);
-Route::post('/forgot-password', [AuthWebController::class, 'forgotPassword']);
+Route::post('/forgot-password', [AuthWebController::class, 'forgotPassword'])->middleware('throttle:5,1');
 Route::get('/reset-password/{token}', [AuthWebController::class, 'showResetPassword'])->name('password.reset');
-Route::post('/reset-password', [AuthWebController::class, 'resetPassword']);
+Route::post('/reset-password', [AuthWebController::class, 'resetPassword'])->middleware('throttle:5,1');
 
 // Protected routes
 Route::middleware('auth')->group(function () {

@@ -25,11 +25,13 @@ public class GradesFragment extends BaseDataFragment {
     }
 
     private void loadClasses() {
-        statusView.setText("Loading classes...");
+        setLoading(true);
+        setStatus("", false);
         listContainer.removeAllViews();
         ApiClient.service(requireContext()).classes().enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                setLoading(false);
                 if (!response.isSuccessful() || response.body() == null) {
                     showError("Classes request failed: HTTP " + response.code());
                     return;
@@ -43,6 +45,7 @@ public class GradesFragment extends BaseDataFragment {
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
+                setLoading(false);
                 showError("Network error: " + t.getMessage());
             }
         });

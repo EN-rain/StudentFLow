@@ -8,8 +8,10 @@ use App\Models\Assignment;
 use App\Models\Attendance;
 use App\Models\ExamAttempt;
 use App\Models\StudentGrade;
+use App\Support\StudentUsername;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class StudentPortalController extends Controller
 {
@@ -29,7 +31,39 @@ class StudentPortalController extends Controller
 
     public function profile(Request $request): JsonResponse
     {
-        return response()->json(['data' => $this->student($request)->load('user', 'classes.teacher.user')]);
+        $student = $this->student($request)->load('user', 'classes.teacher.user');
+
+        return response()->json(['data' => $this->profilePayload($student)]);
+    }
+
+    public function updateProfile(Request $request): JsonResponse
+    {
+        $student = $this->student($request);
+        $user = $request->user();
+
+        $payload = $request->validate([
+            'first_name' => ['required', 'string', 'max:100'],
+            'last_name' => ['required', 'string', 'max:100'],
+            'email' => ['required', 'email', 'max:191', Rule::unique('students', 'email')->ignore($student->id), Rule::unique('users', 'email')->ignore($user->id)],
+            'username' => ['required', 'string', 'max:64', 'regex:/^[A-Za-z0-9._-]+$/', Rule::unique('users', 'username')->ignore($user->id)],
+            'profile_image' => ['nullable', 'url', 'max:2048'],
+        ]);
+
+        $student->update([
+            'first_name' => $payload['first_name'],
+            'last_name' => $payload['last_name'],
+            'email' => strtolower($payload['email']),
+            'profile_image' => $payload['profile_image'] ?? null,
+        ]);
+
+        $user->forceFill([
+            'username' => $payload['username'] ?: StudentUsername::fromStudent($student),
+            'name' => $student->fresh()->full_name,
+            'email' => strtolower($payload['email']),
+            'avatar_url' => $payload['profile_image'] ?? $user->avatar_url,
+        ])->save();
+
+        return response()->json(['data' => $this->profilePayload($student->fresh()->load('user', 'classes.teacher.user'))]);
     }
 
     public function classes(Request $request): JsonResponse
@@ -97,5 +131,23 @@ class StudentPortalController extends Controller
         }
 
         return $student;
+    }
+
+    private function profilePayload($student): array
+    {
+        return [
+            'id' => $student->id,
+            'student_number' => $student->student_number,
+            'first_name' => $student->first_name,
+            'last_name' => $student->last_name,
+            'full_name' => $student->full_name,
+            'email' => $student->email,
+            'profile_image' => $student->profile_image,
+            'username' => $student->user?->username,
+            'google_linked' => filled($student->user?->google_id),
+            'github_linked' => filled($student->user?->github_id),
+            'github_username' => $student->user?->github_username,
+            'classes' => $student->classes,
+        ];
     }
 }

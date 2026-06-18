@@ -23,17 +23,19 @@ public class TeacherExamsFragment extends BaseDataFragment {
     }
 
     private void load() {
-        statusView.setText("Loading exams...");
+        setLoading(true);
+        setStatus("", false);
         ApiClient.service(requireContext()).exams().enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                setLoading(false);
                 listContainer.removeAllViews();
                 if (!response.isSuccessful() || response.body() == null) {
                     showError("Exam list failed: HTTP " + response.code());
                     return;
                 }
                 JsonArray rows = response.body().getAsJsonArray("data");
-                statusView.setText(rows.size() + " exam(s).");
+                setStatus(rows.size() + " exam(s).", false);
                 for (JsonElement element : rows) {
                     JsonObject exam = element.getAsJsonObject();
                     addCard(summarize(exam), v -> audit(exam.get("id").getAsInt()));
@@ -45,6 +47,7 @@ public class TeacherExamsFragment extends BaseDataFragment {
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
+                setLoading(false);
                 showError("Network error: " + t.getMessage());
             }
         });

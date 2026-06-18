@@ -17,7 +17,7 @@
             android:background="@color/studentflow_primary"
             android:minHeight="72dp"
             android:paddingLeft="8dp"
-            android:paddingTop="10dp"
+            android:paddingTop="16dp"
             android:paddingRight="16dp"
             android:paddingBottom="10dp"
             android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"
@@ -32,7 +32,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:background="@drawable/bg_content_surface"
-            android:paddingTop="8dp" />
+            android:paddingTop="10dp" />
     </LinearLayout>
 
     <com.google.android.material.navigation.NavigationView

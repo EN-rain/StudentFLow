@@ -139,6 +139,9 @@ public interface ApiService {
     @GET("student/profile")
     Call<JsonObject> studentProfile();
 
+    @PATCH("student/profile")
+    Call<JsonObject> updateStudentProfile(@Body JsonObject request);
+
     @GET("student/classes")
     Call<JsonObject> studentClasses();
 

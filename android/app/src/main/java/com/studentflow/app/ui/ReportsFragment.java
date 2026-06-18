@@ -22,7 +22,8 @@ public class ReportsFragment extends BaseDataFragment {
     }
 
     private void load(String type) {
-        statusView.setText("Loading " + type + " report source...");
+        setLoading(true);
+        setStatus("", false);
         Call<JsonObject> call;
         if ("attendance".equals(type)) {
             call = ApiClient.service(requireContext()).attendance(null, null);
@@ -35,6 +36,7 @@ public class ReportsFragment extends BaseDataFragment {
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                setLoading(false);
                 if (response.isSuccessful()) {
                     renderData(response.body(), "No report records found.");
                 } else {
@@ -44,6 +46,7 @@ public class ReportsFragment extends BaseDataFragment {
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
+                setLoading(false);
                 showError("Network error: " + t.getMessage());
             }
         });

@@ -28,10 +28,12 @@ public class ProfileFragment extends BaseDataFragment {
     }
 
     private void load() {
-        setStatus("Loading profile...", false);
+        setLoading(true);
+        setStatus("", false);
         ApiClient.service(requireContext()).me().enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                setLoading(false);
                 if (response.isSuccessful() && response.body() != null) {
                     renderProfile(response.body());
                 } else {
@@ -41,6 +43,7 @@ public class ProfileFragment extends BaseDataFragment {
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
+                setLoading(false);
                 showError("Network error: " + t.getMessage());
             }
         });

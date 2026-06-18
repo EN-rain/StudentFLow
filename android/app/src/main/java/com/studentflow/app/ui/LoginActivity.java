@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -52,11 +53,12 @@ public class LoginActivity extends AppCompatActivity {
     private TextInputEditText nameInput;
     private TextInputEditText passwordInput;
     private TextInputEditText confirmPasswordInput;
-    private TextView message;
     private TextView forgotPasswordButton;
     private MaterialButton loginButton;
     private MaterialButton showLoginButton;
     private MaterialButton showRegisterButton;
+    private ImageButton googleLoginButton;
+    private ImageButton githubLoginButton;
     private LinearLayout socialRow;
     private TokenStore tokenStore;
     private GoogleSignInClient googleSignInClient;
@@ -78,15 +80,14 @@ public class LoginActivity extends AppCompatActivity {
         usernameInput = findViewById(R.id.usernameInput);
         passwordInput = findViewById(R.id.passwordInput);
         confirmPasswordInput = findViewById(R.id.confirmPasswordInput);
-        message = findViewById(R.id.loginMessage);
         forgotPasswordButton = findViewById(R.id.forgotPasswordButton);
         loginButton = findViewById(R.id.loginButton);
         showLoginButton = findViewById(R.id.showLoginButton);
         showRegisterButton = findViewById(R.id.showRegisterButton);
         socialRow = findViewById(R.id.socialRow);
         configureLayoutMotion();
-        ImageButton googleLoginButton = findViewById(R.id.googleLoginButton);
-        ImageButton githubLoginButton = findViewById(R.id.githubLoginButton);
+        googleLoginButton = findViewById(R.id.googleLoginButton);
+        githubLoginButton = findViewById(R.id.githubLoginButton);
         googleSignInClient = GoogleSignIn.getClient(this, new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .requestIdToken(Constants.GOOGLE_WEB_CLIENT_ID)
@@ -109,7 +110,6 @@ public class LoginActivity extends AppCompatActivity {
 
     private void setMode(Mode nextMode) {
         mode = nextMode;
-        clearMessage();
         nameLayout.setVisibility(mode == Mode.REGISTER ? View.VISIBLE : View.GONE);
         passwordLayout.setVisibility(mode == Mode.FORGOT ? View.GONE : View.VISIBLE);
         confirmPasswordLayout.setVisibility(mode == Mode.REGISTER ? View.VISIBLE : View.GONE);
@@ -158,37 +158,48 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void clearMessage() {
-        message.animate().cancel();
-        message.setText("");
-        message.setTranslationX(0f);
-        message.setAlpha(1f);
-    }
-
     private void showStatus(String text) {
-        message.animate().cancel();
-        message.setTextColor(getColor(R.color.studentflow_text_muted));
-        message.setText(text);
-        message.setAlpha(0f);
-        message.setTranslationX(0f);
-        message.animate().alpha(1f).setDuration(180).start();
+        showPopup(text, false);
     }
 
     private void showError(String text) {
-        message.animate().cancel();
-        message.setTextColor(getColor(R.color.studentflow_error));
-        message.setText(text);
-        message.setAlpha(1f);
-        message.setTranslationX(0f);
-        message.animate()
+        showPopup(text, true);
+        View panel = findViewById(R.id.authPanel);
+        panel.animate()
                 .translationX(12f)
                 .setDuration(55)
-                .withEndAction(() -> message.animate()
+                .withEndAction(() -> panel.animate()
                         .translationX(-12f)
                         .setDuration(55)
-                        .withEndAction(() -> message.animate().translationX(0f).setDuration(70).start())
+                        .withEndAction(() -> panel.animate().translationX(0f).setDuration(70).start())
                         .start())
                 .start();
+    }
+
+    private void showPopup(String text, boolean error) {
+        Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), text, Snackbar.LENGTH_LONG);
+        snackbar.setBackgroundTint(getColor(error ? R.color.studentflow_error : R.color.studentflow_primary));
+        snackbar.setTextColor(getColor(android.R.color.white));
+        snackbar.show();
+    }
+
+    private void setAuthControlsEnabled(boolean enabled) {
+        nameInput.setEnabled(enabled);
+        usernameInput.setEnabled(enabled);
+        passwordInput.setEnabled(enabled);
+        confirmPasswordInput.setEnabled(enabled);
+        nameLayout.setEnabled(enabled);
+        usernameLayout.setEnabled(enabled);
+        passwordLayout.setEnabled(enabled);
+        confirmPasswordLayout.setEnabled(enabled);
+        loginButton.setEnabled(enabled);
+        showLoginButton.setEnabled(enabled);
+        showRegisterButton.setEnabled(enabled);
+        forgotPasswordButton.setEnabled(enabled);
+        googleLoginButton.setEnabled(enabled);
+        githubLoginButton.setEnabled(enabled);
+        socialRow.setAlpha(enabled ? 1f : 0.5f);
+        loginButton.setAlpha(enabled ? 1f : 0.7f);
     }
 
     private void submitPrimary() {
@@ -208,13 +219,13 @@ public class LoginActivity extends AppCompatActivity {
             showError("Enter username and password.");
             return;
         }
-        loginButton.setEnabled(false);
+        setAuthControlsEnabled(false);
         showStatus("Signing in...");
         ApiClient.reset();
         ApiClient.service(this).login(new LoginRequest(username, password)).enqueue(new Callback<LoginResponse>() {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
-                loginButton.setEnabled(true);
+                setAuthControlsEnabled(true);
                 LoginResponse body = response.body();
                 if (response.isSuccessful() && body != null && body.token != null) {
                     saveAndOpen(body);
@@ -225,7 +236,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
-                loginButton.setEnabled(true);
+                setAuthControlsEnabled(true);
                 showError("Connection problem. Please try again.");
             }
         });
@@ -245,13 +256,13 @@ public class LoginActivity extends AppCompatActivity {
         payload.addProperty("email", email);
         payload.addProperty("password", password);
         payload.addProperty("password_confirmation", confirm);
-        loginButton.setEnabled(false);
+        setAuthControlsEnabled(false);
         showStatus("Registering...");
         ApiClient.reset();
         ApiClient.service(this).register(payload).enqueue(new Callback<LoginResponse>() {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
-                loginButton.setEnabled(true);
+                setAuthControlsEnabled(true);
                 LoginResponse body = response.body();
                 if (response.isSuccessful() && body != null && body.token != null) {
                     saveAndOpen(body);
@@ -262,7 +273,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
-                loginButton.setEnabled(true);
+                setAuthControlsEnabled(true);
                 showError("Connection problem. Please try again.");
             }
         });
@@ -276,13 +287,13 @@ public class LoginActivity extends AppCompatActivity {
         }
         JsonObject payload = new JsonObject();
         payload.addProperty("email", email);
-        loginButton.setEnabled(false);
+        setAuthControlsEnabled(false);
         showStatus("Sending reset link...");
         ApiClient.reset();
         ApiClient.service(this).forgotPassword(payload).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                loginButton.setEnabled(true);
+                setAuthControlsEnabled(true);
                 if (response.isSuccessful() && response.body() != null && response.body().has("message")) {
                     showStatus(response.body().get("message").getAsString());
                     return;
@@ -292,7 +303,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
-                loginButton.setEnabled(true);
+                setAuthControlsEnabled(true);
                 showError("Connection problem. Please try again.");
             }
         });
@@ -374,6 +385,7 @@ public class LoginActivity extends AppCompatActivity {
         JsonObject payload = new JsonObject();
         payload.addProperty("exchange_code", exchangeCode);
         payload.addProperty("state", returnedState);
+        setAuthControlsEnabled(false);
         ApiClient.service(this).mobileExchange(payload).enqueue(new Callback<LoginResponse>() {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
@@ -381,12 +393,14 @@ public class LoginActivity extends AppCompatActivity {
                 if (response.isSuccessful() && body != null && body.token != null) {
                     saveAndOpen(body);
                 } else {
+                    setAuthControlsEnabled(true);
                     showError("GitHub sign-in failed. " + errorMessage(response));
                 }
             }
 
             @Override
             public void onFailure(Call<LoginResponse> call, Throwable t) {
+                setAuthControlsEnabled(true);
                 showError("Connection problem. Please try again.");
             }
         });
@@ -413,6 +427,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
         showStatus("Signing in with " + provider + "...");
+        setAuthControlsEnabled(false);
         ApiClient.reset();
         (provider.equals("google")
                 ? ApiClient.service(this).googleLogin(payload)
@@ -424,12 +439,14 @@ public class LoginActivity extends AppCompatActivity {
                         if (response.isSuccessful() && body != null && body.token != null) {
                             saveAndOpen(body);
                         } else {
+                            setAuthControlsEnabled(true);
                             showError("Sign-in failed. " + errorMessage(response));
                         }
                     }
 
                     @Override
                     public void onFailure(Call<LoginResponse> call, Throwable t) {
+                        setAuthControlsEnabled(true);
                         showError("Connection problem. Please try again.");
                     }
                 });

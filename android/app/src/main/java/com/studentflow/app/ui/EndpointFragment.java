@@ -34,7 +34,8 @@ public class EndpointFragment extends BaseDataFragment {
     }
 
     private void load() {
-        statusView.setText("Loading...");
+        setLoading(true);
+        setStatus("", false);
         String endpoint = requireArguments().getString(ARG_ENDPOINT);
         Call<JsonObject> call;
         if ("classes".equals(endpoint)) {
@@ -52,6 +53,7 @@ public class EndpointFragment extends BaseDataFragment {
         call.enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                setLoading(false);
                 if (response.isSuccessful()) {
                     renderData(response.body(), "No records found.");
                 } else {
@@ -61,6 +63,7 @@ public class EndpointFragment extends BaseDataFragment {
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
+                setLoading(false);
                 showError("Network error: " + t.getMessage());
             }
         });

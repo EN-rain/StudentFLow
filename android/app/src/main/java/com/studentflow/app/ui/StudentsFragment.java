@@ -21,10 +21,12 @@ public class StudentsFragment extends BaseDataFragment {
     }
 
     private void load(String query) {
-        statusView.setText("Loading students...");
+        setLoading(true);
+        setStatus("", false);
         ApiClient.service(requireContext()).students(query, null).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                setLoading(false);
                 if (response.isSuccessful()) {
                     renderData(response.body(), "No students found.");
                 } else {
@@ -34,6 +36,7 @@ public class StudentsFragment extends BaseDataFragment {
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
+                setLoading(false);
                 showError("Network error: " + t.getMessage());
             }
         });

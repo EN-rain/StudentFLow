@@ -106,22 +106,12 @@
                     android:textSize="16sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <TextView
-                android:id="@+id/loginMessage"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:gravity="center"
-                android:lineSpacingExtra="2dp"
-                android:textColor="@color/studentflow_error"
-                android:textSize="13sp" />
-
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/usernameLayout"
                 style="@style/StudentFlow.TextInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
+                android:layout_marginTop="18dp"
                 android:hint="Username or email"
                 app:boxBackgroundMode="outline">
 
@@ -143,7 +133,7 @@
                 android:layout_marginTop="14dp"
                 android:hint="Password"
                 app:boxBackgroundMode="outline"
-                app:passwordToggleEnabled="true">
+                app:endIconMode="password_toggle">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/passwordInput"
@@ -164,7 +154,7 @@
                 android:hint="Confirm password"
                 android:visibility="gone"
                 app:boxBackgroundMode="outline"
-                app:passwordToggleEnabled="true">
+                app:endIconMode="password_toggle">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/confirmPasswordInput"

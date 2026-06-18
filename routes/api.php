@@ -20,14 +20,14 @@ use App\Http\Controllers\Api\StudentSocialAuthController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function () {
-    Route::post('/register', [AuthController::class, 'register']);
-    Route::post('/login', [AuthController::class, 'login']);
-    Route::post('/google', [StudentSocialAuthController::class, 'google']);
-    Route::post('/github', [StudentSocialAuthController::class, 'github']);
-    Route::get('/github/callback', [StudentSocialAuthController::class, 'githubCallback']);
-    Route::post('/mobile-exchange', [StudentSocialAuthController::class, 'mobileExchange']);
-    Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
-    Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+    Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:5,1');
+    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:10,1');
+    Route::post('/google', [StudentSocialAuthController::class, 'google'])->middleware('throttle:10,1');
+    Route::post('/github', [StudentSocialAuthController::class, 'github'])->middleware('throttle:10,1');
+    Route::get('/github/callback', [StudentSocialAuthController::class, 'githubCallback'])->middleware('throttle:20,1');
+    Route::post('/mobile-exchange', [StudentSocialAuthController::class, 'mobileExchange'])->middleware('throttle:20,1');
+    Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->middleware('throttle:5,1');
+    Route::post('/reset-password', [AuthController::class, 'resetPassword'])->middleware('throttle:5,1');
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
@@ -36,14 +36,15 @@ Route::prefix('auth')->group(function () {
     });
 });
 
-Route::post('/exam/magic/{token}/start', [ExamController::class, 'magicStart']);
-Route::get('/exam/magic/{token}', [ExamController::class, 'magicShow']);
-Route::post('/exam/magic/{token}/submit', [ExamController::class, 'magicSubmit']);
+Route::post('/exam/magic/{token}/start', [ExamController::class, 'magicStart'])->middleware('throttle:20,1');
+Route::get('/exam/magic/{token}', [ExamController::class, 'magicShow'])->middleware('throttle:60,1');
+Route::post('/exam/magic/{token}/submit', [ExamController::class, 'magicSubmit'])->middleware('throttle:20,1');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('student')->middleware('role:student')->group(function () {
         Route::get('/dashboard', [StudentPortalController::class, 'dashboard']);
         Route::get('/profile', [StudentPortalController::class, 'profile']);
+        Route::patch('/profile', [StudentPortalController::class, 'updateProfile']);
         Route::get('/classes', [StudentPortalController::class, 'classes']);
         Route::get('/announcements', [StudentPortalController::class, 'announcements']);
         Route::get('/assignments', [StudentPortalController::class, 'assignments']);

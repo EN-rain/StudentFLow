@@ -303,6 +303,35 @@ class StudentFlowFeatureTest extends TestCase
         $this->assertNotEmpty($login->json('token'));
     }
 
+    public function test_student_can_update_own_mobile_profile(): void
+    {
+        $studentUser = User::where('username', 'aaronvillanueva001')->firstOrFail();
+
+        Sanctum::actingAs($studentUser);
+        $this->patchJson('/api/student/profile', [
+            'first_name' => 'Aaron',
+            'last_name' => 'Villanueva',
+            'email' => 'aaron.updated@studentflow.local',
+            'username' => 'aaronupdated001',
+            'profile_image' => 'https://example.com/avatar.png',
+        ])->assertOk()
+            ->assertJsonPath('data.email', 'aaron.updated@studentflow.local')
+            ->assertJsonPath('data.username', 'aaronupdated001')
+            ->assertJsonPath('data.profile_image', 'https://example.com/avatar.png');
+
+        $this->assertDatabaseHas('students', [
+            'id' => $studentUser->student_id,
+            'email' => 'aaron.updated@studentflow.local',
+            'profile_image' => 'https://example.com/avatar.png',
+        ]);
+        $this->assertDatabaseHas('users', [
+            'id' => $studentUser->id,
+            'username' => 'aaronupdated001',
+            'email' => 'aaron.updated@studentflow.local',
+            'avatar_url' => 'https://example.com/avatar.png',
+        ]);
+    }
+
     public function test_verified_student_can_request_class_and_teacher_can_approve(): void
     {
         $verified = User::where('username', 'aaronvillanueva001')->firstOrFail();

@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
@@ -26,6 +27,8 @@ public abstract class BaseDataFragment extends Fragment {
     protected TextView titleView;
     protected TextView subtitleView;
     protected TextView statusView;
+    protected ProgressBar loadingLine;
+    protected LinearLayout topActionRow;
     protected LinearLayout actionRow;
     protected LinearLayout listContainer;
 
@@ -36,6 +39,8 @@ public abstract class BaseDataFragment extends Fragment {
         titleView = view.findViewById(R.id.screenTitle);
         subtitleView = view.findViewById(R.id.screenSubtitle);
         statusView = view.findViewById(R.id.statusText);
+        loadingLine = view.findViewById(R.id.loadingLine);
+        topActionRow = view.findViewById(R.id.topActionRow);
         actionRow = view.findViewById(R.id.actionRow);
         listContainer = view.findViewById(R.id.listContainer);
         configure();
@@ -66,11 +71,33 @@ public abstract class BaseDataFragment extends Fragment {
         return button;
     }
 
+    protected MaterialButton addTopIconAction(int iconRes, String description, View.OnClickListener listener) {
+        MaterialButton button = new MaterialButton(requireContext(), null, com.google.android.material.R.attr.materialButtonOutlinedStyle);
+        button.setIconResource(iconRes);
+        button.setIconTintResource(R.color.studentflow_primary);
+        button.setContentDescription(description);
+        button.setText("");
+        button.setOnClickListener(listener);
+        button.setInsetTop(0);
+        button.setInsetBottom(0);
+        button.setMinWidth(dp(48));
+        button.setMinimumWidth(dp(48));
+        button.setCornerRadius(dp(24));
+        button.setStrokeWidth(dp(1));
+        button.setStrokeColorResource(R.color.studentflow_border);
+        button.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.studentflow_field));
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(dp(48), dp(48));
+        params.setMargins(dp(8), 0, 0, 0);
+        topActionRow.addView(button, params);
+        return button;
+    }
+
     protected void renderData(JsonObject body, String emptyMessage) {
         if (!isAdded() || getView() == null || listContainer == null || statusView == null) {
             return;
         }
         listContainer.removeAllViews();
+        setLoading(false);
         JsonElement data = body == null ? null : body.get("data");
         if (data != null && data.isJsonArray()) {
             JsonArray array = data.getAsJsonArray();
@@ -97,13 +124,21 @@ public abstract class BaseDataFragment extends Fragment {
             return;
         }
         listContainer.removeAllViews();
+        setLoading(false);
         setStatus(message, true);
     }
 
     protected void setStatus(String message, boolean error) {
+        statusView.setVisibility(message == null || message.trim().isEmpty() ? View.GONE : View.VISIBLE);
         statusView.setText(message);
         statusView.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), error ? R.color.studentflow_error : R.color.studentflow_surface_alt));
         statusView.setTextColor(ContextCompat.getColor(requireContext(), error ? android.R.color.white : R.color.studentflow_text));
+    }
+
+    protected void setLoading(boolean loading) {
+        if (loadingLine != null) {
+            loadingLine.setVisibility(loading ? View.VISIBLE : View.GONE);
+        }
     }
 
     protected void addCard(String text) {

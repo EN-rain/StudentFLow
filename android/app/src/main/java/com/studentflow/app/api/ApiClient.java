@@ -6,7 +6,6 @@ import com.studentflow.app.Constants;
 import com.studentflow.app.data.TokenStore;
 
 import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -16,9 +15,6 @@ public class ApiClient {
     public static ApiService service(Context context) {
         if (retrofit == null) {
             TokenStore tokenStore = new TokenStore(context);
-            HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-            logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
-
             OkHttpClient client = new OkHttpClient.Builder()
                     .addInterceptor(chain -> {
                         okhttp3.Request.Builder builder = chain.request().newBuilder()
@@ -30,7 +26,6 @@ public class ApiClient {
                         }
                         return chain.proceed(builder.build());
                     })
-                    .addInterceptor(logging)
                     .build();
 
             retrofit = new Retrofit.Builder()
