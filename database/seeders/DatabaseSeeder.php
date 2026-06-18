@@ -23,8 +23,13 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // Disable FK checks for SQLite to allow truncate-cascade
-        DB::statement('PRAGMA foreign_keys = OFF');
+        $driver = DB::connection()->getDriverName();
+        $usesSqlitePragma = $driver === 'sqlite';
+
+        // Disable FK checks only for SQLite to allow truncate-cascade.
+        if ($usesSqlitePragma) {
+            DB::statement('PRAGMA foreign_keys = OFF');
+        }
 
         DB::table('exam_answers')->truncate();
         DB::table('exam_attempts')->truncate();
@@ -45,7 +50,9 @@ class DatabaseSeeder extends Seeder
         $this->seedAnnouncements();
         $this->seedSchoolSettings();
 
-        DB::statement('PRAGMA foreign_keys = ON');
+        if ($usesSqlitePragma) {
+            DB::statement('PRAGMA foreign_keys = ON');
+        }
     }
 
     private function seedUsers(): void

@@ -7,7 +7,7 @@ public final class Constants {
      * Keep the Android OAuth client in Google Console with package com.studentflow.app
      * and the app signing SHA-1, but do not put the Android client ID here.
      */
-    public static final String GOOGLE_WEB_CLIENT_ID = "919040220334-psvoce66g4mcim0csum12mujhlmqk6oe.apps.googleusercontent.com";
+    public static final String GOOGLE_WEB_CLIENT_ID = "919040220334-t58kckj5vih61ph3070r60obuiap0bkl.apps.googleusercontent.com";
     public static final String GITHUB_CLIENT_ID = "Ov23lipHaQtpSjuQyWmi";
     public static final String GITHUB_REDIRECT_URI = API_BASE_URL + "auth/github/callback";
 
