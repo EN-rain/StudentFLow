@@ -570,6 +570,7 @@
                             <li class="nav-item"><a class="nav-link {{ request()->is('attendance*') ? 'active' : '' }}" href="/attendance"><i class="bi bi-check2-square"></i> Attendance</a></li>
                             <li class="nav-item"><a class="nav-link {{ request()->is('grades*') ? 'active' : '' }}" href="/grades"><i class="bi bi-clipboard-data"></i> Grades</a></li>
                             <li class="nav-item"><a class="nav-link {{ request()->is('assignments*') ? 'active' : '' }}" href="/assignments"><i class="bi bi-journal-text"></i> Assignments</a></li>
+                            <li class="nav-item"><a class="nav-link {{ request()->is('exams*') ? 'active' : '' }}" href="/exams"><i class="bi bi-ui-checks-grid"></i> Exams</a></li>
                             <li class="nav-item"><a class="nav-link {{ request()->is('announcements*') ? 'active' : '' }}" href="/announcements"><i class="bi bi-megaphone"></i> Announcements</a></li>
                             <li class="nav-item"><a class="nav-link {{ request()->is('reports*') ? 'active' : '' }}" href="/reports"><i class="bi bi-file-earmark-bar-graph"></i> Reports</a></li>
                             @if (auth()->user()->isAdmin())

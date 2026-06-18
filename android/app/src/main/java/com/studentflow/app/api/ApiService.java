@@ -172,6 +172,9 @@ public interface ApiService {
     @PATCH("join-requests/{requestId}")
     Call<JsonObject> reviewClassJoinRequest(@Path("requestId") int requestId, @Body JsonObject request);
 
+    @POST("student/exams/{attemptId}/start")
+    Call<JsonObject> startStudentExam(@Path("attemptId") int attemptId);
+
     @POST("student/exams/{attemptId}/submit")
     Call<JsonObject> submitStudentExam(@Path("attemptId") int attemptId, @Body JsonObject request);
 

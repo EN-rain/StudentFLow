@@ -9,6 +9,7 @@ use App\Http\Controllers\Web\AttendanceWebController;
 use App\Http\Controllers\Web\AuthWebController;
 use App\Http\Controllers\Web\ClassWebController;
 use App\Http\Controllers\Web\DashboardController;
+use App\Http\Controllers\Web\ExamWebController;
 use App\Http\Controllers\Web\GradeWebController;
 use App\Http\Controllers\Web\MagicExamWebController;
 use App\Http\Controllers\Web\ReportController;
@@ -95,6 +96,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/assignments/{assignment}/edit', [AssignmentWebController::class, 'edit']);
         Route::put('/assignments/{assignment}', [AssignmentWebController::class, 'update']);
         Route::delete('/assignments/{assignment}', [AssignmentWebController::class, 'destroy']);
+
+        Route::get('/exams', [ExamWebController::class, 'index']);
+        Route::get('/exams/create', [ExamWebController::class, 'create']);
+        Route::post('/exams', [ExamWebController::class, 'store']);
+        Route::get('/exams/{exam}', [ExamWebController::class, 'show']);
+        Route::post('/exams/{exam}/publish', [ExamWebController::class, 'publish']);
 
         Route::get('/announcements', [AnnouncementWebController::class, 'index']);
         Route::get('/announcements/create', [AnnouncementWebController::class, 'create']);

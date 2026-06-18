@@ -409,4 +409,57 @@ class StudentFlowFeatureTest extends TestCase
         $this->assertDatabaseHas('students', ['email' => 'new.social@studentflow.local']);
         $this->assertDatabaseHas('users', ['email' => 'new.social@studentflow.local', 'role' => 'student']);
     }
+
+    public function test_student_starts_exam_through_authenticated_attempt_route(): void
+    {
+        $attempt = ExamAttempt::where('status', 'assigned')->with('student.user', 'exam.questions')->firstOrFail();
+        $attempt->exam->update([
+            'available_from' => now()->subMinute(),
+            'due_at' => now()->addHour(),
+        ]);
+        Sanctum::actingAs($attempt->student->user);
+
+        $this->postJson("/api/student/exams/{$attempt->id}/start")
+            ->assertOk()
+            ->assertJsonPath('data.id', $attempt->id)
+            ->assertJsonPath('data.status', 'in_progress')
+            ->assertJsonPath('data.exam.id', $attempt->exam_id)
+            ->assertJsonPath('data.exam.questions.0.id', $attempt->exam->questions->first()->id)
+            ->assertJsonStructure(['data' => ['remaining_seconds', 'expires_at']]);
+
+        $this->assertSame('in_progress', $attempt->fresh()->status);
+    }
+
+    public function test_teacher_can_create_and_publish_exam_from_web(): void
+    {
+        $teacher = User::where('username', 'john.reyes')->firstOrFail();
+        $class = SchoolClass::where('teacher_id', $teacher->teacher->id)->firstOrFail();
+
+        $this->actingAs($teacher)->post('/exams', [
+            'class_id' => $class->id,
+            'title' => 'Web Security Quiz',
+            'instructions' => 'Answer every question.',
+            'duration_minutes' => 30,
+            'maximum_score' => 10,
+            'status' => 'draft',
+            'questions' => [[
+                'prompt' => 'Which protocol encrypts web traffic?',
+                'type' => 'multiple_choice',
+                'choices_text' => "HTTP\nHTTPS\nFTP",
+                'correct_answer' => 'HTTPS',
+                'points' => 10,
+            ]],
+        ])->assertRedirect();
+
+        $exam = Exam::where('title', 'Web Security Quiz')->firstOrFail();
+        $this->assertSame('draft', $exam->status);
+        $this->assertSame(['HTTP', 'HTTPS', 'FTP'], $exam->questions()->firstOrFail()->choices);
+
+        $this->actingAs($teacher)->post("/exams/{$exam->id}/publish")
+            ->assertRedirect()
+            ->assertSessionHas('status');
+
+        $this->assertSame('published', $exam->fresh()->status);
+        $this->assertSame($class->students()->wherePivot('status', 'enrolled')->count(), $exam->attempts()->count());
+    }
 }

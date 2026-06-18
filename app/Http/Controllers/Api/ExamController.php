@@ -138,7 +138,10 @@ class ExamController extends Controller
             abort(403);
         }
 
-        return $this->start($attempt);
+        $this->start($attempt);
+        $attempt->refresh()->load('exam.questions', 'exam.schoolClass', 'student');
+
+        return response()->json(['data' => $this->attemptPayload($attempt)]);
     }
 
     public function submitAttempt(Request $request, ExamAttempt $attempt): JsonResponse
@@ -196,39 +199,7 @@ class ExamController extends Controller
             abort(422, 'Exam is not available yet.');
         }
 
-        return response()->json(['data' => [
-            'id' => $attempt->id,
-            'status' => $attempt->status,
-            'started_at' => $attempt->started_at,
-            'submitted_at' => $attempt->submitted_at,
-            'score' => $attempt->score,
-            'student' => [
-                'student_number' => $attempt->student->student_number,
-                'name' => $attempt->student->full_name,
-            ],
-            'exam' => [
-                'id' => $attempt->exam->id,
-                'title' => $attempt->exam->title,
-                'instructions' => $attempt->exam->instructions,
-                'available_from' => $attempt->exam->available_from,
-                'due_at' => $attempt->exam->due_at,
-                'duration_minutes' => $attempt->exam->duration_minutes,
-                'maximum_score' => $attempt->exam->maximum_score,
-                'class' => [
-                    'id' => $attempt->exam->schoolClass->id,
-                    'class_name' => $attempt->exam->schoolClass->class_name,
-                    'subject' => $attempt->exam->schoolClass->subject,
-                ],
-                'questions' => $attempt->exam->questions->map(fn ($question) => [
-                    'id' => $question->id,
-                    'prompt' => $question->prompt,
-                    'type' => $question->type,
-                    'choices' => $question->choices,
-                    'points' => $question->points,
-                    'sort_order' => $question->sort_order,
-                ])->values(),
-            ],
-        ]]);
+        return response()->json(['data' => $this->attemptPayload($attempt)]);
     }
 
     public function magicSubmit(Request $request, string $token): JsonResponse
@@ -260,6 +231,53 @@ class ExamController extends Controller
         }
 
         return response()->json(['data' => $attempt->fresh()]);
+    }
+
+    private function attemptPayload(ExamAttempt $attempt): array
+    {
+        $expiresAt = null;
+        if ($attempt->started_at && $attempt->exam->duration_minutes) {
+            $expiresAt = $attempt->started_at->copy()->addMinutes($attempt->exam->duration_minutes);
+        }
+        if ($attempt->exam->due_at && (! $expiresAt || $attempt->exam->due_at->lessThan($expiresAt))) {
+            $expiresAt = $attempt->exam->due_at;
+        }
+
+        return [
+            'id' => $attempt->id,
+            'status' => $attempt->status,
+            'started_at' => $attempt->started_at,
+            'submitted_at' => $attempt->submitted_at,
+            'score' => $attempt->score,
+            'expires_at' => $expiresAt,
+            'remaining_seconds' => $expiresAt ? max(0, now()->diffInSeconds($expiresAt, false)) : null,
+            'student' => [
+                'student_number' => $attempt->student->student_number,
+                'name' => $attempt->student->full_name,
+            ],
+            'exam' => [
+                'id' => $attempt->exam->id,
+                'title' => $attempt->exam->title,
+                'instructions' => $attempt->exam->instructions,
+                'available_from' => $attempt->exam->available_from,
+                'due_at' => $attempt->exam->due_at,
+                'duration_minutes' => $attempt->exam->duration_minutes,
+                'maximum_score' => $attempt->exam->maximum_score,
+                'class' => [
+                    'id' => $attempt->exam->schoolClass->id,
+                    'class_name' => $attempt->exam->schoolClass->class_name,
+                    'subject' => $attempt->exam->schoolClass->subject,
+                ],
+                'questions' => $attempt->exam->questions->map(fn ($question) => [
+                    'id' => $question->id,
+                    'prompt' => $question->prompt,
+                    'type' => $question->type,
+                    'choices' => $question->choices,
+                    'points' => $question->points,
+                    'sort_order' => $question->sort_order,
+                ])->values(),
+            ],
+        ];
     }
 
     private function authorizeExam(Request $request, Exam $exam): void

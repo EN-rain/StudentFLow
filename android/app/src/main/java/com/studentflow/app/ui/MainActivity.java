@@ -18,6 +18,7 @@ import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.navigation.NavigationView;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.studentflow.app.BuildConfig;
 import com.studentflow.app.R;
 import com.studentflow.app.api.ApiClient;
 import com.studentflow.app.data.TokenStore;
@@ -139,6 +140,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.getMenu().findItem(R.id.nav_classes).setTitle(student ? "My Classes" : "Classes");
         navigationView.getMenu().findItem(R.id.nav_assignments).setTitle(student ? "My Assignments" : "Assignments");
         navigationView.getMenu().findItem(R.id.nav_attendance).setTitle(student ? "My Attendance" : "Attendance");
+        navigationView.getMenu().findItem(R.id.nav_qa_tests).setVisible(BuildConfig.DEBUG && isAdmin());
     }
 
     private void configureHeader(NavigationView navigationView) {
@@ -158,9 +160,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private boolean isStudent() {
+        return hasRole("student");
+    }
+
+    private boolean isAdmin() {
+        return hasRole("admin");
+    }
+
+    private boolean hasRole(String expectedRole) {
         try {
             String json = tokenStore.getUserJson();
-            return json != null && JsonParser.parseString(json).getAsJsonObject().get("role").getAsString().equals("student");
+            return json != null
+                    && expectedRole.equals(JsonParser.parseString(json).getAsJsonObject().get("role").getAsString());
         } catch (RuntimeException e) {
             return false;
         }
