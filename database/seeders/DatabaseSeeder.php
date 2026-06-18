@@ -44,9 +44,14 @@ class DatabaseSeeder extends Seeder
         DB::table('exam_questions')->truncate();
         DB::table('exams')->truncate();
         DB::table('activity_logs')->truncate();
+
+        // PostgreSQL implements truncate() with CASCADE. Since users.student_id
+        // references students and teachers.user_id references users, truncating
+        // students after creating users/teachers deletes those new parent rows.
+        // Seed students first, then rebuild users and teachers from their IDs.
+        $this->seedStudents();
         $this->seedUsers();
         $this->seedTeachers();
-        $this->seedStudents();
         $this->seedClasses();
         $this->seedEnrollments();
         $this->seedAttendance();
