@@ -16,6 +16,7 @@ use App\Models\SchoolSetting;
 use App\Models\Student;
 use App\Models\Teacher;
 use App\Models\User;
+use App\Support\StudentUsername;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -149,7 +150,7 @@ class DatabaseSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'username' => '2026-0001',
+                'username' => 'aaronvillanueva001',
                 'name' => 'Aaron Miguel Villanueva',
                 'email' => 'aaron.villanueva@studentflow.local',
                 'password' => Hash::make($this->seedPassword('STUDENTFLOW_SEED_STUDENT_PASSWORD')),
@@ -167,7 +168,7 @@ class DatabaseSeeder extends Seeder
                 $student = Student::where('student_number', sprintf('2026-%04d', $number))->firstOrFail();
 
                 return [
-                    'username' => $student->student_number,
+                    'username' => StudentUsername::fromStudent($student),
                     'name' => $student->full_name,
                     'email' => $student->email,
                     'password' => Hash::make($this->seedPassword('STUDENTFLOW_SEED_STUDENT_PASSWORD')),

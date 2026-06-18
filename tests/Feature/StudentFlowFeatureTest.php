@@ -293,8 +293,8 @@ class StudentFlowFeatureTest extends TestCase
 
     public function test_verified_student_can_request_class_and_teacher_can_approve(): void
     {
-        $verified = User::where('username', '2026-0001')->firstOrFail();
-        $unverified = User::where('username', '2026-0002')->firstOrFail();
+        $verified = User::where('username', 'aaronvillanueva001')->firstOrFail();
+        $unverified = User::where('username', 'biancaramos002')->firstOrFail();
         $class = SchoolClass::where('class_name', 'BSIT 1B')->firstOrFail();
 
         Sanctum::actingAs($unverified);

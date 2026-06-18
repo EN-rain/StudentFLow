@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Student;
 use App\Models\User;
+use App\Support\StudentUsername;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -38,7 +39,7 @@ class AuthController extends Controller
             ]);
 
             $user = User::create([
-                'username' => $student->student_number,
+                'username' => StudentUsername::fromStudent($student),
                 'name' => $student->full_name,
                 'email' => $student->email,
                 'password' => Hash::make($payload['password']),

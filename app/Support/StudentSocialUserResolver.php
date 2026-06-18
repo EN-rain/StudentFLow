@@ -35,7 +35,7 @@ class StudentSocialUserResolver
         $user = User::where('student_id', $student->id)->orWhere('email', $email)->first();
         if (! $user) {
             $user = User::create([
-                'username' => $student->student_number,
+                'username' => StudentUsername::fromStudent($student),
                 'name' => $student->full_name,
                 'email' => $email,
                 'password' => Hash::make(Str::random(48)),
