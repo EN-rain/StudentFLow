@@ -23,6 +23,10 @@ class SeedIfEmpty extends Command
         Artisan::call('db:seed', ['--force' => true]);
         $this->output->write(Artisan::output());
 
+        if (blank(env('STUDENTFLOW_SEED_ADMIN_PASSWORD')) || blank(env('STUDENTFLOW_SEED_TEACHER_PASSWORD'))) {
+            $this->warn('Seeded accounts were created without fixed default passwords. Set STUDENTFLOW_SEED_ADMIN_PASSWORD and STUDENTFLOW_SEED_TEACHER_PASSWORD before seeding if you need known bootstrap credentials.');
+        }
+
         return self::SUCCESS;
     }
 }

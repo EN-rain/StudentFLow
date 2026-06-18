@@ -1,6 +1,8 @@
 param(
     [string]$BaseUrl = "http://127.0.0.1:8000",
-    [string]$Php = "C:\php\php.exe"
+    [string]$Php = "C:\php\php.exe",
+    [string]$AdminPassword = $env:STUDENTFLOW_SEED_ADMIN_PASSWORD,
+    [string]$TeacherPassword = $env:STUDENTFLOW_SEED_TEACHER_PASSWORD
 )
 
 $ErrorActionPreference = "Stop"
@@ -65,11 +67,15 @@ function Invoke-Api {
 }
 
 try {
-    $adminLogin = Invoke-Api POST "/api/auth/login" @{ username = "admin"; password = "Admin123!" }
+    if ([string]::IsNullOrWhiteSpace($AdminPassword) -or [string]::IsNullOrWhiteSpace($TeacherPassword)) {
+        throw "Set STUDENTFLOW_SEED_ADMIN_PASSWORD and STUDENTFLOW_SEED_TEACHER_PASSWORD before running qa-api.ps1."
+    }
+
+    $adminLogin = Invoke-Api POST "/api/auth/login" @{ username = "admin"; password = $AdminPassword }
     $adminToken = $adminLogin.Json.token
     Add-Result "API valid admin login" ($adminLogin.Status -eq 200 -and $adminToken) "status=$($adminLogin.Status)"
 
-    $teacherLogin = Invoke-Api POST "/api/auth/login" @{ username = "john.reyes"; password = "Teacher123!" }
+    $teacherLogin = Invoke-Api POST "/api/auth/login" @{ username = "john.reyes"; password = $TeacherPassword }
     $teacherToken = $teacherLogin.Json.token
     Add-Result "API valid teacher login" ($teacherLogin.Status -eq 200 -and $teacherToken) "status=$($teacherLogin.Status)"
 

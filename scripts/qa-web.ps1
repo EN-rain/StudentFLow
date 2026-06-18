@@ -1,5 +1,7 @@
 param(
-    [string]$BaseUrl = "http://127.0.0.1:8000"
+    [string]$BaseUrl = "http://127.0.0.1:8000",
+    [string]$AdminPassword = $env:STUDENTFLOW_SEED_ADMIN_PASSWORD,
+    [string]$TeacherPassword = $env:STUDENTFLOW_SEED_TEACHER_PASSWORD
 )
 
 $ErrorActionPreference = "Stop"
@@ -58,7 +60,11 @@ function Get-Web {
 }
 
 try {
-    $admin = New-WebLogin "admin" "Admin123!"
+    if ([string]::IsNullOrWhiteSpace($AdminPassword) -or [string]::IsNullOrWhiteSpace($TeacherPassword)) {
+        throw "Set STUDENTFLOW_SEED_ADMIN_PASSWORD and STUDENTFLOW_SEED_TEACHER_PASSWORD before running qa-web.ps1."
+    }
+
+    $admin = New-WebLogin "admin" $AdminPassword
     $adminDashboard = Get-Web $admin.Session "/dashboard"
     Add-Result "Admin web login" ($adminDashboard.StatusCode -eq 200 -and $adminDashboard.Content -match "Administrator Dashboard") "status=$($adminDashboard.StatusCode)"
 
@@ -79,7 +85,7 @@ try {
     $csv = Get-Web $admin.Session "/reports/grades/csv?class_id=1"
     Add-Result "Grades CSV export" ($csv.StatusCode -eq 200 -and $csv.Content -match "Student") "status=$($csv.StatusCode)"
 
-    $teacher = New-WebLogin "john.reyes" "Teacher123!"
+    $teacher = New-WebLogin "john.reyes" $TeacherPassword
     $teacherDashboard = Get-Web $teacher.Session "/dashboard"
     Add-Result "Teacher web login" ($teacherDashboard.StatusCode -eq 200 -and $teacherDashboard.Content -match "Teacher Dashboard") "status=$($teacherDashboard.StatusCode)"
     Add-Result "Teacher nav hides admin modules" ($teacherDashboard.Content -notmatch "/admin/teachers" -and $teacherDashboard.Content -notmatch "/admin/settings" -and $teacherDashboard.Content -notmatch "/admin/activity-logs")

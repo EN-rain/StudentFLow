@@ -17,8 +17,10 @@ use App\Models\Teacher;
 use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
@@ -37,12 +39,14 @@ class StudentFlowFeatureTest extends TestCase
     {
         Notification::fake();
         $admin = User::where('username', 'admin')->first();
+        $password = Str::password(24);
+        $admin->forceFill(['password' => Hash::make($password)])->save();
 
-        $this->post('/login', ['username' => 'admin', 'password' => 'Admin123!'])
+        $this->post('/login', ['username' => 'admin', 'password' => $password])
             ->assertRedirect('/dashboard');
 
         $admin->update(['status' => 'disabled']);
-        $this->post('/login', ['username' => 'admin', 'password' => 'Admin123!'])
+        $this->post('/login', ['username' => 'admin', 'password' => $password])
             ->assertSessionHasErrors('username');
         $admin->update(['status' => 'active']);
 
@@ -54,13 +58,14 @@ class StudentFlowFeatureTest extends TestCase
     public function test_admin_can_manage_teacher_settings_and_logs(): void
     {
         $admin = User::where('username', 'admin')->first();
+        $password = Str::password(24);
 
         $this->actingAs($admin)->post('/admin/teachers', [
             'username' => 'new.teacher',
             'name' => 'New Teacher',
             'email' => 'new.teacher@studentflow.local',
-            'password' => 'Teacher123!',
-            'password_confirmation' => 'Teacher123!',
+            'password' => $password,
+            'password_confirmation' => $password,
             'status' => 'active',
             'employee_number' => 'TCH-2026-099',
             'first_name' => 'New',

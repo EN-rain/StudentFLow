@@ -19,6 +19,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
@@ -71,7 +72,7 @@ class DatabaseSeeder extends Seeder
                 'username' => 'admin',
                 'name' => 'Maria Santos',
                 'email' => 'admin@studentflow.local',
-                'password' => Hash::make('Admin123!'),
+                'password' => Hash::make($this->seedPassword('STUDENTFLOW_SEED_ADMIN_PASSWORD')),
                 'role' => 'admin',
                 'status' => 'active',
                 'created_at' => now(),
@@ -81,7 +82,7 @@ class DatabaseSeeder extends Seeder
                 'username' => 'john.reyes',
                 'name' => 'John Michael Reyes',
                 'email' => 'john.reyes@studentflow.local',
-                'password' => Hash::make('Teacher123!'),
+                'password' => Hash::make($this->seedPassword('STUDENTFLOW_SEED_TEACHER_PASSWORD')),
                 'role' => 'teacher',
                 'status' => 'active',
                 'created_at' => now(),
@@ -91,7 +92,7 @@ class DatabaseSeeder extends Seeder
                 'username' => 'angela.cruz',
                 'name' => 'Angela Marie Cruz',
                 'email' => 'angela.cruz@studentflow.local',
-                'password' => Hash::make('Teacher123!'),
+                'password' => Hash::make($this->seedPassword('STUDENTFLOW_SEED_TEACHER_PASSWORD')),
                 'role' => 'teacher',
                 'status' => 'active',
                 'created_at' => now(),
@@ -101,7 +102,7 @@ class DatabaseSeeder extends Seeder
                 'username' => 'roberto.delapena',
                 'name' => 'Roberto Dela PeÃƒÂ±a',
                 'email' => 'roberto.delapena@studentflow.local',
-                'password' => Hash::make('Teacher123!'),
+                'password' => Hash::make($this->seedPassword('STUDENTFLOW_SEED_TEACHER_PASSWORD')),
                 'role' => 'teacher',
                 'status' => 'active',
                 'created_at' => now(),
@@ -663,6 +664,17 @@ class DatabaseSeeder extends Seeder
         }
 
         return (int) $classId;
+    }
+
+    private function seedPassword(string $envKey): string
+    {
+        $value = env($envKey);
+
+        if (is_string($value) && trim($value) !== '') {
+            return $value;
+        }
+
+        return Str::password(32);
     }
 }
 

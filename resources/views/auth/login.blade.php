@@ -36,13 +36,6 @@
             <div class="text-center mt-3">
                 <a href="/forgot-password" class="text-decoration-none">Forgot password?</a>
             </div>
-
-            <hr>
-            <div class="small text-muted">
-                <strong>Demo credentials:</strong><br>
-                Admin: <code>admin</code> / <code>Admin123!</code><br>
-                Teacher: <code>john.reyes</code> / <code>Teacher123!</code>
-            </div>
         </div>
     </div>
 </div>

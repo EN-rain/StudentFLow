@@ -11,7 +11,7 @@ This directory contains a native Java Android scaffold for StudentFlow.
 
 Open the `android/` directory in Android Studio. The default build points to the Render backend. For local emulator testing, temporarily set `Constants.API_BASE_URL` to `http://10.0.2.2:8000/api/`.
 
-Seeded teacher credentials from the backend README work against `/api/auth/login`, for example `john.reyes` / `Teacher123!`.
+Teacher password login works against `/api/auth/login`, but bootstrap passwords now come from backend env variables or are randomized during seeding. Set `STUDENTFLOW_SEED_TEACHER_PASSWORD` before seeding if you need a known teacher password for QA.
 
 Student login is role-aware and uses backend social endpoints:
 

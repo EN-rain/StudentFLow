@@ -28,12 +28,16 @@ Open `http://127.0.0.1:8000`.
 
 ## Seeded Accounts
 
-| Role | Username | Password |
-| --- | --- | --- |
-| Admin | `admin` | `Admin123!` |
-| Teacher | `john.reyes` | `Teacher123!` |
-| Teacher | `angela.cruz` | `Teacher123!` |
-| Teacher | `roberto.delapena` | `Teacher123!` |
+The demo seeder creates the bootstrap users `admin`, `john.reyes`, `angela.cruz`, and `roberto.delapena`, but it does not ship with fixed passwords.
+
+Set these before `artisan migrate --seed` if you need known bootstrap credentials:
+
+```env
+STUDENTFLOW_SEED_ADMIN_PASSWORD=change-this-admin-password
+STUDENTFLOW_SEED_TEACHER_PASSWORD=change-this-teacher-password
+```
+
+If those variables are left blank, StudentFlow generates random passwords during seeding.
 
 ## Implemented Scope
 
