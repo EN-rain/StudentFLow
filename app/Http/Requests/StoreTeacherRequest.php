@@ -19,7 +19,6 @@ class StoreTeacherRequest extends FormRequest
         $teacherId = $teacher?->id;
 
         $rules = [
-            'username' => ['required', 'string', 'max:64', Rule::unique('users', 'username')->ignore($userId)],
             'name' => 'required|string|max:191',
             'email' => ['required', 'email', 'max:191', Rule::unique('users', 'email')->ignore($userId)],
             'status' => 'required|in:active,disabled',
@@ -30,12 +29,6 @@ class StoreTeacherRequest extends FormRequest
             'department' => 'nullable|string|max:128',
             'contact_number' => 'nullable|string|max:32',
         ];
-
-        if ($this->isMethod('post')) {
-            $rules['password'] = 'required|string|min:8|confirmed';
-        } else {
-            $rules['password'] = 'nullable|string|min:8|confirmed';
-        }
 
         return $rules;
     }

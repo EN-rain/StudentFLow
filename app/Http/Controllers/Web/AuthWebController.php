@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class AuthWebController extends Controller
@@ -73,6 +75,47 @@ class AuthWebController extends Controller
     public function showResetPassword(Request $request, string $token)
     {
         return view('auth.reset-password', ['token' => $token, 'email' => $request->query('email')]);
+    }
+
+    public function showTeacherSetup(Request $request, string $token)
+    {
+        return view('auth.teacher-setup', ['token' => $token, 'email' => $request->query('email')]);
+    }
+
+    public function completeTeacherSetup(Request $request)
+    {
+        $payload = $request->validate([
+            'token' => 'required|string',
+            'email' => 'required|email',
+            'username' => ['required', 'string', 'max:64', Rule::unique('users', 'username')],
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $status = Password::reset([
+            'token' => $payload['token'],
+            'email' => $payload['email'],
+            'password' => $payload['password'],
+            'password_confirmation' => $request->string('password_confirmation')->toString(),
+        ], function (User $user, string $password) use ($payload) {
+            if (! $user->isTeacher()) {
+                throw ValidationException::withMessages([
+                    'email' => 'Only teacher invite links can be used on this form.',
+                ]);
+            }
+
+            $user->forceFill([
+                'username' => $payload['username'],
+                'password' => Hash::make($password),
+                'remember_token' => Str::random(60),
+                'status' => 'active',
+            ])->save();
+        });
+
+        if ($status !== Password::PASSWORD_RESET) {
+            throw ValidationException::withMessages(['email' => __($status)]);
+        }
+
+        return redirect('/login')->with('status', 'Teacher account setup complete. You can now sign in.');
     }
 
     public function resetPassword(Request $request)

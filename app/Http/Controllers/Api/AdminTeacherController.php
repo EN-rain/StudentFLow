@@ -11,6 +11,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
 
 class AdminTeacherController extends Controller
 {
@@ -22,23 +24,24 @@ class AdminTeacherController extends Controller
 
     public function store(StoreTeacherRequest $request): JsonResponse
     {
-        $teacher = DB::transaction(function () use ($request) {
+        [$teacher, $setupUrl] = DB::transaction(function () use ($request) {
             $user = User::create([
-                'username' => $request->username,
+                'username' => $this->pendingTeacherUsername(),
                 'name' => $request->name,
                 'email' => $request->email,
-                'password' => Hash::make($request->password),
+                'password' => Hash::make(Str::random(48)),
                 'role' => 'teacher',
                 'status' => $request->status,
             ]);
 
-            return Teacher::create($request->safe()->except(['username', 'name', 'email', 'password', 'password_confirmation', 'status']) + [
+            $teacher = Teacher::create($request->safe()->except(['name', 'email', 'status']) + [
                 'user_id' => $user->id,
             ]);
+            return [$teacher, $this->teacherSetupUrl($user)];
         });
 
-        ActivityLogger::log($request, 'teacher.created', $teacher);
-        return response()->json(['data' => $teacher->load('user')], 201);
+        ActivityLogger::log($request, 'teacher.created', $teacher, ['setup_url' => $setupUrl]);
+        return response()->json(['data' => $teacher->load('user'), 'setup_url' => $setupUrl], 201);
     }
 
     public function show(Teacher $teacher): JsonResponse
@@ -50,16 +53,12 @@ class AdminTeacherController extends Controller
     {
         DB::transaction(function () use ($request, $teacher) {
             $userData = [
-                'username' => $request->username,
                 'name' => $request->name,
                 'email' => $request->email,
                 'status' => $request->status,
             ];
-            if ($request->filled('password')) {
-                $userData['password'] = Hash::make($request->password);
-            }
             $teacher->user->update($userData);
-            $teacher->update($request->safe()->except(['username', 'name', 'email', 'password', 'password_confirmation', 'status']));
+            $teacher->update($request->safe()->except(['name', 'email', 'status']));
         });
 
         ActivityLogger::log($request, 'teacher.updated', $teacher);
@@ -72,5 +71,29 @@ class AdminTeacherController extends Controller
         $teacher->user->update(['status' => $payload['status']]);
         ActivityLogger::log($request, 'teacher.status_changed', $teacher, ['status' => $payload['status']]);
         return response()->json(['data' => $teacher->load('user')]);
+    }
+
+    public function invite(Request $request, Teacher $teacher): JsonResponse
+    {
+        $setupUrl = $this->teacherSetupUrl($teacher->user);
+        ActivityLogger::log($request, 'teacher.invite_regenerated', $teacher, ['setup_url' => $setupUrl]);
+
+        return response()->json(['data' => $teacher->load('user'), 'setup_url' => $setupUrl]);
+    }
+
+    private function pendingTeacherUsername(): string
+    {
+        do {
+            $candidate = User::TEACHER_INVITE_PREFIX . Str::lower(Str::random(12));
+        } while (User::where('username', $candidate)->exists());
+
+        return $candidate;
+    }
+
+    private function teacherSetupUrl(User $user): string
+    {
+        $token = Password::broker()->createToken($user);
+
+        return url('/teacher/setup/' . $token . '?email=' . urlencode($user->email));
     }
 }

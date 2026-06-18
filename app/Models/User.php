@@ -11,6 +11,8 @@ class User extends Authenticatable
 {
     use HasFactory, HasApiTokens, Notifiable;
 
+    public const TEACHER_INVITE_PREFIX = 'invite-teacher-';
+
     protected $fillable = [
         'username',
         'name',
@@ -68,5 +70,11 @@ class User extends Authenticatable
     public function isStudent(): bool
     {
         return $this->role === 'student';
+    }
+
+    public function hasPendingTeacherSetup(): bool
+    {
+        return $this->role === 'teacher'
+            && str_starts_with($this->username, self::TEACHER_INVITE_PREFIX);
     }
 }

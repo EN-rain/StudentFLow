@@ -23,6 +23,8 @@ Route::post('/exam/magic/{token}', [MagicExamWebController::class, 'submit']);
 Route::get('/login', [AuthWebController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthWebController::class, 'login']);
 Route::post('/logout', [AuthWebController::class, 'logout'])->name('logout');
+Route::get('/teacher/setup/{token}', [AuthWebController::class, 'showTeacherSetup'])->name('teacher.setup');
+Route::post('/teacher/setup', [AuthWebController::class, 'completeTeacherSetup']);
 Route::get('/forgot-password', [AuthWebController::class, 'showForgotPassword']);
 Route::post('/forgot-password', [AuthWebController::class, 'forgotPassword']);
 Route::get('/reset-password/{token}', [AuthWebController::class, 'showResetPassword'])->name('password.reset');
@@ -41,6 +43,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/teachers/{teacher}/edit', [AdminTeacherController::class, 'edit']);
         Route::put('/teachers/{teacher}', [AdminTeacherController::class, 'update']);
         Route::patch('/teachers/{teacher}/status', [AdminTeacherController::class, 'setStatus']);
+        Route::post('/teachers/{teacher}/invite', [AdminTeacherController::class, 'invite']);
         Route::get('/activity-logs', [AdminActivityLogController::class, 'index']);
         Route::get('/activity-logs/csv', [AdminActivityLogController::class, 'csv']);
         Route::get('/settings', [AdminSchoolSettingController::class, 'index']);

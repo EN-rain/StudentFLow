@@ -10,6 +10,8 @@ use App\Support\ActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
 
 class AdminTeacherController extends Controller
 {
@@ -36,23 +38,25 @@ class AdminTeacherController extends Controller
 
     public function store(StoreTeacherRequest $request)
     {
-        $teacher = DB::transaction(function () use ($request) {
+        [$teacher, $setupUrl] = DB::transaction(function () use ($request) {
             $user = User::create([
-                'username' => $request->username,
+                'username' => $this->pendingTeacherUsername(),
                 'name' => $request->name,
                 'email' => $request->email,
-                'password' => Hash::make($request->password),
+                'password' => Hash::make(Str::random(48)),
                 'role' => 'teacher',
                 'status' => $request->status,
             ]);
 
-            return Teacher::create($request->safe()->except(['username', 'name', 'email', 'password', 'password_confirmation', 'status']) + [
+            $teacher = Teacher::create($request->safe()->except(['name', 'email', 'status']) + [
                 'user_id' => $user->id,
             ]);
+
+            return [$teacher, $this->teacherSetupUrl($user)];
         });
 
-        ActivityLogger::log($request, 'teacher.created', $teacher);
-        return redirect('/admin/teachers')->with('status', 'Teacher created.');
+        ActivityLogger::log($request, 'teacher.created', $teacher, ['setup_url' => $setupUrl]);
+        return redirect('/admin/teachers')->with('status', 'Teacher created. Share the setup link below.')->with('teacher_setup_url', $setupUrl);
     }
 
     public function edit(Teacher $teacher)
@@ -65,20 +69,24 @@ class AdminTeacherController extends Controller
     {
         DB::transaction(function () use ($request, $teacher) {
             $userData = [
-                'username' => $request->username,
                 'name' => $request->name,
                 'email' => $request->email,
                 'status' => $request->status,
             ];
-            if ($request->filled('password')) {
-                $userData['password'] = Hash::make($request->password);
-            }
             $teacher->user->update($userData);
-            $teacher->update($request->safe()->except(['username', 'name', 'email', 'password', 'password_confirmation', 'status']));
+            $teacher->update($request->safe()->except(['name', 'email', 'status']));
         });
 
         ActivityLogger::log($request, 'teacher.updated', $teacher);
         return redirect('/admin/teachers')->with('status', 'Teacher updated.');
+    }
+
+    public function invite(Request $request, Teacher $teacher)
+    {
+        $setupUrl = $this->teacherSetupUrl($teacher->user);
+        ActivityLogger::log($request, 'teacher.invite_regenerated', $teacher, ['setup_url' => $setupUrl]);
+
+        return back()->with('status', 'Teacher setup link regenerated.')->with('teacher_setup_url', $setupUrl);
     }
 
     public function setStatus(Request $request, Teacher $teacher)
@@ -87,5 +95,21 @@ class AdminTeacherController extends Controller
         $teacher->user->update(['status' => $payload['status']]);
         ActivityLogger::log($request, 'teacher.status_changed', $teacher, ['status' => $payload['status']]);
         return back()->with('status', 'Teacher account status updated.');
+    }
+
+    private function pendingTeacherUsername(): string
+    {
+        do {
+            $candidate = User::TEACHER_INVITE_PREFIX . Str::lower(Str::random(12));
+        } while (User::where('username', $candidate)->exists());
+
+        return $candidate;
+    }
+
+    private function teacherSetupUrl(User $user): string
+    {
+        $token = Password::broker()->createToken($user);
+
+        return url('/teacher/setup/' . $token . '?email=' . urlencode($user->email));
     }
 }

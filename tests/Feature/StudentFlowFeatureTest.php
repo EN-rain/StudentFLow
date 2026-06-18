@@ -58,14 +58,9 @@ class StudentFlowFeatureTest extends TestCase
     public function test_admin_can_manage_teacher_settings_and_logs(): void
     {
         $admin = User::where('username', 'admin')->first();
-        $password = Str::password(24);
-
-        $this->actingAs($admin)->post('/admin/teachers', [
-            'username' => 'new.teacher',
+        $response = $this->actingAs($admin)->post('/admin/teachers', [
             'name' => 'New Teacher',
             'email' => 'new.teacher@studentflow.local',
-            'password' => $password,
-            'password_confirmation' => $password,
             'status' => 'active',
             'employee_number' => 'TCH-2026-099',
             'first_name' => 'New',
@@ -73,10 +68,28 @@ class StudentFlowFeatureTest extends TestCase
             'last_name' => 'Teacher',
             'department' => 'Science',
             'contact_number' => '09000000000',
-        ])->assertRedirect('/admin/teachers');
+        ])->assertRedirect('/admin/teachers')->assertSessionHas('teacher_setup_url');
 
         $teacher = Teacher::where('employee_number', 'TCH-2026-099')->first();
         $this->assertNotNull($teacher);
+        $this->assertTrue($teacher->user->hasPendingTeacherSetup());
+
+        $setupUrl = $response->getSession()->get('teacher_setup_url');
+        $parts = parse_url($setupUrl);
+        $token = basename($parts['path'] ?? '');
+        $teacherPassword = Str::password(24);
+
+        $this->post('/teacher/setup', [
+            'token' => $token,
+            'email' => $teacher->user->email,
+            'username' => 'new.teacher',
+            'password' => $teacherPassword,
+            'password_confirmation' => $teacherPassword,
+        ])->assertRedirect('/login');
+
+        $this->post('/logout');
+        $this->post('/login', ['username' => 'new.teacher', 'password' => $teacherPassword])
+            ->assertRedirect('/dashboard');
 
         $this->actingAs($admin)->patch("/admin/teachers/{$teacher->id}/status", ['status' => 'disabled'])
             ->assertRedirect();
@@ -260,6 +273,14 @@ class StudentFlowFeatureTest extends TestCase
         $this->assertSame('student', $register->json('user.role'));
         $this->assertDatabaseHas('students', ['email' => 'new.mobile@studentflow.local']);
         $this->assertDatabaseHas('users', ['email' => 'new.mobile@studentflow.local', 'role' => 'student']);
+
+        $this->postJson('/api/auth/register', [
+            'name' => 'Bad Actor',
+            'email' => 'bad.actor@studentflow.local',
+            'password' => 'Student123!',
+            'password_confirmation' => 'Student123!',
+            'role' => 'teacher',
+        ])->assertUnprocessable()->assertJsonValidationErrors('role');
 
         $social = $this->postJson('/api/auth/google', [
             'id_token' => 'test-google:new.social@studentflow.local',

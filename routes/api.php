@@ -56,6 +56,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/teachers/{teacher}', [AdminTeacherController::class, 'show']);
         Route::put('/teachers/{teacher}', [AdminTeacherController::class, 'update']);
         Route::patch('/teachers/{teacher}/status', [AdminTeacherController::class, 'setStatus']);
+        Route::post('/teachers/{teacher}/invite', [AdminTeacherController::class, 'invite']);
         Route::get('/settings', [AdminSchoolSettingController::class, 'index']);
         Route::put('/settings', [AdminSchoolSettingController::class, 'update']);
         Route::get('/activity-logs', [AdminActivityLogController::class, 'index']);

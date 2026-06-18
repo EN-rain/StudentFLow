@@ -1,10 +1,6 @@
 @csrf
 <div class="row g-3">
     <div class="col-md-4">
-        <label class="form-label">Username</label>
-        <input name="username" class="form-control" value="{{ old('username', $teacher->user->username ?? '') }}" required>
-    </div>
-    <div class="col-md-4">
         <label class="form-label">Display Name</label>
         <input name="name" class="form-control" value="{{ old('name', $teacher->user->name ?? '') }}" required>
     </div>
@@ -44,15 +40,12 @@
             @endforeach
         </select>
     </div>
-    <div class="col-md-4">
-        <label class="form-label">{{ isset($teacher) ? 'New Password' : 'Password' }}</label>
-        <input type="password" name="password" class="form-control" {{ isset($teacher) ? '' : 'required' }}>
-    </div>
-    <div class="col-md-4">
-        <label class="form-label">Confirm Password</label>
-        <input type="password" name="password_confirmation" class="form-control" {{ isset($teacher) ? '' : 'required' }}>
-    </div>
 </div>
+@if (! isset($teacher))
+    <div class="alert alert-info mt-4 mb-0">
+        The teacher will receive a setup link. They choose their own username and password from that link.
+    </div>
+@endif
 <div class="mt-4">
     <button class="btn btn-primary"><i class="bi bi-check-lg"></i> Save</button>
     <a href="/admin/teachers" class="btn btn-outline-secondary">Cancel</a>
