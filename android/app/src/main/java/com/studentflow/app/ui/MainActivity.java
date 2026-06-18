@@ -92,6 +92,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toolbar.setTitle(title);
         toolbar.setSubtitle(subtitle);
         getSupportFragmentManager().beginTransaction()
+                .setCustomAnimations(
+                        R.anim.sf_enter,
+                        R.anim.sf_exit,
+                        R.anim.sf_pop_enter,
+                        R.anim.sf_pop_exit
+                )
                 .replace(R.id.contentFrame, fragment)
                 .commit();
     }
@@ -113,6 +119,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void openLogin() {
         startActivity(new Intent(this, LoginActivity.class));
+        overridePendingTransition(R.anim.sf_pop_enter, R.anim.sf_pop_exit);
         finish();
     }
 

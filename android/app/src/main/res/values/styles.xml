@@ -12,6 +12,18 @@
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowLightNavigationBar">true</item>
         <item name="android:enforceNavigationBarContrast">false</item>
+        <item name="android:windowAnimationStyle">@style/StudentFlow.ActivityAnimation</item>
+    </style>
+
+    <style name="StudentFlow.ActivityAnimation" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/sf_enter</item>
+        <item name="android:activityOpenExitAnimation">@anim/sf_exit</item>
+        <item name="android:activityCloseEnterAnimation">@anim/sf_pop_enter</item>
+        <item name="android:activityCloseExitAnimation">@anim/sf_pop_exit</item>
+        <item name="android:taskOpenEnterAnimation">@anim/sf_enter</item>
+        <item name="android:taskOpenExitAnimation">@anim/sf_exit</item>
+        <item name="android:taskCloseEnterAnimation">@anim/sf_pop_enter</item>
+        <item name="android:taskCloseExitAnimation">@anim/sf_pop_exit</item>
     </style>
 
     <style name="StudentFlow.TextInput" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">

@@ -419,6 +419,96 @@
             }
         }
 
+        @keyframes sf-page-enter {
+            from { opacity: 0; transform: translateY(12px) scale(.995); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes sf-item-enter {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        body {
+            transition: opacity 160ms ease;
+        }
+
+        body.sf-page-leaving {
+            opacity: 0;
+        }
+
+        .content-panel,
+        body > main.container {
+            animation: sf-page-enter 320ms cubic-bezier(.2,.8,.2,1) both;
+        }
+
+        .card,
+        .alert,
+        .table,
+        .page-header,
+        form,
+        .list-group-item {
+            animation: sf-item-enter 300ms cubic-bezier(.2,.8,.2,1) both;
+        }
+
+        .card,
+        .btn,
+        .nav-link,
+        .list-group-item,
+        .table tbody tr,
+        input,
+        select,
+        textarea,
+        .badge,
+        .dropdown-menu,
+        .modal-content {
+            transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease,
+                border-color 180ms ease, color 180ms ease, opacity 180ms ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 32px rgba(15, 23, 42, .10);
+        }
+
+        .btn:hover:not(:disabled),
+        .nav-link:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn:active:not(:disabled),
+        .nav-link:active {
+            transform: scale(.97);
+        }
+
+        .table tbody tr:hover {
+            transform: translateX(2px);
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            transform: translateY(-1px);
+        }
+
+        .modal.fade .modal-dialog {
+            transform: translateY(16px) scale(.98);
+            transition: transform 220ms cubic-bezier(.2,.8,.2,1), opacity 220ms ease;
+        }
+
+        .modal.show .modal-dialog {
+            transform: translateY(0) scale(1);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: .01ms !important;
+                animation-iteration-count: 1 !important;
+                scroll-behavior: auto !important;
+                transition-duration: .01ms !important;
+            }
+        }
+
         @media (max-width: 767.98px) {
             .topbar {
                 padding: 0.9rem 0.9rem 0;
@@ -508,6 +598,27 @@
     @endauth
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('click', function (event) {
+            const link = event.target.closest('a[href]');
+            if (!link || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+                return;
+            }
+
+            const url = new URL(link.href, window.location.href);
+            if (url.origin !== window.location.origin || link.target === '_blank' || link.hasAttribute('download') || url.hash) {
+                return;
+            }
+
+            event.preventDefault();
+            document.body.classList.add('sf-page-leaving');
+            window.setTimeout(() => window.location.assign(url.href), 150);
+        });
+
+        window.addEventListener('pageshow', function () {
+            document.body.classList.remove('sf-page-leaving');
+        });
+    </script>
     @stack('scripts')
 </body>
 </html>

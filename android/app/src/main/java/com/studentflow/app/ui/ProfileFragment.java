@@ -4,6 +4,7 @@ import android.content.Intent;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.studentflow.app.R;
 import com.studentflow.app.api.ApiClient;
 
 import retrofit2.Call;
@@ -19,7 +20,10 @@ public class ProfileFragment extends BaseDataFragment {
     protected void configure() {
         setHeader("Profile", "Review your account identity, access, and connected profile details.");
         addAction("Refresh", v -> load());
-        addAction("Password", v -> startActivity(new Intent(requireContext(), ChangePasswordActivity.class)));
+        addAction("Password", v -> {
+            startActivity(new Intent(requireContext(), ChangePasswordActivity.class));
+            requireActivity().overridePendingTransition(R.anim.sf_enter, R.anim.sf_exit);
+        });
         load();
     }
 

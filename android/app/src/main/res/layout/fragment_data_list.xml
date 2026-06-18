@@ -68,6 +68,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="18dp"
+            android:animateLayoutChanges="true"
+            android:layoutAnimation="@anim/sf_layout_fall_down"
             android:orientation="vertical" />
     </LinearLayout>
 </ScrollView>

@@ -35,6 +35,12 @@ public class ChangePasswordActivity extends AppCompatActivity {
         saveButton.setOnClickListener(v -> save());
     }
 
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.sf_pop_enter, R.anim.sf_pop_exit);
+    }
+
     private void save() {
         String current = text(currentInput);
         String next = text(newInput);

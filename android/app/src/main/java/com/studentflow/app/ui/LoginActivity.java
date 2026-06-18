@@ -1,10 +1,12 @@
 package com.studentflow.app.ui;
 
+import android.animation.LayoutTransition;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -82,6 +84,7 @@ public class LoginActivity extends AppCompatActivity {
         showLoginButton = findViewById(R.id.showLoginButton);
         showRegisterButton = findViewById(R.id.showRegisterButton);
         socialRow = findViewById(R.id.socialRow);
+        configureLayoutMotion();
         ImageButton googleLoginButton = findViewById(R.id.googleLoginButton);
         ImageButton githubLoginButton = findViewById(R.id.githubLoginButton);
         googleSignInClient = GoogleSignIn.getClient(this, new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -121,6 +124,17 @@ public class LoginActivity extends AppCompatActivity {
         int field = getColor(R.color.studentflow_field);
         button.setBackgroundTintList(ColorStateList.valueOf(selected ? primary : field));
         button.setTextColor(selected ? field : primary);
+    }
+
+    private void configureLayoutMotion() {
+        ViewGroup authPanel = findViewById(R.id.authPanel);
+        LayoutTransition transition = new LayoutTransition();
+        transition.enableTransitionType(LayoutTransition.CHANGING);
+        transition.setDuration(LayoutTransition.APPEARING, 220);
+        transition.setDuration(LayoutTransition.DISAPPEARING, 140);
+        transition.setDuration(LayoutTransition.CHANGE_APPEARING, 220);
+        transition.setDuration(LayoutTransition.CHANGE_DISAPPEARING, 160);
+        authPanel.setLayoutTransition(transition);
     }
 
     private void submitPrimary() {
@@ -410,6 +424,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void openMain() {
         startActivity(new Intent(this, MainActivity.class));
+        overridePendingTransition(R.anim.sf_enter, R.anim.sf_exit);
         finish();
     }
 }
