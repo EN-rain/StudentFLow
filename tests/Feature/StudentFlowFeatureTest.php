@@ -291,6 +291,18 @@ class StudentFlowFeatureTest extends TestCase
             ->assertJsonPath('data.students.0.google_email', $student->email);
     }
 
+    public function test_student_can_login_with_seeded_username_and_password(): void
+    {
+        $login = $this->postJson('/api/auth/login', [
+            'username' => 'aaronvillanueva001',
+            'password' => 'StudentPass123!',
+        ])->assertOk();
+
+        $login->assertJsonPath('user.role', 'student')
+            ->assertJsonPath('user.username', 'aaronvillanueva001');
+        $this->assertNotEmpty($login->json('token'));
+    }
+
     public function test_verified_student_can_request_class_and_teacher_can_approve(): void
     {
         $verified = User::where('username', 'aaronvillanueva001')->firstOrFail();

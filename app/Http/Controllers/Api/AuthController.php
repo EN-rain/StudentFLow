@@ -86,12 +86,6 @@ class AuthController extends Controller
             ]);
         }
 
-        if ($user->role === 'student') {
-            throw ValidationException::withMessages([
-                'username' => ['Students must sign in with Google or GitHub.'],
-            ]);
-        }
-
         if ($user->status !== 'active') {
             throw ValidationException::withMessages([
                 'username' => ['This account has been disabled. Contact an administrator.'],
