@@ -20,6 +20,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes;
 import com.google.android.gms.tasks.Task;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -272,10 +273,12 @@ public class LoginActivity extends AppCompatActivity {
             }
             submitSocial("google", idToken);
         } catch (ApiException e) {
-            if (e.getStatusCode() == 10) {
-                message.setText("Google sign-in failed: OAuth client mismatch. Use a Web client ID for Android token login and keep the Android SHA-1 client in Google Console.");
+            int statusCode = e.getStatusCode();
+            String statusName = GoogleSignInStatusCodes.getStatusCodeString(statusCode);
+            if (statusCode == 10 || statusCode == GoogleSignInStatusCodes.SIGN_IN_FAILED) {
+                message.setText("Google sign-in failed (" + statusCode + " " + statusName + "). Check package com.studentflow.app, the Android OAuth SHA-1, and that GOOGLE_WEB_CLIENT_ID is the Web client from the same Google Cloud project.");
             } else {
-                message.setText("Google sign-in failed: " + e.getStatusCode());
+                message.setText("Google sign-in failed (" + statusCode + " " + statusName + ").");
             }
         }
     }

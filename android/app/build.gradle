@@ -2,9 +2,17 @@ plugins {
     id "com.android.application"
 }
 
+def googleWebClientId = providers.gradleProperty("GOOGLE_WEB_CLIENT_ID")
+        .orElse(System.getenv("GOOGLE_WEB_CLIENT_ID") ?: "")
+        .get()
+
 android {
     namespace "com.studentflow.app"
     compileSdk 35
+
+    buildFeatures {
+        buildConfig true
+    }
 
     defaultConfig {
         applicationId "com.studentflow.app"
@@ -12,6 +20,7 @@ android {
         targetSdk 35
         versionCode 1
         versionName "0.1.0"
+        buildConfigField "String", "GOOGLE_WEB_CLIENT_ID", "\"${googleWebClientId}\""
     }
 
     compileOptions {

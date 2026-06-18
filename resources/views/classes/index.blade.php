@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Classes - StudentFlow')
 @section('content')
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-2">
         <h2 class="mb-0"><i class="bi bi-collection"></i> Classes</h2>
         @if (auth()->user()->isAdmin() || auth()->user()->isTeacher())
             <a href="/classes/create" class="btn btn-primary">
@@ -9,6 +9,10 @@
             </a>
         @endif
     </div>
+
+    @if (auth()->user()->isAdmin())
+        <p class="text-muted mb-4">These are live database records. You can edit or delete the initial demo classes here; changes are not read from the seeder during normal use.</p>
+    @endif
 
     @if (session('status'))
         <div class="alert alert-success">{{ session('status') }}</div>
