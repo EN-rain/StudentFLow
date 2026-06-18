@@ -13,7 +13,7 @@ class StudentWebController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Student::query();
+        $query = Student::with('user', 'classes');
 
         if ($request->user()->isTeacher()) {
             $teacher = $request->user()->teacher;
@@ -60,7 +60,7 @@ class StudentWebController extends Controller
     public function show(Request $request, Student $student)
     {
         $this->authorizeAccess($request, $student);
-        $student->load('classes.teacher.user');
+        $student->load('user', 'classes.teacher.user');
 
         $attendanceTotal = $student->attendance()->count();
         $attendancePresent = $student->attendance()->whereIn('status', ['Present', 'Late'])->count();

@@ -45,6 +45,7 @@
                         <th>Gender</th>
                         <th>Email</th>
                         <th>Classes</th>
+                        <th>Verification</th>
                         <th>Status</th>
                         <th></th>
                     </tr>
@@ -58,6 +59,14 @@
                             <td>{{ $s->gender ?? '-' }}</td>
                             <td><small>{{ $s->email }}</small></td>
                             <td>{{ $s->classes->count() }}</td>
+                            <td>
+                                @if ($s->user?->isClassroomVerified())
+                                    <span class="badge bg-success">Verified</span>
+                                    <small class="d-block text-muted">Google + GitHub</small>
+                                @else
+                                    <span class="badge bg-secondary">Not verified</span>
+                                @endif
+                            </td>
                             <td><span class="badge bg-{{ $s->status === 'active' ? 'success' : 'secondary' }}">{{ ucfirst($s->status) }}</span></td>
                             <td>
                                 <a href="/students/{{ $s->id }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i></a>
@@ -67,7 +76,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="8" class="text-center text-muted py-4">No students match the filters.</td></tr>
+                        <tr><td colspan="9" class="text-center text-muted py-4">No students match the filters.</td></tr>
                     @endforelse
                 </tbody>
             </table>

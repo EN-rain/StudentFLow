@@ -11,7 +11,7 @@
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowLightNavigationBar">true</item>
-        <item name="android:windowNavigationBarContrastEnforced">false</item>
+        <item name="android:enforceNavigationBarContrast">false</item>
     </style>
 
     <style name="StudentFlow.TextInput" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">

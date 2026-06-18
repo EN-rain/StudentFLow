@@ -17,6 +17,17 @@
         </div>
     </div>
 
+    <div class="alert alert-{{ $student->user?->isClassroomVerified() ? 'success' : 'secondary' }} d-flex justify-content-between align-items-center">
+        <div>
+            <strong>{{ $student->user?->isClassroomVerified() ? 'Verified student' : 'Not verified' }}</strong>
+            <div class="small">
+                Google: {{ filled($student->user?->google_id) ? 'linked' : 'not linked' }} ·
+                GitHub: {{ filled($student->user?->github_id) ? 'linked' : 'not linked' }}
+            </div>
+        </div>
+        <div class="small text-end">Only verified students can request to join classrooms.</div>
+    </div>
+
     <div class="row g-3 mb-3">
         <div class="col-md-3">
             <div class="card stat-card"><div class="card-body">

@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreClassRequest;
 use App\Models\SchoolClass;
 use App\Models\Teacher;
-use App\Support\DummyClassGenerator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -63,13 +62,6 @@ class ClassController extends Controller
         $class->update($request->validated());
 
         return response()->json(['data' => $class]);
-    }
-
-    public function dummy(Request $request): JsonResponse
-    {
-        abort_unless($request->user()->isAdmin(), 403);
-
-        return response()->json(['data' => DummyClassGenerator::create()->load('teacher.user')], 201);
     }
 
     public function destroy(Request $request, SchoolClass $class): JsonResponse

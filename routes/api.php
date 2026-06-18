@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\AssignmentSubmissionController;
 use App\Http\Controllers\Api\AttendanceController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClassController;
+use App\Http\Controllers\Api\ClassJoinRequestController;
 use App\Http\Controllers\Api\EnrollmentController;
 use App\Http\Controllers\Api\ExamController;
 use App\Http\Controllers\Api\GradeController;
@@ -49,6 +50,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/grades', [StudentPortalController::class, 'grades']);
         Route::get('/attendance', [StudentPortalController::class, 'attendance']);
         Route::get('/exams', [StudentPortalController::class, 'exams']);
+        Route::get('/join-requests', [ClassJoinRequestController::class, 'studentIndex']);
+        Route::post('/join-requests', [ClassJoinRequestController::class, 'store']);
         Route::post('/exams/{attempt}/start', [ExamController::class, 'startAttempt']);
         Route::post('/exams/{attempt}/submit', [ExamController::class, 'submitAttempt']);
     });
@@ -68,11 +71,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('role:admin,teacher')->group(function () {
         Route::get('/classes', [ClassController::class, 'index']);
         Route::post('/classes', [ClassController::class, 'store']);
-        Route::post('/classes/dummy', [ClassController::class, 'dummy']);
         Route::get('/classes/{class}', [ClassController::class, 'show']);
         Route::put('/classes/{class}', [ClassController::class, 'update']);
         Route::patch('/classes/{class}', [ClassController::class, 'update']);
         Route::delete('/classes/{class}', [ClassController::class, 'destroy']);
+        Route::get('/classes/{class}/join-requests', [ClassJoinRequestController::class, 'classIndex']);
+        Route::patch('/join-requests/{joinRequest}', [ClassJoinRequestController::class, 'review']);
 
         Route::get('/classes/{class}/enrollments', [EnrollmentController::class, 'index']);
         Route::post('/classes/{class}/enrollments', [EnrollmentController::class, 'store']);

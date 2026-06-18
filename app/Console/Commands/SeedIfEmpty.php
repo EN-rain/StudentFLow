@@ -11,7 +11,7 @@ class SeedIfEmpty extends Command
 {
     protected $signature = 'app:seed-if-empty';
 
-    protected $description = 'Seed demo data only when the users table is empty.';
+    protected $description = 'Seed starter data only when the users table is empty.';
 
     public function handle(): int
     {
@@ -27,13 +27,13 @@ class SeedIfEmpty extends Command
             return self::SUCCESS;
         }
 
-        $this->warn('Database has no users; running initial demo seed.');
-        config(['studentflow.allow_demo_seed' => true]);
+        $this->warn('Database has no users; running initial starter-data seed.');
+        config(['studentflow.allow_starter_seed' => true]);
         Artisan::call('db:seed', ['--force' => true]);
         $this->output->write(Artisan::output());
 
         if (blank(env('STUDENTFLOW_SEED_ADMIN_PASSWORD')) || blank(env('STUDENTFLOW_SEED_TEACHER_PASSWORD'))) {
-            $this->warn('Seeded accounts were created without fixed default passwords. Set STUDENTFLOW_SEED_ADMIN_PASSWORD and STUDENTFLOW_SEED_TEACHER_PASSWORD before seeding if you need known bootstrap credentials.');
+            $this->warn('Seeded accounts were created without fixed default passwords. Set the STUDENTFLOW_SEED_*_PASSWORD variables before seeding if you need known bootstrap credentials.');
         }
 
         return self::SUCCESS;

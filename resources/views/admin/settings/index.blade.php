@@ -4,9 +4,9 @@
     <h2 class="mb-3"><i class="bi bi-gear"></i> School Settings</h2>
     @php
         $defaults = [
-            'school_name' => 'StudentFlow Demo School',
-            'school_year' => '2026-2027',
-            'semester' => 'First Semester',
+            'school_name' => 'StudentFlow Academy',
+            'school_year' => '2025-2026',
+            'semester' => 'Second Semester',
             'principal_name' => '',
             'contact_email' => 'admin@studentflow.local',
         ];

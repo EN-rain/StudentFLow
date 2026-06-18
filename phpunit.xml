@@ -28,7 +28,10 @@
         <env name="PULSE_ENABLED" value="false"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
-        <env name="STUDENTFLOW_SEED_DEMO_DATA" value="true"/>
+        <env name="STUDENTFLOW_SEED_STARTER_DATA" value="true"/>
+        <env name="STUDENTFLOW_SEED_ADMIN_PASSWORD" value="AdminPass123!"/>
+        <env name="STUDENTFLOW_SEED_TEACHER_PASSWORD" value="TeacherPass123!"/>
+        <env name="STUDENTFLOW_SEED_STUDENT_PASSWORD" value="StudentPass123!"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
     </php>
 </phpunit>

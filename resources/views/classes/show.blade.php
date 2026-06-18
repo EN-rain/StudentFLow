@@ -45,11 +45,69 @@
         </div>
         <div class="col-md-2">
             <div class="card stat-card"><div class="card-body">
+                <div class="stat-label">Join Code</div>
+                <div class="fw-bold font-monospace">{{ $class->join_code }}</div>
+            </div></div>
+        </div>
+        <div class="col-md-2">
+            <div class="card stat-card"><div class="card-body">
                 <div class="stat-label">Enrolled</div>
                 <div class="stat-value text-primary">{{ $class->students->count() }}</div>
             </div></div>
         </div>
     </div>
+
+    @if ($class->joinRequests->isNotEmpty())
+        <div class="card stat-card mb-3">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Classroom Join Requests</h5>
+                <span class="badge bg-warning text-dark">{{ $class->joinRequests->where('status', 'pending')->count() }} pending</span>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr><th>Student</th><th>Verification</th><th>Status</th><th>Requested</th><th></th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($class->joinRequests as $joinRequest)
+                            <tr>
+                                <td>
+                                    <strong>{{ $joinRequest->student->full_name }}</strong><br>
+                                    <small class="text-muted">{{ $joinRequest->student->student_number }}</small>
+                                </td>
+                                <td>
+                                    @if ($joinRequest->student->user?->isClassroomVerified())
+                                        <span class="badge bg-success">Verified</span>
+                                        <small class="d-block text-muted">Google + GitHub linked</small>
+                                    @else
+                                        <span class="badge bg-secondary">Not verified</span>
+                                    @endif
+                                </td>
+                                <td><span class="badge bg-{{ $joinRequest->status === 'approved' ? 'success' : ($joinRequest->status === 'rejected' ? 'danger' : 'warning text-dark') }}">{{ ucfirst($joinRequest->status) }}</span></td>
+                                <td>{{ $joinRequest->created_at->format('M d, Y H:i') }}</td>
+                                <td>
+                                    @if ($joinRequest->status === 'pending')
+                                        <div class="d-flex gap-2">
+                                            <form method="POST" action="/classes/{{ $class->id }}/join-requests/{{ $joinRequest->id }}">
+                                                @csrf @method('PATCH')
+                                                <input type="hidden" name="decision" value="approved">
+                                                <button class="btn btn-sm btn-success">Approve</button>
+                                            </form>
+                                            <form method="POST" action="/classes/{{ $class->id }}/join-requests/{{ $joinRequest->id }}">
+                                                @csrf @method('PATCH')
+                                                <input type="hidden" name="decision" value="rejected">
+                                                <button class="btn btn-sm btn-outline-danger">Reject</button>
+                                            </form>
+                                        </div>
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    @endif
 
     <div class="row g-3">
         <div class="col-lg-8">

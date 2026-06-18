@@ -1,9 +1,12 @@
 @extends('layouts.app')
 @section('title', 'Teacher Dashboard - StudentFlow')
 @section('content')
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0"><i class="bi bi-speedometer2"></i> Teacher Dashboard</h2>
-        <span class="text-muted">Welcome, {{ $teacher->full_name }}</span>
+    <div class="page-header">
+        <div>
+            <h2><i class="bi bi-speedometer2 me-2"></i>Teacher Dashboard</h2>
+            <p>Track classes, attendance, grading activity, and recent teacher communication in one place.</p>
+        </div>
+        <div class="text-muted">Welcome, {{ $teacher->full_name }}</div>
     </div>
 
     <div class="row g-3 mb-4">
@@ -43,8 +46,8 @@
 
     <div class="row g-3">
         <div class="col-lg-7">
-            <div class="card stat-card">
-                <div class="card-header bg-white">
+            <div class="card surface-card">
+                <div class="card-header">
                     <h5 class="mb-0"><i class="bi bi-megaphone"></i> My Recent Announcements</h5>
                 </div>
                 <div class="card-body">
@@ -67,8 +70,8 @@
             </div>
         </div>
         <div class="col-lg-5">
-            <div class="card stat-card">
-                <div class="card-header bg-white">
+            <div class="card surface-card">
+                <div class="card-header">
                     <h5 class="mb-0"><i class="bi bi-clipboard-data"></i> Recent Grade Updates</h5>
                 </div>
                 <div class="card-body">

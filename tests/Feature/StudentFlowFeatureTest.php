@@ -6,6 +6,9 @@ use App\Mail\ClassAnnouncementMail;
 use App\Models\ActivityLog;
 use App\Models\Assignment;
 use App\Models\AssignmentSubmission;
+use App\Models\ClassJoinRequest;
+use App\Models\Exam;
+use App\Models\ExamAnswer;
 use App\Models\ExamAttempt;
 use App\Models\GradeCategory;
 use App\Models\GradeItem;
@@ -29,6 +32,31 @@ class StudentFlowFeatureTest extends TestCase
     use RefreshDatabase;
 
     protected bool $seed = true;
+
+    public function test_starter_dataset_matches_second_semester_programming_context(): void
+    {
+        $this->assertSame(1, User::where('role', 'admin')->count());
+        $this->assertSame(5, User::where('role', 'teacher')->count());
+        $this->assertSame(10, User::where('role', 'student')->count());
+        $this->assertSame(5, Teacher::count());
+        $this->assertSame(10, Student::count());
+        $this->assertSame(5, SchoolClass::count());
+        $this->assertSame(5, SchoolClass::distinct('teacher_id')->count('teacher_id'));
+        $this->assertSame(0, SchoolClass::where('semester', '!=', 'Second Semester')->count());
+
+        $this->assertSame([
+            'Introduction to Programming with Python',
+            'Mobile Application Development',
+            'Object-Oriented Programming with Java',
+            'Software Engineering and Testing',
+            'Web Application Development',
+        ], SchoolClass::orderBy('subject')->pluck('subject')->all());
+
+        $this->assertSame(20, Exam::count());
+        $this->assertSame(20, ExamAttempt::where('status', 'submitted')->count());
+        $this->assertSame(20, ExamAttempt::where('status', 'assigned')->count());
+        $this->assertSame(20, ExamAnswer::count());
+    }
 
     public function test_root_redirects_to_dashboard(): void
     {
@@ -110,7 +138,7 @@ class StudentFlowFeatureTest extends TestCase
         $angela = User::where('username', 'angela.cruz')->first();
         $johnClass = SchoolClass::where('class_name', 'BSIT 2A')->first();
         $angelaClass = SchoolClass::where('class_name', 'BSIT 1B')->first();
-        $student = Student::where('student_number', '2026-0020')->first();
+        $student = Student::where('student_number', '2026-0010')->first();
 
         Sanctum::actingAs($angela);
         $this->getJson("/api/classes/{$johnClass->id}")->assertForbidden();
@@ -261,6 +289,54 @@ class StudentFlowFeatureTest extends TestCase
             ->assertOk()
             ->assertJsonPath('data.stats.submitted', 1)
             ->assertJsonPath('data.students.0.google_email', $student->email);
+    }
+
+    public function test_verified_student_can_request_class_and_teacher_can_approve(): void
+    {
+        $verified = User::where('username', '2026-0001')->firstOrFail();
+        $unverified = User::where('username', '2026-0002')->firstOrFail();
+        $class = SchoolClass::where('class_name', 'BSIT 1B')->firstOrFail();
+
+        Sanctum::actingAs($unverified);
+        $this->postJson('/api/student/join-requests', ['join_code' => $class->join_code])
+            ->assertUnprocessable();
+
+        Sanctum::actingAs($verified);
+        $response = $this->postJson('/api/student/join-requests', ['join_code' => strtolower($class->join_code)])
+            ->assertCreated()
+            ->assertJsonPath('data.status', 'pending');
+
+        $joinRequest = ClassJoinRequest::findOrFail($response->json('data.id'));
+        $teacher = User::where('username', 'angela.cruz')->firstOrFail();
+        Sanctum::actingAs($teacher);
+
+        $this->patchJson("/api/join-requests/{$joinRequest->id}", ['decision' => 'approved'])
+            ->assertOk()
+            ->assertJsonPath('data.status', 'approved');
+
+        $this->assertDatabaseHas('class_students', [
+            'class_id' => $class->id,
+            'student_id' => $verified->student_id,
+            'status' => 'enrolled',
+        ]);
+    }
+
+    public function test_starter_dataset_matches_second_semester_context(): void
+    {
+        $this->assertSame(1, User::where('role', 'admin')->count());
+        $this->assertSame(5, User::where('role', 'teacher')->count());
+        $this->assertSame(10, User::where('role', 'student')->count());
+        $this->assertSame(5, Teacher::count());
+        $this->assertSame(10, Student::count());
+        $this->assertSame(5, SchoolClass::count());
+        $this->assertSame(5, SchoolClass::distinct('teacher_id')->count('teacher_id'));
+        $this->assertSame(0, SchoolClass::where('semester', '!=', 'Second Semester')->count());
+        $this->assertSame(0, SchoolClass::where('school_year', '!=', '2025-2026')->count());
+        $this->assertSame(10, Exam::where('status', 'closed')->count());
+        $this->assertSame(10, Exam::where('status', 'published')->count());
+        $this->assertGreaterThan(0, ExamAttempt::where('status', 'submitted')->count());
+        $this->assertGreaterThan(0, ExamAttempt::where('status', 'assigned')->count());
+        $this->assertDatabaseHas('exam_answers', ['is_correct' => true]);
     }
 
     public function test_student_registration_and_new_social_login_create_student_records(): void

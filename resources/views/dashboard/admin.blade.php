@@ -1,9 +1,12 @@
 @extends('layouts.app')
 @section('title', 'Admin Dashboard - StudentFlow')
 @section('content')
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0"><i class="bi bi-speedometer2"></i> Administrator Dashboard</h2>
-        <span class="text-muted">Welcome, {{ auth()->user()->name }}</span>
+    <div class="page-header">
+        <div>
+            <h2><i class="bi bi-speedometer2 me-2"></i>Administrator Dashboard</h2>
+            <p>Operational view across students, classes, staffing, attendance, and announcements.</p>
+        </div>
+        <div class="text-muted">Welcome, {{ auth()->user()->name }}</div>
     </div>
 
     <div class="row g-3 mb-4">
@@ -57,8 +60,8 @@
         </div>
     </div>
 
-    <div class="card stat-card">
-        <div class="card-header bg-white">
+    <div class="card surface-card">
+        <div class="card-header">
             <h5 class="mb-0"><i class="bi bi-megaphone"></i> Recent Announcements</h5>
         </div>
         <div class="card-body">

@@ -191,6 +191,7 @@ public abstract class BaseDataFragment extends Fragment {
         JsonObject object = element.getAsJsonObject();
         StringBuilder builder = new StringBuilder();
         appendIfPresent(builder, object, "class_name", "Class");
+        appendIfPresent(builder, object, "join_code", "Join code");
         appendIfPresent(builder, object, "subject", "Subject");
         appendIfPresent(builder, object, "student_number", "Student #");
         appendName(builder, object);

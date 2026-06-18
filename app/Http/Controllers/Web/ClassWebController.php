@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreClassRequest;
+use App\Models\ClassJoinRequest;
 use App\Models\SchoolClass;
 use App\Models\Student;
 use App\Models\Teacher;
 use App\Support\ActivityLogger;
-use App\Support\DummyClassGenerator;
 use Illuminate\Http\Request;
 
 class ClassWebController extends Controller
@@ -52,7 +52,13 @@ class ClassWebController extends Controller
     public function show(Request $request, SchoolClass $class)
     {
         $this->authorizeAccess($request, $class);
-        $class->load('teacher.user', 'students', 'assignments', 'announcements');
+        $class->load([
+            'teacher.user',
+            'students',
+            'assignments',
+            'announcements',
+            'joinRequests' => fn ($query) => $query->with('student.user')->latest(),
+        ]);
         $availableStudents = Student::whereNotIn('id', $class->students->pluck('id'))
             ->orderBy('last_name')
             ->orderBy('first_name')
@@ -76,16 +82,6 @@ class ClassWebController extends Controller
         ActivityLogger::log($request, 'class.updated', $class);
 
         return redirect('/classes')->with('status', 'Class updated.');
-    }
-
-    public function dummy(Request $request)
-    {
-        abort_unless($request->user()->isAdmin(), 403);
-
-        $class = DummyClassGenerator::create();
-        ActivityLogger::log($request, 'class.dummy_created', $class);
-
-        return redirect('/classes/'.$class->id.'/edit')->with('status', 'Dummy class created. Edit any values before using it.');
     }
 
     public function destroy(Request $request, SchoolClass $class)
@@ -134,6 +130,35 @@ class ClassWebController extends Controller
         ActivityLogger::log($request, 'enrollment.updated', $class, ['student_id' => $student->id, 'status' => $payload['status']]);
 
         return back()->with('status', 'Enrollment updated.');
+    }
+
+    public function reviewJoinRequest(Request $request, SchoolClass $class, ClassJoinRequest $joinRequest)
+    {
+        $this->authorizeAccess($request, $class);
+        abort_unless($joinRequest->class_id === $class->id, 404);
+
+        $payload = $request->validate([
+            'decision' => 'required|in:approved,rejected',
+        ]);
+
+        $joinRequest->update([
+            'status' => $payload['decision'],
+            'reviewed_by' => $request->user()->id,
+            'reviewed_at' => now(),
+        ]);
+
+        if ($payload['decision'] === 'approved') {
+            $class->students()->syncWithoutDetaching([
+                $joinRequest->student_id => [
+                    'date_enrolled' => now()->toDateString(),
+                    'status' => 'enrolled',
+                ],
+            ]);
+        }
+
+        ActivityLogger::log($request, 'class_join_request.'.$payload['decision'], $joinRequest);
+
+        return back()->with('status', 'Join request '.$payload['decision'].'.');
     }
 
     public function destroyEnrollment(Request $request, SchoolClass $class, Student $student)

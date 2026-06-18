@@ -7,15 +7,18 @@
             <code>{{ session('teacher_setup_url') }}</code>
         </div>
     @endif
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="mb-0"><i class="bi bi-person-workspace"></i> Teachers</h2>
+    <div class="page-header">
+        <div>
+            <h2><i class="bi bi-person-workspace me-2"></i>Teachers</h2>
+            <p>Manage teaching staff accounts, invitation links, activation state, and class ownership.</p>
+        </div>
         <a href="/admin/teachers/create" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Add Teacher</a>
     </div>
     <form class="row g-2 mb-3">
         <div class="col-md-5"><input name="q" class="form-control" value="{{ request('q') }}" placeholder="Search teachers"></div>
         <div class="col-auto"><button class="btn btn-outline-secondary"><i class="bi bi-search"></i></button></div>
     </form>
-    <div class="card stat-card">
+    <div class="card surface-card">
         <div class="table-responsive">
             <table class="table table-hover mb-0">
                 <thead class="table-light"><tr><th>Teacher</th><th>Account</th><th>Department</th><th>Classes</th><th>Status</th><th></th></tr></thead>

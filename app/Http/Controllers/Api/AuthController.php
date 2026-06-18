@@ -133,6 +133,9 @@ class AuthController extends Controller
             'email' => $user->email,
             'role' => $user->role,
             'status' => $user->status,
+            'classroom_verified' => $user->isClassroomVerified(),
+            'google_linked' => filled($user->google_id),
+            'github_linked' => filled($user->github_id),
             'teacher' => $user->teacher ? [
                 'id' => $user->teacher->id,
                 'employee_number' => $user->teacher->employee_number,

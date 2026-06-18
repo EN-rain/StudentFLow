@@ -22,7 +22,7 @@
     </div>
     <div class="col-md-4">
         <label class="form-label">Semester</label>
-        <input type="text" name="semester" class="form-control" value="{{ old('semester', $class->semester ?? 'First Semester') }}">
+        <input type="text" name="semester" class="form-control" value="{{ old('semester', $class->semester ?? 'Second Semester') }}">
     </div>
     <div class="col-md-6">
         <label class="form-label">Schedule</label>

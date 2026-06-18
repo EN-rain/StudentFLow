@@ -5,6 +5,10 @@ namespace Database\Seeders;
 use App\Models\Assignment;
 use App\Models\AssignmentSubmission;
 use App\Models\Attendance;
+use App\Models\Exam;
+use App\Models\ExamAnswer;
+use App\Models\ExamAttempt;
+use App\Models\ExamQuestion;
 use App\Models\GradeCategory;
 use App\Models\GradeItem;
 use App\Models\SchoolClass;
@@ -28,8 +32,14 @@ class DatabaseSeeder extends Seeder
 
     public function run(): void
     {
-        if (app()->environment('production') && ! config('studentflow.allow_demo_seed', false)) {
-            throw new \RuntimeException('Refusing to run the destructive demo seeder directly in production.');
+        if (app()->environment('production') && ! config('studentflow.allow_starter_seed', false)) {
+            throw new \RuntimeException('Refusing to run the destructive starter-data seeder directly in production.');
+        }
+
+        if (! config('studentflow.seed_starter_data')) {
+            $this->seedBootstrapOnly();
+
+            return;
         }
 
         $driver = DB::connection()->getDriverName();
@@ -55,7 +65,7 @@ class DatabaseSeeder extends Seeder
         $this->seedTeachers();
         $this->seedSchoolSettings();
 
-        if (config('studentflow.seed_demo_data')) {
+        if (config('studentflow.seed_starter_data')) {
             $this->seedClasses();
             $this->seedEnrollments();
             $this->seedAttendance();
@@ -65,6 +75,7 @@ class DatabaseSeeder extends Seeder
             $this->seedAssignments();
             $this->seedAssignmentSubmissions();
             $this->seedAnnouncements();
+            $this->seedExams();
         }
 
         if ($usesSqlitePragma) {
@@ -109,7 +120,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'username' => 'roberto.delapena',
-                'name' => 'Roberto Dela PeÃƒÂ±a',
+                'name' => 'Roberto Dela Peña',
                 'email' => 'roberto.delapena@studentflow.local',
                 'password' => Hash::make($this->seedPassword('STUDENTFLOW_SEED_TEACHER_PASSWORD')),
                 'role' => 'teacher',
@@ -117,9 +128,61 @@ class DatabaseSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+            [
+                'username' => 'paolo.mercado',
+                'name' => 'Paolo Luis Mercado',
+                'email' => 'paolo.mercado@studentflow.local',
+                'password' => Hash::make($this->seedPassword('STUDENTFLOW_SEED_TEACHER_PASSWORD')),
+                'role' => 'teacher',
+                'status' => 'active',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'username' => 'sophia.tan',
+                'name' => 'Sophia Marie Tan',
+                'email' => 'sophia.tan@studentflow.local',
+                'password' => Hash::make($this->seedPassword('STUDENTFLOW_SEED_TEACHER_PASSWORD')),
+                'role' => 'teacher',
+                'status' => 'active',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'username' => '2026-0001',
+                'name' => 'Aaron Miguel Villanueva',
+                'email' => 'aaron.villanueva@studentflow.local',
+                'password' => Hash::make($this->seedPassword('STUDENTFLOW_SEED_STUDENT_PASSWORD')),
+                'role' => 'student',
+                'status' => 'active',
+                'student_id' => Student::where('student_number', '2026-0001')->value('id'),
+                'google_id' => 'google-aaron-villanueva',
+                'github_id' => 'github-aaron-villanueva',
+                'github_username' => 'aaron-villanueva',
+                'social_verified_at' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            ...collect(range(2, 10))->map(function ($number) {
+                $student = Student::where('student_number', sprintf('2026-%04d', $number))->firstOrFail();
+
+                return [
+                    'username' => $student->student_number,
+                    'name' => $student->full_name,
+                    'email' => $student->email,
+                    'password' => Hash::make($this->seedPassword('STUDENTFLOW_SEED_STUDENT_PASSWORD')),
+                    'role' => 'student',
+                    'status' => 'active',
+                    'student_id' => $student->id,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            })->all(),
         ];
 
-        DB::table('users')->insert($users);
+        foreach ($users as $user) {
+            DB::table('users')->insert($user);
+        }
 
         $expected = collect($users)->pluck('username')->all();
         $actual = User::whereIn('username', $expected)->pluck('username')->all();
@@ -154,7 +217,7 @@ class DatabaseSeeder extends Seeder
                 'first_name' => 'Angela Marie',
                 'middle_name' => null,
                 'last_name' => 'Cruz',
-                'department' => 'Mathematics',
+                'department' => 'Information Technology',
                 'contact_number' => '09181234567',
                 'profile_image' => null,
                 'created_at' => now(),
@@ -165,9 +228,33 @@ class DatabaseSeeder extends Seeder
                 'employee_number' => 'TCH-2026-003',
                 'first_name' => 'Roberto',
                 'middle_name' => null,
-                'last_name' => 'Dela PeÃƒÂ±a',
-                'department' => 'General Education',
+                'last_name' => 'Dela Peña',
+                'department' => 'Information Technology',
                 'contact_number' => '09191234567',
+                'profile_image' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'username' => 'paolo.mercado',
+                'employee_number' => 'TCH-2026-004',
+                'first_name' => 'Paolo Luis',
+                'middle_name' => null,
+                'last_name' => 'Mercado',
+                'department' => 'Information Technology',
+                'contact_number' => '09201234567',
+                'profile_image' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'username' => 'sophia.tan',
+                'employee_number' => 'TCH-2026-005',
+                'first_name' => 'Sophia Marie',
+                'middle_name' => null,
+                'last_name' => 'Tan',
+                'department' => 'Information Technology',
+                'contact_number' => '09211234567',
                 'profile_image' => null,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -206,17 +293,9 @@ class DatabaseSeeder extends Seeder
             ['2026-0008', 'Hannah', 'Grace', 'Lim', 'Female', '2007-02-18', 'hannah.lim@studentflow.local', '09981234567', 'Banilad', 'Teresa Lim', '09248889999'],
             ['2026-0009', 'Ivan', 'James', 'Castillo', 'Male', '2007-06-10', 'ivan.castillo@studentflow.local', '09991234567', 'Carcar City', 'Roberto Castillo', '09259990000'],
             ['2026-0010', 'Jasmine', 'Marie', 'Aquino', 'Female', '2007-08-25', 'jasmine.aquino@studentflow.local', '09902234567', 'Toledo City', 'Elena Aquino', '09260001111'],
-            ['2026-0011', 'Kevin', 'Anthony', 'Bautista', 'Male', '2007-03-14', 'kevin.bautista@studentflow.local', '09903234567', 'Danao City', 'Mario Bautista', '09261112222'],
-            ['2026-0012', 'Lara', 'Jean', 'Santiago', 'Female', '2007-11-02', 'lara.santiago@studentflow.local', '09904234567', 'Talisay City', 'Cristina Santiago', '09262223333'],
-            ['2026-0013', 'Mark Anthony', 'Reyes', 'Perez', 'Male', '2006-05-20', 'mark.perez@studentflow.local', '09905234567', 'Consolacion', 'Andres Perez', '09263334444'],
-            ['2026-0014', 'Nicole', 'Anne', 'Fernandez', 'Female', '2007-07-09', 'nicole.fernandez@studentflow.local', '09906234567', 'Minglanilla', 'Maricel Fernandez', '09264445555'],
-            ['2026-0015', 'Owen', 'James', 'Martinez', 'Male', '2005-04-18', 'owen.martinez@studentflow.local', '09907234567', 'Compostela', 'Oscar Martinez', '09265556666'],
-            ['2026-0016', 'Patricia', 'Mae', 'Lopez', 'Female', '2005-10-12', 'patricia.lopez@studentflow.local', '09908234567', 'Liloan', 'Rosario Lopez', '09266667777'],
-            ['2026-0017', 'Quentin', 'Jose', 'Rivera', 'Male', '2005-08-03', 'quentin.rivera@studentflow.local', '09909234567', 'Consolacion', 'Eduardo Rivera', '09267778888'],
-            ['2026-0018', 'Rachel', 'Anne', 'Gomez', 'Female', '2005-06-25', 'rachel.gomez@studentflow.local', '09910234567', 'Talisay City', 'Imelda Gomez', '09268889999'],
-            ['2026-0019', 'Samuel', 'James', 'Domingo', 'Male', '2005-02-08', 'samuel.domingo@studentflow.local', '09911234568', 'Mandaue City', 'Felipe Domingo', '09269990000'],
-            ['2026-0020', 'Trisha', 'Marie', 'Valencia', 'Female', '2005-09-17', 'trisha.valencia@studentflow.local', '09912234567', 'Cebu City', 'Rowena Valencia', '09270001111'],
         ];
+
+        $students = array_slice($students, 0, 10);
 
         $rows = [];
         $now = now();
@@ -248,53 +327,27 @@ class DatabaseSeeder extends Seeder
         DB::table('classes')->truncate();
 
         $classes = [
-            [
-                'teacher_id' => $this->requiredTeacherId('TCH-2026-001'),
-                'class_name' => 'BSIT 2A',
-                'section' => 'A',
-                'subject' => 'Object-Oriented Programming',
-                'grade_level' => 'Second Year College',
-                'school_year' => '2026-2027',
-                'semester' => 'First Semester',
-                'schedule' => 'Monday and Wednesday, 10:00 AM-11:30 AM',
-                'room' => 'Computer Laboratory 2',
-                'status' => 'active',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'teacher_id' => $this->requiredTeacherId('TCH-2026-002'),
-                'class_name' => 'BSIT 1B',
-                'section' => 'B',
-                'subject' => 'Mathematics in the Modern World',
-                'grade_level' => 'First Year College',
-                'school_year' => '2026-2027',
-                'semester' => 'First Semester',
-                'schedule' => 'Tuesday and Thursday, 1:00 PM-2:30 PM',
-                'room' => 'Room 204',
-                'status' => 'active',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'teacher_id' => $this->requiredTeacherId('TCH-2026-003'),
-                'class_name' => 'BSIT 3A',
-                'section' => 'A',
-                'subject' => 'Ethics',
-                'grade_level' => 'Third Year College',
-                'school_year' => '2026-2027',
-                'semester' => 'First Semester',
-                'schedule' => 'Friday, 8:00 AM-11:00 AM',
-                'room' => 'Room 301',
-                'status' => 'active',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+            ['TCH-2026-001', 'BSIT 2A', 'A', 'Object-Oriented Programming with Java', 'Second Year College', 'Monday and Wednesday, 9:00 AM-10:30 AM', 'Computer Laboratory 1'],
+            ['TCH-2026-002', 'BSIT 1B', 'B', 'Introduction to Programming with Python', 'First Year College', 'Tuesday and Thursday, 10:30 AM-12:00 PM', 'Computer Laboratory 2'],
+            ['TCH-2026-003', 'BSIT 3A', 'A', 'Web Application Development', 'Third Year College', 'Monday and Wednesday, 1:00 PM-2:30 PM', 'Computer Laboratory 3'],
+            ['TCH-2026-004', 'BSIT 3B', 'B', 'Mobile Application Development', 'Third Year College', 'Tuesday and Thursday, 2:30 PM-4:00 PM', 'Mobile Development Laboratory'],
+            ['TCH-2026-005', 'BSIT 4A', 'A', 'Software Engineering and Testing', 'Fourth Year College', 'Friday, 8:00 AM-11:00 AM', 'Innovation Laboratory'],
         ];
 
-        foreach ($classes as $class) {
-            $record = SchoolClass::create($class);
-            $this->seededClasses[$class['class_name']] = $record->id;
+        foreach ($classes as [$employeeNumber, $className, $section, $subject, $gradeLevel, $schedule, $room]) {
+            $record = SchoolClass::create([
+                'teacher_id' => $this->requiredTeacherId($employeeNumber),
+                'class_name' => $className,
+                'section' => $section,
+                'subject' => $subject,
+                'grade_level' => $gradeLevel,
+                'school_year' => '2025-2026',
+                'semester' => 'Second Semester',
+                'schedule' => $schedule,
+                'room' => $room,
+                'status' => 'active',
+            ]);
+            $this->seededClasses[$className] = $record->id;
         }
     }
 
@@ -302,29 +355,20 @@ class DatabaseSeeder extends Seeder
     {
         DB::table('class_students')->truncate();
 
-        $bsit2a = SchoolClass::where('class_name', 'BSIT 2A')->first();
-        $bsit1b = SchoolClass::where('class_name', 'BSIT 1B')->first();
-        $bsit3a = SchoolClass::where('class_name', 'BSIT 3A')->first();
-
-        // BSIT 2A: 2026-0001..0007 (7 students)
-        $bsit2aStudents = Student::whereBetween('student_number', ['2026-0001', '2026-0007'])->get();
-        // BSIT 1B: 2026-0008..0014 (7 students)
-        $bsit1bStudents = Student::whereBetween('student_number', ['2026-0008', '2026-0014'])->get();
-        // BSIT 3A: 2026-0015..0020 (6 students)
-        $bsit3aStudents = Student::whereBetween('student_number', ['2026-0015', '2026-0020'])->get();
-
-        $now = now();
-        $enrolledDate = '2026-06-01';
-
+        $classNames = ['BSIT 2A', 'BSIT 1B', 'BSIT 3A', 'BSIT 3B', 'BSIT 4A'];
+        $students = Student::orderBy('student_number')->get();
         $rows = [];
-        foreach ($bsit2aStudents as $s) {
-            $rows[] = ['class_id' => $this->requiredClassId('BSIT 2A'), 'student_id' => $s->id, 'date_enrolled' => $enrolledDate, 'status' => 'enrolled', 'created_at' => $now, 'updated_at' => $now];
-        }
-        foreach ($bsit1bStudents as $s) {
-            $rows[] = ['class_id' => $this->requiredClassId('BSIT 1B'), 'student_id' => $s->id, 'date_enrolled' => $enrolledDate, 'status' => 'enrolled', 'created_at' => $now, 'updated_at' => $now];
-        }
-        foreach ($bsit3aStudents as $s) {
-            $rows[] = ['class_id' => $this->requiredClassId('BSIT 3A'), 'student_id' => $s->id, 'date_enrolled' => $enrolledDate, 'status' => 'enrolled', 'created_at' => $now, 'updated_at' => $now];
+
+        foreach ($students as $index => $student) {
+            $className = $classNames[intdiv($index, 2)];
+            $rows[] = [
+                'class_id' => $this->requiredClassId($className),
+                'student_id' => $student->id,
+                'date_enrolled' => '2026-01-12',
+                'status' => 'enrolled',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
         }
 
         DB::table('class_students')->insert($rows);
@@ -514,8 +558,8 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'class_id' => $this->requiredClassId('BSIT 1B'),
-                'title' => 'Percentage and Interest Worksheet',
-                'description' => 'Complete the worksheet involving percentages, simple interest, and compound interest.',
+                'title' => 'Python Console Expense Tracker',
+                'description' => 'Build a Python console application using variables, conditions, loops, functions, and file handling.',
                 'date_assigned' => '2026-06-12',
                 'deadline' => '2026-06-20',
                 'maximum_score' => 40,
@@ -526,10 +570,34 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'class_id' => $this->requiredClassId('BSIT 3A'),
-                'title' => 'Ethical Case Analysis',
-                'description' => 'Write a short analysis of an ethical issue involving privacy and technology.',
+                'title' => 'Responsive Portfolio Website',
+                'description' => 'Create a responsive portfolio using semantic HTML, CSS, and JavaScript form validation.',
                 'date_assigned' => '2026-06-13',
                 'deadline' => '2026-06-27',
+                'maximum_score' => 100,
+                'status' => 'Active',
+                'attachment_link' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'class_id' => $this->requiredClassId('BSIT 3B'),
+                'title' => 'Android Student Notes App',
+                'description' => 'Build an Android notes application with multiple activities and local persistence.',
+                'date_assigned' => '2026-06-14',
+                'deadline' => '2026-06-28',
+                'maximum_score' => 100,
+                'status' => 'Active',
+                'attachment_link' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'class_id' => $this->requiredClassId('BSIT 4A'),
+                'title' => 'Automated Test Plan',
+                'description' => 'Prepare unit, integration, and UI tests for a small web application.',
+                'date_assigned' => '2026-06-15',
+                'deadline' => '2026-06-30',
                 'maximum_score' => 100,
                 'status' => 'Active',
                 'attachment_link' => null,
@@ -602,7 +670,7 @@ class DatabaseSeeder extends Seeder
                 'teacher_id' => $this->requiredTeacherId('TCH-2026-002'),
                 'class_id' => $this->requiredClassId('BSIT 1B'),
                 'title' => 'Quiz Schedule',
-                'message' => 'Quiz 1 will be held on June 23. Review percentages, ratios, and interest calculations.',
+                'message' => 'Quiz 1 will be held on June 23. Review Python variables, conditions, loops, and functions.',
                 'priority' => 'Normal',
                 'publish_date' => '2026-06-17',
                 'expiration_date' => null,
@@ -613,7 +681,7 @@ class DatabaseSeeder extends Seeder
                 'teacher_id' => $this->requiredTeacherId('TCH-2026-003'),
                 'class_id' => $this->requiredClassId('BSIT 3A'),
                 'title' => 'Classroom Change',
-                'message' => "Friday's Ethics class will be held in Room 305 instead of Room 301.",
+                'message' => 'Friday Web Application Development class will be held in Computer Laboratory 3.',
                 'priority' => 'Urgent',
                 'publish_date' => '2026-06-17',
                 'expiration_date' => null,
@@ -625,15 +693,79 @@ class DatabaseSeeder extends Seeder
         DB::table('announcements')->insert($rows);
     }
 
+    private function seedExams(): void
+    {
+        DB::table('exam_answers')->truncate();
+        DB::table('exam_attempts')->truncate();
+        DB::table('exam_questions')->truncate();
+        DB::table('exams')->truncate();
+
+        foreach (SchoolClass::with('students')->orderBy('id')->get() as $class) {
+            $assessments = [
+                ['Completed Quiz 1', 'closed', now()->subDays(30), now()->subDays(28), 20, 10],
+                ['Completed Midterm Examination', 'closed', now()->subDays(20), now()->subDays(18), 60, 50],
+                ['Upcoming Quiz 2', 'published', now()->addDays(5), now()->addDays(7), 20, 10],
+                ['Upcoming Final Examination', 'published', now()->addDays(14), now()->addDays(16), 90, 50],
+            ];
+
+            foreach ($assessments as [$title, $status, $availableFrom, $dueAt, $duration, $points]) {
+                $exam = Exam::create([
+                    'class_id' => $class->id,
+                    'teacher_id' => $class->teacher_id,
+                    'title' => $title,
+                    'instructions' => 'Answer all questions based on '.$class->subject.'.',
+                    'available_from' => $availableFrom,
+                    'due_at' => $dueAt,
+                    'duration_minutes' => $duration,
+                    'maximum_score' => $points,
+                    'status' => $status,
+                ]);
+
+                $question = ExamQuestion::create([
+                    'exam_id' => $exam->id,
+                    'prompt' => 'Which statement best describes a core concept in '.$class->subject.'?',
+                    'type' => 'multiple_choice',
+                    'choices' => ['It organizes program logic', 'It removes all testing', 'It prevents code reuse'],
+                    'correct_answer' => 'It organizes program logic',
+                    'points' => $points,
+                    'sort_order' => 1,
+                ]);
+
+                foreach ($class->students as $student) {
+                    $completed = $status === 'closed';
+                    $attempt = ExamAttempt::create([
+                        'exam_id' => $exam->id,
+                        'student_id' => $student->id,
+                        'magic_token' => Str::random(64),
+                        'started_at' => $completed ? $availableFrom->copy()->addMinutes(5) : null,
+                        'submitted_at' => $completed ? $availableFrom->copy()->addMinutes(15) : null,
+                        'score' => $completed ? $points : null,
+                        'status' => $completed ? 'submitted' : 'assigned',
+                    ]);
+
+                    if ($completed) {
+                        ExamAnswer::create([
+                            'exam_attempt_id' => $attempt->id,
+                            'exam_question_id' => $question->id,
+                            'answer_text' => 'It organizes program logic',
+                            'is_correct' => true,
+                            'score' => $points,
+                        ]);
+                    }
+                }
+            }
+        }
+    }
+
     private function seedSchoolSettings(): void
     {
         DB::table('school_setting_histories')->truncate();
         DB::table('school_settings')->truncate();
 
         $settings = [
-            ['school_name', 'StudentFlow Demo School'],
-            ['school_year', '2026-2027'],
-            ['semester', 'First Semester'],
+            ['school_name', 'StudentFlow Academy'],
+            ['school_year', '2025-2026'],
+            ['semester', 'Second Semester'],
             ['principal_name', 'Maria Santos'],
             ['contact_email', 'admin@studentflow.local'],
         ];
@@ -644,6 +776,35 @@ class DatabaseSeeder extends Seeder
                 'setting_value' => $value,
                 'label' => ucwords(str_replace('_', ' ', $key)),
             ]);
+        }
+    }
+
+    private function seedBootstrapOnly(): void
+    {
+        User::firstOrCreate(
+            ['username' => 'admin'],
+            [
+                'name' => 'Maria Santos',
+                'email' => 'admin@studentflow.local',
+                'password' => Hash::make($this->seedPassword('STUDENTFLOW_SEED_ADMIN_PASSWORD')),
+                'role' => 'admin',
+                'status' => 'active',
+            ]
+        );
+
+        $settings = [
+            'school_name' => 'StudentFlow Academy',
+            'school_year' => '2025-2026',
+            'semester' => 'Second Semester',
+            'principal_name' => 'Maria Santos',
+            'contact_email' => 'admin@studentflow.local',
+        ];
+
+        foreach ($settings as $key => $value) {
+            SchoolSetting::firstOrCreate(
+                ['setting_key' => $key],
+                ['setting_value' => $value, 'label' => ucwords(str_replace('_', ' ', $key))]
+            );
         }
     }
 
@@ -685,6 +846,6 @@ class DatabaseSeeder extends Seeder
             return $value;
         }
 
-        return Str::password(32);
+        throw new \RuntimeException("Missing required starter password environment variable: {$envKey}");
     }
 }

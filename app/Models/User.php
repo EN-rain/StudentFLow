@@ -72,6 +72,14 @@ class User extends Authenticatable
         return $this->role === 'student';
     }
 
+    public function isClassroomVerified(): bool
+    {
+        return $this->isStudent()
+            && filled($this->google_id)
+            && filled($this->github_id)
+            && $this->social_verified_at !== null;
+    }
+
     public function hasPendingTeacherSetup(): bool
     {
         return $this->role === 'teacher'

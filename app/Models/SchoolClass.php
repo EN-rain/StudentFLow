@@ -4,16 +4,31 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class SchoolClass extends Model
 {
     use HasFactory;
+
+    protected static function booted(): void
+    {
+        static::creating(function (SchoolClass $class) {
+            if (blank($class->join_code)) {
+                do {
+                    $code = Str::upper(Str::random(8));
+                } while (self::where('join_code', $code)->exists());
+
+                $class->join_code = $code;
+            }
+        });
+    }
 
     protected $table = 'classes';
 
     protected $fillable = [
         'teacher_id',
         'class_name',
+        'join_code',
         'section',
         'subject',
         'grade_level',
@@ -34,6 +49,11 @@ class SchoolClass extends Model
         return $this->belongsToMany(Student::class, 'class_students', 'class_id', 'student_id')
             ->withPivot('date_enrolled', 'status')
             ->withTimestamps();
+    }
+
+    public function joinRequests()
+    {
+        return $this->hasMany(ClassJoinRequest::class, 'class_id');
     }
 
     public function attendance()

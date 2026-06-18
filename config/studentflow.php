@@ -3,16 +3,15 @@
 return [
     /*
     |--------------------------------------------------------------------------
-    | Demo data
+    | Starter data
     |--------------------------------------------------------------------------
     |
-    | Production installations should leave this disabled. Classes, schedules,
-    | rooms, subjects, and teacher assignments are then created and maintained
-    | by an administrator through the Classes page instead of being loaded from
-    | the demo seeder.
+    | Production installations should normally leave this disabled. When
+    | enabled, realistic starter accounts, classrooms, subjects, schedules, and
+    | enrollments are inserted into the backend database.
     |
     */
-    'seed_demo_data' => (bool) env('STUDENTFLOW_SEED_DEMO_DATA', false),
+    'seed_starter_data' => (bool) env('STUDENTFLOW_SEED_STARTER_DATA', false),
 
-    'allow_demo_seed' => false,
+    'allow_starter_seed' => false,
 ];

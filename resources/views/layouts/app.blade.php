@@ -9,71 +9,500 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        :root { --sf-primary: #0d6efd; }
-        body { background: #f5f7fb; }
-        .navbar-brand { font-weight: 700; letter-spacing: 0.3px; }
-        .stat-card { border: none; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
-        .stat-card .stat-label { color: #6c757d; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; }
-        .stat-card .stat-value { font-size: 2rem; font-weight: 700; }
-        .login-card { max-width: 420px; margin: 4rem auto; }
-        .sidebar { background: #fff; min-height: calc(100vh - 56px); border-right: 1px solid #e9ecef; padding-top: 1rem; }
-        .sidebar .nav-link { color: #495057; padding: 0.5rem 1rem; border-radius: 0.375rem; margin: 0 0.5rem; }
-        .sidebar .nav-link.active, .sidebar .nav-link:hover { background: #f1f3f5; color: var(--sf-primary); }
-        .content { padding: 1.5rem; }
-        .brand-logo { width: 30px; height: 30px; object-fit: contain; border-radius: 7px; margin-right: 0.4rem; background: #fff; }
+        :root {
+            --sf-primary: #0f172a;
+            --sf-primary-dark: #020617;
+            --sf-accent: #0f766e;
+            --sf-accent-soft: #ccfbf1;
+            --sf-surface: #f8fafc;
+            --sf-surface-alt: #eff6ff;
+            --sf-panel: #ffffff;
+            --sf-border: #dbe4ee;
+            --sf-border-strong: #cbd5e1;
+            --sf-text: #0f172a;
+            --sf-text-muted: #64748b;
+            --sf-shadow: 0 24px 60px rgba(15, 23, 42, 0.14);
+            --sf-shadow-soft: 0 12px 30px rgba(15, 23, 42, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            color: var(--sf-text);
+            background:
+                radial-gradient(circle at top left, rgba(15, 118, 110, 0.26), transparent 28%),
+                linear-gradient(180deg, var(--sf-primary-dark) 0, var(--sf-primary) 280px, var(--sf-surface) 280px, var(--sf-surface) 100%);
+        }
+
+        a {
+            color: var(--sf-accent);
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: #115e59;
+        }
+
+        .topbar {
+            padding: 1.1rem 1.25rem 0;
+            background: transparent;
+        }
+
+        .topbar .container-fluid {
+            min-height: 72px;
+            padding: 0.85rem 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            background: rgba(15, 23, 42, 0.72);
+            backdrop-filter: blur(16px);
+            box-shadow: 0 20px 45px rgba(2, 6, 23, 0.28);
+        }
+
+        .navbar-brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.15rem;
+            font-weight: 700;
+            letter-spacing: 0;
+            color: #fff;
+        }
+
+        .brand-logo {
+            width: 44px;
+            height: 44px;
+            padding: 0.3rem;
+            object-fit: contain;
+            border-radius: 14px;
+            background: #fff;
+            box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18);
+        }
+
+        .topbar-user {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: #fff;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .topbar-user-name {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.55rem;
+            font-weight: 600;
+        }
+
+        .role-pill {
+            display: inline-flex;
+            align-items: center;
+            min-height: 30px;
+            padding: 0.35rem 0.75rem;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.12);
+            color: #ecfeff;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .app-shell {
+            padding: 1rem 1.25rem 1.5rem;
+        }
+
+        .app-shell > .row {
+            --bs-gutter-x: 1.25rem;
+            --bs-gutter-y: 1.25rem;
+            align-items: flex-start;
+        }
+
+        .sidebar {
+            padding: 1rem;
+        }
+
+        .sidebar-panel {
+            position: sticky;
+            top: 1rem;
+            padding: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.55);
+            border-radius: 28px;
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.96));
+            box-shadow: var(--sf-shadow);
+        }
+
+        .sidebar-title {
+            margin: 0.85rem 0 0.5rem;
+            padding: 0 0.75rem;
+            color: var(--sf-text-muted);
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .sidebar .nav {
+            gap: 0.25rem;
+        }
+
+        .sidebar .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            min-height: 46px;
+            padding: 0.75rem 0.9rem;
+            border-radius: 18px;
+            color: var(--sf-text);
+            font-weight: 600;
+            transition: background-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
+        }
+
+        .sidebar .nav-link i {
+            width: 1.15rem;
+            color: var(--sf-accent);
+        }
+
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background: linear-gradient(135deg, var(--sf-surface-alt), #e2e8f0);
+            color: var(--sf-primary);
+            transform: translateX(1px);
+        }
+
+        .sidebar .nav-link.active {
+            box-shadow: inset 0 0 0 1px rgba(15, 118, 110, 0.12);
+        }
+
+        .content {
+            padding: 0;
+        }
+
+        .content-panel {
+            min-height: calc(100vh - 136px);
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.55);
+            border-radius: 32px;
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(248, 250, 252, 0.97));
+            box-shadow: var(--sf-shadow);
+        }
+
+        .page-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .page-header h2,
+        .page-header h1 {
+            margin: 0;
+            font-size: clamp(1.5rem, 2vw, 2rem);
+            font-weight: 800;
+            letter-spacing: 0;
+        }
+
+        .page-header p,
+        .page-header .text-muted {
+            margin: 0.4rem 0 0;
+            color: var(--sf-text-muted) !important;
+            font-size: 0.96rem;
+        }
+
+        .surface-card,
+        .stat-card {
+            border: 1px solid var(--sf-border);
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.96);
+            box-shadow: var(--sf-shadow-soft);
+            overflow: hidden;
+        }
+
+        .stat-card .card-body {
+            padding: 1.2rem 1.25rem;
+        }
+
+        .stat-card .stat-label {
+            color: var(--sf-text-muted);
+            font-size: 0.74rem;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .stat-card .stat-value {
+            margin-top: 0.4rem;
+            font-size: clamp(1.9rem, 2vw, 2.35rem);
+            line-height: 1;
+            font-weight: 800;
+            color: var(--sf-primary);
+        }
+
+        .card-header {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--sf-border);
+            background: transparent !important;
+        }
+
+        .card-header h5,
+        .card-header h6 {
+            margin: 0;
+            font-weight: 700;
+            color: var(--sf-primary);
+        }
+
+        .card-body {
+            padding: 1.2rem 1.25rem;
+        }
+
+        .table {
+            --bs-table-bg: transparent;
+            --bs-table-border-color: var(--sf-border);
+            color: var(--sf-text);
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            padding: 1rem 1.1rem;
+            border-bottom-width: 1px;
+            color: var(--sf-text-muted);
+            font-size: 0.76rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            background: rgba(239, 246, 255, 0.72) !important;
+        }
+
+        .table tbody td {
+            padding: 1rem 1.1rem;
+            vertical-align: middle;
+        }
+
+        .table-hover tbody tr:hover {
+            --bs-table-accent-bg: rgba(239, 246, 255, 0.68);
+            color: inherit;
+        }
+
+        .list-group-item {
+            padding: 1rem 0;
+            border-color: var(--sf-border);
+            background: transparent;
+        }
+
+        .btn {
+            border-radius: 16px;
+            font-weight: 700;
+            padding: 0.7rem 1rem;
+            box-shadow: none !important;
+        }
+
+        .btn-sm {
+            min-height: 36px;
+            padding: 0.48rem 0.72rem;
+            border-radius: 12px;
+        }
+
+        .btn-primary {
+            border-color: var(--sf-accent);
+            background: var(--sf-accent);
+        }
+
+        .btn-primary:hover,
+        .btn-primary:focus {
+            border-color: #115e59;
+            background: #115e59;
+        }
+
+        .btn-outline-primary {
+            border-color: rgba(15, 118, 110, 0.34);
+            color: var(--sf-accent);
+        }
+
+        .btn-outline-primary:hover,
+        .btn-outline-primary:focus {
+            border-color: var(--sf-accent);
+            background: var(--sf-accent-soft);
+            color: #115e59;
+        }
+
+        .btn-outline-secondary,
+        .btn-outline-light,
+        .btn-outline-warning {
+            border-color: var(--sf-border-strong);
+            color: var(--sf-text);
+        }
+
+        .btn-outline-secondary:hover,
+        .btn-outline-secondary:focus,
+        .btn-outline-light:hover,
+        .btn-outline-light:focus,
+        .btn-outline-warning:hover,
+        .btn-outline-warning:focus {
+            background: var(--sf-surface-alt);
+            color: var(--sf-primary);
+            border-color: var(--sf-border-strong);
+        }
+
+        .btn-topbar {
+            border-color: rgba(255, 255, 255, 0.22);
+            color: #fff;
+            background: transparent;
+        }
+
+        .btn-topbar:hover,
+        .btn-topbar:focus {
+            border-color: rgba(255, 255, 255, 0.32);
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+        }
+
+        .form-control,
+        .form-select {
+            min-height: 48px;
+            border: 1px solid var(--sf-border-strong);
+            border-radius: 16px;
+            color: var(--sf-text);
+            background: rgba(255, 255, 255, 0.96);
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: rgba(15, 118, 110, 0.5);
+            box-shadow: 0 0 0 0.2rem rgba(15, 118, 110, 0.12);
+        }
+
+        .badge {
+            padding: 0.5rem 0.7rem;
+            border-radius: 999px;
+            font-weight: 700;
+            letter-spacing: 0;
+        }
+
+        .alert {
+            border: 1px solid var(--sf-border);
+            border-radius: 20px;
+            box-shadow: var(--sf-shadow-soft);
+        }
+
+        code {
+            padding: 0.2rem 0.45rem;
+            border-radius: 10px;
+            color: var(--sf-primary);
+            background: var(--sf-surface-alt);
+        }
+
+        .login-card {
+            max-width: 440px;
+            margin: 4rem auto;
+            border: 1px solid var(--sf-border);
+            border-radius: 28px;
+            background: rgba(255, 255, 255, 0.96);
+            box-shadow: var(--sf-shadow);
+        }
+
+        @media (max-width: 991.98px) {
+            .app-shell {
+                padding-top: 0.75rem;
+            }
+
+            .sidebar-panel,
+            .content-panel {
+                position: static;
+                min-height: auto;
+            }
+        }
+
+        @media (max-width: 767.98px) {
+            .topbar {
+                padding: 0.9rem 0.9rem 0;
+            }
+
+            .app-shell {
+                padding: 0.9rem;
+            }
+
+            .content-panel {
+                padding: 1rem;
+                border-radius: 24px;
+            }
+
+            .sidebar-panel {
+                border-radius: 24px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
     </style>
     @stack('head')
 </head>
 <body>
     @auth
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <nav class="navbar navbar-expand-lg navbar-dark topbar">
             <div class="container-fluid">
                 <a class="navbar-brand" href="/dashboard">
-                    <img src="/images/studentflow-logo.png" alt="" class="brand-logo"> StudentFlow
+                    <img src="/images/studentflow-logo.png" alt="" class="brand-logo">
+                    <span>StudentFlow</span>
                 </a>
-                <div class="d-flex align-items-center text-white">
-                    <span class="me-3">
+                <div class="topbar-user">
+                    <span class="topbar-user-name">
                         <i class="bi bi-person-circle"></i>
                         {{ auth()->user()->name }}
-                        <span class="badge bg-light text-primary ms-1">{{ ucfirst(auth()->user()->role) }}</span>
+                        <span class="role-pill">{{ ucfirst(auth()->user()->role) }}</span>
                     </span>
                     <form method="POST" action="/logout" class="d-inline">
                         @csrf
-                        <button class="btn btn-sm btn-outline-light" type="submit">
-                            <i class="bi bi-box-arrow-right"></i> Logout
+                        <button class="btn btn-sm btn-topbar" type="submit">
+                            <i class="bi bi-box-arrow-right"></i>
+                            Logout
                         </button>
                     </form>
                 </div>
             </div>
         </nav>
-        <div class="container-fluid">
+        <div class="container-fluid app-shell">
             <div class="row">
-                <aside class="col-md-3 col-lg-2 sidebar">
-                    <ul class="nav flex-column">
-                        <li class="nav-item"><a class="nav-link {{ request()->is('dashboard') ? 'active' : '' }}" href="/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
-                        <li class="nav-item"><a class="nav-link {{ request()->is('classes*') ? 'active' : '' }}" href="/classes"><i class="bi bi-collection"></i> Classes</a></li>
-                        <li class="nav-item"><a class="nav-link {{ request()->is('students*') ? 'active' : '' }}" href="/students"><i class="bi bi-people"></i> Students</a></li>
-                        <li class="nav-item"><a class="nav-link {{ request()->is('attendance*') ? 'active' : '' }}" href="/attendance"><i class="bi bi-check2-square"></i> Attendance</a></li>
-                        <li class="nav-item"><a class="nav-link {{ request()->is('grades*') ? 'active' : '' }}" href="/grades"><i class="bi bi-clipboard-data"></i> Grades</a></li>
-                        <li class="nav-item"><a class="nav-link {{ request()->is('assignments*') ? 'active' : '' }}" href="/assignments"><i class="bi bi-journal-text"></i> Assignments</a></li>
-                        <li class="nav-item"><a class="nav-link {{ request()->is('announcements*') ? 'active' : '' }}" href="/announcements"><i class="bi bi-megaphone"></i> Announcements</a></li>
-                        <li class="nav-item"><a class="nav-link {{ request()->is('reports*') ? 'active' : '' }}" href="/reports"><i class="bi bi-file-earmark-bar-graph"></i> Reports</a></li>
-                        @if (auth()->user()->isAdmin())
-                            <li class="nav-item mt-2"><small class="text-muted px-3">Administration</small></li>
-                            <li class="nav-item"><a class="nav-link {{ request()->is('admin/teachers*') ? 'active' : '' }}" href="/admin/teachers"><i class="bi bi-person-workspace"></i> Teachers</a></li>
-                            <li class="nav-item"><a class="nav-link {{ request()->is('admin/settings*') ? 'active' : '' }}" href="/admin/settings"><i class="bi bi-gear"></i> Settings</a></li>
-                            <li class="nav-item"><a class="nav-link {{ request()->is('admin/activity-logs*') ? 'active' : '' }}" href="/admin/activity-logs"><i class="bi bi-clock-history"></i> Activity Logs</a></li>
-                        @endif
-                        <li class="nav-item"><a class="nav-link {{ request()->is('change-password') ? 'active' : '' }}" href="/change-password"><i class="bi bi-key"></i> Change Password</a></li>
-                    </ul>
+                <aside class="col-lg-3 col-xl-2 sidebar">
+                    <div class="sidebar-panel">
+                        <ul class="nav flex-column">
+                            <li class="nav-item"><a class="nav-link {{ request()->is('dashboard') ? 'active' : '' }}" href="/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+                            <li class="nav-item"><a class="nav-link {{ request()->is('classes*') ? 'active' : '' }}" href="/classes"><i class="bi bi-collection"></i> Classes</a></li>
+                            <li class="nav-item"><a class="nav-link {{ request()->is('students*') ? 'active' : '' }}" href="/students"><i class="bi bi-people"></i> Students</a></li>
+                            <li class="nav-item"><a class="nav-link {{ request()->is('attendance*') ? 'active' : '' }}" href="/attendance"><i class="bi bi-check2-square"></i> Attendance</a></li>
+                            <li class="nav-item"><a class="nav-link {{ request()->is('grades*') ? 'active' : '' }}" href="/grades"><i class="bi bi-clipboard-data"></i> Grades</a></li>
+                            <li class="nav-item"><a class="nav-link {{ request()->is('assignments*') ? 'active' : '' }}" href="/assignments"><i class="bi bi-journal-text"></i> Assignments</a></li>
+                            <li class="nav-item"><a class="nav-link {{ request()->is('announcements*') ? 'active' : '' }}" href="/announcements"><i class="bi bi-megaphone"></i> Announcements</a></li>
+                            <li class="nav-item"><a class="nav-link {{ request()->is('reports*') ? 'active' : '' }}" href="/reports"><i class="bi bi-file-earmark-bar-graph"></i> Reports</a></li>
+                            @if (auth()->user()->isAdmin())
+                                <li class="nav-item">
+                                    <div class="sidebar-title">Administration</div>
+                                </li>
+                                <li class="nav-item"><a class="nav-link {{ request()->is('admin/teachers*') ? 'active' : '' }}" href="/admin/teachers"><i class="bi bi-person-workspace"></i> Teachers</a></li>
+                                <li class="nav-item"><a class="nav-link {{ request()->is('admin/settings*') ? 'active' : '' }}" href="/admin/settings"><i class="bi bi-gear"></i> Settings</a></li>
+                                <li class="nav-item"><a class="nav-link {{ request()->is('admin/activity-logs*') ? 'active' : '' }}" href="/admin/activity-logs"><i class="bi bi-clock-history"></i> Activity Logs</a></li>
+                            @endif
+                            <li class="nav-item"><a class="nav-link {{ request()->is('change-password') ? 'active' : '' }}" href="/change-password"><i class="bi bi-key"></i> Change Password</a></li>
+                        </ul>
+                    </div>
                 </aside>
-                <main class="col-md-9 col-lg-10 content">
-                    @yield('content')
+                <main class="col-lg-9 col-xl-10 content">
+                    <div class="content-panel">
+                        @yield('content')
+                    </div>
                 </main>
             </div>
         </div>
     @else
-        <main class="container">
+        <main class="container py-4">
             @yield('content')
         </main>
     @endauth

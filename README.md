@@ -1,99 +1,124 @@
 # StudentFlow
 
-StudentFlow is a student management system built from `plan.md` with:
+StudentFlow is a Laravel web application and native Java Android client for managing teachers, students, programming classes, attendance, grades, assignments, announcements, quizzes, exams, and classroom membership requests.
 
-- Laravel 11 web dashboard and REST API
-- Sanctum token authentication for API/Android clients
-- Bootstrap 5 Blade dashboard
-- SQLite by default, MySQL/MariaDB-ready through `.env`
-- Native Java Android client scaffold under `android/`
+Both clients use the same Laravel API and database. Changes made on web or Android appear on the other client after refresh.
 
-## Install
+## Local installation
 
 ```cmd
-C:\php\php.exe C:\composer\composer.phar install --no-interaction --no-security-blocking
+C:\php\php.exe C:\composer\composer.phar install
 copy .env.example .env
 C:\php\php.exe artisan key:generate
 type nul > database\database.sqlite
 C:\php\php.exe artisan migrate --seed
-```
-
-Run locally:
-
-```cmd
 C:\php\php.exe artisan serve --host=127.0.0.1 --port=8000
 ```
 
 Open `http://127.0.0.1:8000`.
 
-## Seeded Accounts
+## Starter data
 
-The demo seeder creates the bootstrap users `admin`, `john.reyes`, `angela.cruz`, and `roberto.delapena`, but it does not ship with fixed passwords.
-
-Set these before `artisan migrate --seed` if you need known bootstrap credentials:
+Production should normally use:
 
 ```env
-STUDENTFLOW_SEED_ADMIN_PASSWORD=change-this-admin-password
-STUDENTFLOW_SEED_TEACHER_PASSWORD=change-this-teacher-password
+STUDENTFLOW_SEED_STARTER_DATA=false
 ```
 
-If those variables are left blank, StudentFlow generates random passwords during seeding.
+With starter data disabled, seeding creates only the initial administrator and school settings. Teachers, students, classes, subjects, assessments, and enrollments are created from the application.
 
-## Implemented Scope
+For local development and QA, use:
 
-- Authentication: login, logout, change password, disabled account checks, Laravel password reset links.
-- Admin: teacher CRUD, enable/disable/reactivate accounts, activity logs with CSV export, school settings with history.
-- Teacher workflows: classes, student records, class enrollment, attendance, grades/categories/items, assignments/submissions, announcements with enrolled-student email notifications.
-- Student workflows: Google/GitHub-backed student account linking, student mobile APIs, student Android dashboard, exam taking through Android or same-domain magic links.
-- Exams: teacher-created quizzes/exams, per-student magic links, submissions, audit stats, and automatic score sync to grade items.
-- Reports: student profile, attendance, grades, class performance, missing assignments, failing grades, frequent absences; web/PDF/CSV plus JSON report API.
-- Android: Java client scaffold with login, dashboard, classes, students, attendance, grades, assignments, announcements, reports, profile, and change password.
-
-## API
-
-Core API routes are under `/api/*` and require `Authorization: Bearer <token>` except login, forgot password, and reset password.
-
-See [docs/API.md](docs/API.md) for endpoint groups and payload examples.
-
-## Android
-
-Open the `android/` directory in Android Studio. The default emulator API URL is:
-
-```java
-http://10.0.2.2:8000/api/
+```env
+STUDENTFLOW_SEED_STARTER_DATA=true
+STUDENTFLOW_SEED_ADMIN_PASSWORD=AdminPass123!
+STUDENTFLOW_SEED_TEACHER_PASSWORD=TeacherPass123!
+STUDENTFLOW_SEED_STUDENT_PASSWORD=StudentPass123!
 ```
 
-See [docs/ANDROID.md](docs/ANDROID.md).
+These values are environment-controlled, not embedded as fixed application passwords. Change them before seeding another environment. Every user can later change their password from the web or Android password-change screen.
 
-## Documentation
+## Starter accounts
+
+### Administrator
+
+| Username | Password |
+|---|---|
+| `admin` | `AdminPass123!` |
+
+### Teachers
+
+All five teachers use `TeacherPass123!` unless `STUDENTFLOW_SEED_TEACHER_PASSWORD` is changed before seeding.
+
+| Username | Assigned subject |
+|---|---|
+| `john.reyes` | Object-Oriented Programming with Java |
+| `angela.cruz` | Introduction to Programming with Python |
+| `roberto.delapena` | Web Application Development |
+| `paolo.mercado` | Mobile Application Development |
+| `sophia.tan` | Software Engineering and Testing |
+
+### Students
+
+All ten students use `StudentPass123!` unless `STUDENTFLOW_SEED_STUDENT_PASSWORD` is changed before seeding.
+
+| Username | Verification |
+|---|---|
+| `2026-0001` | Verified: Google and GitHub linked |
+| `2026-0002` | Not verified |
+| `2026-0003` | Not verified |
+| `2026-0004` | Not verified |
+| `2026-0005` | Not verified |
+| `2026-0006` | Not verified |
+| `2026-0007` | Not verified |
+| `2026-0008` | Not verified |
+| `2026-0009` | Not verified |
+| `2026-0010` | Not verified |
+
+Never reuse these local starter passwords in production.
+
+## Academic context
+
+The starter dataset represents School Year `2025-2026`, Second Semester.
+
+It contains exactly:
+
+- 1 administrator
+- 5 teachers
+- 10 students
+- 5 classes
+- 1 programming-related subject per teacher
+- Completed quizzes with submitted answers
+- Completed examinations with submitted answers
+- Upcoming quizzes
+- Upcoming examinations
+
+Each class has two enrolled students. Completed attempts include answer and score records. Upcoming assessments are published and assigned but not yet submitted.
+
+## Student verification and classroom joining
+
+A student is marked **Verified** only when both a verified Google account and a verified GitHub account are linked.
+
+Verified students can enter a classroom join code from Android. The assigned teacher or an administrator can approve or reject the request from web or Android. Approval creates the enrollment record in the shared backend database.
+
+## API and Android
+
+Core routes are under `/api` and authenticated routes require a Sanctum bearer token.
+
+Open the `android/` directory in Android Studio. Google Sign-In requires an Android OAuth client for package `com.studentflow.app`, the signing SHA-1, and the matching Web OAuth client ID.
+
+## Verification
+
+```cmd
+C:\php\php.exe artisan migrate:fresh --seed
+C:\php\php.exe artisan test
+C:\php\php.exe vendor\bin\pint --test
+```
+
+Documentation:
 
 - [API Reference](docs/API.md)
 - [User Manual](docs/USER_MANUAL.md)
 - [Deployment Guide](docs/DEPLOYMENT.md)
 - [Render Deployment](docs/RENDER.md)
 - [Android Build Guide](docs/ANDROID.md)
-
-## Verification
-
-Run the full local QA suite:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\qa-all.ps1
-```
-
-Focused checks:
-
-```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\qa-api.ps1
-powershell -ExecutionPolicy Bypass -File .\scripts\qa-web.ps1
-```
-
-The full script runs a fresh migration/seed, Laravel tests, API smoke checks, web smoke checks, and the Android debug build when the local Gradle/JDK paths are available.
-
-```cmd
-C:\php\php.exe artisan migrate:fresh --seed
-C:\php\php.exe artisan route:list
-C:\php\php.exe artisan test
-```
-
-Android Gradle verification requires Android Studio/SDK or Gradle on PATH.

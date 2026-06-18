@@ -4,14 +4,16 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AlertDialog;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.studentflow.app.api.ApiClient;
-import com.studentflow.app.data.TokenStore;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -35,9 +37,6 @@ public class CrudFragment extends BaseDataFragment {
         setHeader(title(), subtitle());
         addAction("Refresh", v -> load());
         addAction("Add", v -> openForm(null));
-        if ("classes".equals(type) && isAdmin()) {
-            addAction("Add Dummy", v -> submit(ApiClient.service(requireContext()).createDummyClass()));
-        }
         load();
     }
 
@@ -98,8 +97,125 @@ public class CrudFragment extends BaseDataFragment {
             }
         });
         buttons.addView(edit, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
+        if ("classes".equals(type)) {
+            MaterialButton requests = new MaterialButton(requireContext());
+            requests.setText("Requests");
+            requests.setOnClickListener(v -> {
+                Integer id = intValue(row, "id");
+                if (id != null) {
+                    openJoinRequests(id);
+                }
+            });
+            buttons.addView(requests, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
+        }
         buttons.addView(delete, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
         listContainer.addView(buttons);
+    }
+
+    private void openJoinRequests(int classId) {
+        setStatus("Loading join requests...", false);
+        ApiClient.service(requireContext()).classJoinRequests(classId).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (!isAdded() || getView() == null) {
+                    return;
+                }
+                if (!response.isSuccessful() || response.body() == null) {
+                    setStatus("Join requests failed: HTTP " + response.code(), true);
+                    return;
+                }
+
+                JsonArray rows = response.body().getAsJsonArray("data");
+                LinearLayout content = new LinearLayout(requireContext());
+                content.setOrientation(LinearLayout.VERTICAL);
+                int padding = (int) (16 * getResources().getDisplayMetrics().density);
+                content.setPadding(padding, padding, padding, padding);
+
+                if (rows == null || rows.size() == 0) {
+                    TextView empty = new TextView(requireContext());
+                    empty.setText("No join requests.");
+                    content.addView(empty);
+                } else {
+                    for (JsonElement element : rows) {
+                        if (!element.isJsonObject()) {
+                            continue;
+                        }
+                        JsonObject request = element.getAsJsonObject();
+                        JsonObject student = request.has("student") && request.get("student").isJsonObject()
+                                ? request.getAsJsonObject("student")
+                                : new JsonObject();
+                        LinearLayout row = new LinearLayout(requireContext());
+                        row.setOrientation(LinearLayout.VERTICAL);
+                        TextView label = new TextView(requireContext());
+                        label.setText(stringValue(student, "first_name") + " " + stringValue(student, "last_name")
+                                + "\n" + stringValue(student, "student_number")
+                                + "\nStatus: " + stringValue(request, "status"));
+                        row.addView(label);
+
+                        if ("pending".equals(stringValue(request, "status"))) {
+                            LinearLayout actions = new LinearLayout(requireContext());
+                            actions.setOrientation(LinearLayout.HORIZONTAL);
+                            MaterialButton approve = new MaterialButton(requireContext());
+                            approve.setText("Approve");
+                            MaterialButton reject = new MaterialButton(requireContext());
+                            reject.setText("Reject");
+                            Integer requestId = intValue(request, "id");
+                            approve.setOnClickListener(v -> reviewJoinRequest(requestId, "approved", classId));
+                            reject.setOnClickListener(v -> reviewJoinRequest(requestId, "rejected", classId));
+                            actions.addView(approve);
+                            actions.addView(reject);
+                            row.addView(actions);
+                        }
+                        content.addView(row);
+                    }
+                }
+
+                ScrollView scroll = new ScrollView(requireContext());
+                scroll.addView(content);
+                new AlertDialog.Builder(requireContext())
+                        .setTitle("Classroom Join Requests")
+                        .setView(scroll)
+                        .setPositiveButton("Close", null)
+                        .show();
+                setStatus("Join requests loaded.", false);
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                if (isAdded() && getView() != null) {
+                    setStatus("Network error: " + t.getMessage(), true);
+                }
+            }
+        });
+    }
+
+    private void reviewJoinRequest(Integer requestId, String decision, int classId) {
+        if (requestId == null) {
+            return;
+        }
+        JsonObject payload = new JsonObject();
+        payload.addProperty("decision", decision);
+        ApiClient.service(requireContext()).reviewClassJoinRequest(requestId, payload).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (!isAdded() || getView() == null) {
+                    return;
+                }
+                if (response.isSuccessful()) {
+                    setStatus("Join request " + decision + ".", false);
+                    load();
+                } else {
+                    setStatus("Review failed: HTTP " + response.code(), true);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                if (isAdded() && getView() != null) {
+                    setStatus("Network error: " + t.getMessage(), true);
+                }
+            }
+        });
     }
 
     private void openForm(JsonObject existing) {
@@ -260,17 +376,6 @@ public class CrudFragment extends BaseDataFragment {
                 FormDialog.text("publish_date", "Publish date: YYYY-MM-DD", true),
                 FormDialog.text("expiration_date", "Expiration date: YYYY-MM-DD", false)
         };
-    }
-
-    private boolean isAdmin() {
-        try {
-            String json = new TokenStore(requireContext()).getUserJson();
-            return json != null
-                    && JsonParser.parseString(json).getAsJsonObject().has("role")
-                    && "admin".equals(JsonParser.parseString(json).getAsJsonObject().get("role").getAsString());
-        } catch (RuntimeException e) {
-            return false;
-        }
     }
 
     private String title() {

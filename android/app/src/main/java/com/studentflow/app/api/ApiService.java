@@ -10,6 +10,7 @@ import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.PATCH;
 import retrofit2.http.Path;
 import retrofit2.http.PUT;
 import retrofit2.http.Query;
@@ -56,9 +57,6 @@ public interface ApiService {
 
     @POST("classes")
     Call<JsonObject> createClass(@Body JsonObject request);
-
-    @POST("classes/dummy")
-    Call<JsonObject> createDummyClass();
 
     @PUT("classes/{classId}")
     Call<JsonObject> updateClass(@Path("classId") int classId, @Body JsonObject request);
@@ -158,6 +156,18 @@ public interface ApiService {
 
     @GET("student/exams")
     Call<JsonObject> studentExams();
+
+    @GET("student/join-requests")
+    Call<JsonObject> studentJoinRequests();
+
+    @POST("student/join-requests")
+    Call<JsonObject> requestClassJoin(@Body JsonObject request);
+
+    @GET("classes/{classId}/join-requests")
+    Call<JsonObject> classJoinRequests(@Path("classId") int classId);
+
+    @PATCH("join-requests/{requestId}")
+    Call<JsonObject> reviewClassJoinRequest(@Path("requestId") int requestId, @Body JsonObject request);
 
     @POST("student/exams/{attemptId}/submit")
     Call<JsonObject> submitStudentExam(@Path("attemptId") int attemptId, @Body JsonObject request);

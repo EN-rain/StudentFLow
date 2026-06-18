@@ -43,6 +43,9 @@ public class ProfileFragment extends BaseDataFragment {
     }
 
     private void renderProfile(JsonObject body) {
+        if (!isAdded() || getView() == null) {
+            return;
+        }
         listContainer.removeAllViews();
         setStatus("Account loaded", false);
         addCard(summary("Account", body));
@@ -64,6 +67,11 @@ public class ProfileFragment extends BaseDataFragment {
         append(builder, "Email", stringValue(object, "email"));
         append(builder, "Role", stringValue(object, "role"));
         append(builder, "Status", stringValue(object, "status"));
+        if (object.has("classroom_verified")) {
+            append(builder, "Classroom verification", object.get("classroom_verified").getAsBoolean() ? "Verified" : "Not verified");
+            append(builder, "Google", object.has("google_linked") && object.get("google_linked").getAsBoolean() ? "Linked" : "Not linked");
+            append(builder, "GitHub", object.has("github_linked") && object.get("github_linked").getAsBoolean() ? "Linked" : "Not linked");
+        }
         append(builder, "Employee #", stringValue(object, "employee_number"));
         append(builder, "Department", stringValue(object, "department"));
         append(builder, "Student #", stringValue(object, "student_number"));
