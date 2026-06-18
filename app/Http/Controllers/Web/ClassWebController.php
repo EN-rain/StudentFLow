@@ -17,7 +17,9 @@ class ClassWebController extends Controller
         $query = SchoolClass::with('teacher.user', 'students');
         if ($request->user()->isTeacher()) {
             $teacher = $request->user()->teacher;
-            if ($teacher) $query->where('teacher_id', $teacher->id);
+            if ($teacher) {
+                $query->where('teacher_id', $teacher->id);
+            }
         }
         $classes = $query->orderBy('class_name')->get();
 
@@ -27,6 +29,7 @@ class ClassWebController extends Controller
     public function create(Request $request)
     {
         $teachers = Teacher::with('user')->orderBy('last_name')->get();
+
         return view('classes.create', compact('teachers'));
     }
 
@@ -41,6 +44,7 @@ class ClassWebController extends Controller
         }
         $class = SchoolClass::create($request->validated());
         ActivityLogger::log($request, 'class.created', $class);
+
         return redirect('/classes')->with('status', 'Class created.');
     }
 
@@ -52,6 +56,7 @@ class ClassWebController extends Controller
             ->orderBy('last_name')
             ->orderBy('first_name')
             ->get();
+
         return view('classes.show', compact('class', 'availableStudents'));
     }
 
@@ -59,6 +64,7 @@ class ClassWebController extends Controller
     {
         $this->authorizeAccess($request, $class);
         $teachers = Teacher::with('user')->orderBy('last_name')->get();
+
         return view('classes.edit', compact('class', 'teachers'));
     }
 
@@ -67,6 +73,7 @@ class ClassWebController extends Controller
         $this->authorizeAccess($request, $class);
         $class->update($request->validated());
         ActivityLogger::log($request, 'class.updated', $class);
+
         return redirect('/classes')->with('status', 'Class updated.');
     }
 
@@ -75,6 +82,7 @@ class ClassWebController extends Controller
         $this->authorizeAccess($request, $class);
         $class->delete();
         ActivityLogger::log($request, 'class.deleted', $class);
+
         return redirect('/classes')->with('status', 'Class deleted.');
     }
 
@@ -100,6 +108,7 @@ class ClassWebController extends Controller
             ],
         ]);
         ActivityLogger::log($request, 'enrollment.saved', $class, ['student_id' => $payload['student_id']]);
+
         return back()->with('status', 'Enrollment saved.');
     }
 
@@ -112,6 +121,7 @@ class ClassWebController extends Controller
         ]);
         $class->students()->updateExistingPivot($student->id, $payload);
         ActivityLogger::log($request, 'enrollment.updated', $class, ['student_id' => $student->id, 'status' => $payload['status']]);
+
         return back()->with('status', 'Enrollment updated.');
     }
 
@@ -120,6 +130,7 @@ class ClassWebController extends Controller
         $this->authorizeAccess($request, $class);
         $class->students()->detach($student->id);
         ActivityLogger::log($request, 'enrollment.removed', $class, ['student_id' => $student->id]);
+
         return back()->with('status', 'Student removed from class.');
     }
 

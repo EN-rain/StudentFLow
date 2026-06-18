@@ -19,7 +19,9 @@ class AttendanceWebController extends Controller
         $query = SchoolClass::query();
         if ($request->user()->isTeacher()) {
             $teacher = $request->user()->teacher;
-            if ($teacher) $query->where('teacher_id', $teacher->id);
+            if ($teacher) {
+                $query->where('teacher_id', $teacher->id);
+            }
         }
         $classes = $query->orderBy('class_name')->get();
 
@@ -123,8 +125,12 @@ class AttendanceWebController extends Controller
     private function authorizeClassAccess(Request $request, SchoolClass $class): void
     {
         $user = $request->user();
-        if ($user->isAdmin()) return;
+        if ($user->isAdmin()) {
+            return;
+        }
         $teacher = $user->teacher;
-        if (! $teacher || $class->teacher_id !== $teacher->id) abort(403);
+        if (! $teacher || $class->teacher_id !== $teacher->id) {
+            abort(403);
+        }
     }
 }

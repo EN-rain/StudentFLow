@@ -65,6 +65,24 @@ public class StudentExamsFragment extends BaseDataFragment {
             showError("This exam attempt has no magic token.");
             return;
         }
+        ApiClient.service(requireContext()).startMagicExam(token).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (!response.isSuccessful()) {
+                    showError("Exam start failed: HTTP " + response.code());
+                    return;
+                }
+                loadExam(token);
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                showError("Network error: " + t.getMessage());
+            }
+        });
+    }
+
+    private void loadExam(String token) {
         ApiClient.service(requireContext()).magicExam(token).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {

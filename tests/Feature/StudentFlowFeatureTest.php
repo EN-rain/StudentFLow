@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Models\ActivityLog;
 use App\Mail\ClassAnnouncementMail;
+use App\Models\ActivityLog;
 use App\Models\Assignment;
 use App\Models\AssignmentSubmission;
 use App\Models\ExamAttempt;
@@ -18,8 +18,8 @@ use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
@@ -145,7 +145,7 @@ class StudentFlowFeatureTest extends TestCase
         Sanctum::actingAs($admin);
         $categoryResponse = $this->postJson("/api/classes/{$class->id}/grade-categories", [
             'category_name' => 'Recitation',
-            'percentage_weight' => 5,
+            'percentage_weight' => 0,
         ])->assertCreated();
         $categoryId = $categoryResponse->json('data.id');
         $this->assertTrue(GradeCategory::where('id', $categoryId)->exists());
@@ -207,7 +207,7 @@ class StudentFlowFeatureTest extends TestCase
         $gradeItem = GradeItem::where('class_id', $class->id)->first();
 
         $login = $this->postJson('/api/auth/google', [
-            'id_token' => 'test-google:' . $student->email,
+            'id_token' => 'test-google:'.$student->email,
         ])->assertOk();
 
         $this->assertSame('student', $login->json('user.role'));
@@ -243,6 +243,8 @@ class StudentFlowFeatureTest extends TestCase
         $examId = $examResponse->json('data.id');
         $attempt = ExamAttempt::where('exam_id', $examId)->where('student_id', $student->id)->first();
         $this->assertNotNull($attempt);
+
+        $this->postJson("/api/exam/magic/{$attempt->magic_token}/start")->assertOk();
 
         $this->postJson("/api/exam/magic/{$attempt->magic_token}/submit", [
             'answers' => [[

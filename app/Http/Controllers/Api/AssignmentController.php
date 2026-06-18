@@ -21,7 +21,9 @@ class AssignmentController extends Controller
 
         if ($request->user()->isTeacher()) {
             $teacher = $request->user()->teacher;
-            if (! $teacher) return response()->json(['data' => []]);
+            if (! $teacher) {
+                return response()->json(['data' => []]);
+            }
             $classIds = SchoolClass::where('teacher_id', $teacher->id)->pluck('id');
             $query->whereIn('class_id', $classIds);
         }
@@ -32,6 +34,7 @@ class AssignmentController extends Controller
     public function show(Request $request, Assignment $assignment): JsonResponse
     {
         $this->authorizeAccess($request, $assignment);
+
         return response()->json(['data' => $assignment->load('schoolClass')]);
     }
 
@@ -39,6 +42,7 @@ class AssignmentController extends Controller
     {
         $this->authorizeClassId($request, $request->class_id);
         $assignment = Assignment::create($request->validated());
+
         return response()->json(['data' => $assignment], 201);
     }
 
@@ -46,6 +50,7 @@ class AssignmentController extends Controller
     {
         $this->authorizeAccess($request, $assignment);
         $assignment->update($request->validated());
+
         return response()->json(['data' => $assignment]);
     }
 
@@ -53,6 +58,7 @@ class AssignmentController extends Controller
     {
         $this->authorizeAccess($request, $assignment);
         $assignment->delete();
+
         return response()->json(['message' => 'Assignment deleted.']);
     }
 
@@ -73,26 +79,39 @@ class AssignmentController extends Controller
             $assignment->status = 'Active';
         }
         $assignment->save();
+
         return $assignment->status;
     }
 
     private function authorizeAccess(Request $request, Assignment $assignment): void
     {
         $user = $request->user();
-        if ($user->isAdmin()) return;
+        if ($user->isAdmin()) {
+            return;
+        }
         $teacher = $user->teacher;
-        if (! $teacher) abort(403);
+        if (! $teacher) {
+            abort(403);
+        }
         $class = SchoolClass::find($assignment->class_id);
-        if (! $class || $class->teacher_id !== $teacher->id) abort(403);
+        if (! $class || $class->teacher_id !== $teacher->id) {
+            abort(403);
+        }
     }
 
     private function authorizeClassId(Request $request, int $classId): void
     {
         $user = $request->user();
-        if ($user->isAdmin()) return;
+        if ($user->isAdmin()) {
+            return;
+        }
         $teacher = $user->teacher;
-        if (! $teacher) abort(403);
+        if (! $teacher) {
+            abort(403);
+        }
         $class = SchoolClass::find($classId);
-        if (! $class || $class->teacher_id !== $teacher->id) abort(403, 'You can only create assignments for your own classes.');
+        if (! $class || $class->teacher_id !== $teacher->id) {
+            abort(403, 'You can only create assignments for your own classes.');
+        }
     }
 }

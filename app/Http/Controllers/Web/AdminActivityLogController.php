@@ -13,6 +13,7 @@ class AdminActivityLogController extends Controller
         $query = ActivityLog::with('user')->latest();
         $this->applyFilters($query, $request);
         $logs = $query->limit(500)->get();
+
         return view('admin.activity-logs.index', compact('logs'));
     }
 

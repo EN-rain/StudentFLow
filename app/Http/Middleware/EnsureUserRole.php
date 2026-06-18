@@ -22,7 +22,7 @@ class EnsureUserRole
 
         if (! in_array($user->role, $roles, true)) {
             return response()->json([
-                'message' => 'Forbidden. Required role: ' . implode(' or ', $roles),
+                'message' => 'Forbidden. Required role: '.implode(' or ', $roles),
             ], 403);
         }
 

@@ -20,16 +20,38 @@ class ExamSubmissionService
         if ($attempt->exam->status !== 'published') {
             abort(422, 'Exam is not open.');
         }
+        if (! $attempt->started_at) {
+            abort(409, 'Exam must be started before it can be submitted.');
+        }
+        if ($attempt->exam->available_from && now()->lessThan($attempt->exam->available_from)) {
+            abort(422, 'Exam is not available yet.');
+        }
+        if ($attempt->exam->duration_minutes && $attempt->started_at && now()->greaterThan($attempt->started_at->copy()->addMinutes($attempt->exam->duration_minutes))) {
+            $attempt->update(['status' => 'expired']);
+            abort(422, 'Exam duration has expired.');
+        }
         if ($attempt->exam->due_at && now()->greaterThan($attempt->exam->due_at)) {
             $attempt->update(['status' => 'expired']);
             abort(422, 'Exam link has expired.');
+        }
+
+        $answers = collect($answers);
+        if ($answers->pluck('question_id')->duplicates()->isNotEmpty()) {
+            abort(422, 'Each exam question may only be answered once.');
+        }
+
+        $allowedQuestionIds = $attempt->exam->questions->pluck('id')->map(fn ($id) => (int) $id);
+        if ($answers->pluck('question_id')->map(fn ($id) => (int) $id)->diff($allowedQuestionIds)->isNotEmpty()) {
+            abort(422, 'One or more answers do not belong to this exam.');
         }
 
         return DB::transaction(function () use ($attempt, $answers, $request) {
             $total = 0.0;
             foreach ($answers as $answer) {
                 $question = $attempt->exam->questions->firstWhere('id', (int) $answer['question_id']);
-                if (! $question) continue;
+                if (! $question) {
+                    continue;
+                }
                 $given = trim((string) ($answer['answer'] ?? ''));
                 $correct = $question->correct_answer !== null && strcasecmp(trim($question->correct_answer), $given) === 0;
                 $points = $correct ? (float) $question->points : 0.0;
@@ -60,7 +82,7 @@ class ExamSubmissionService
                     'student_id' => $attempt->student_id,
                 ], [
                     'score' => $score,
-                    'remarks' => 'Synced from exam: ' . $attempt->exam->title,
+                    'remarks' => 'Synced from exam: '.$attempt->exam->title,
                 ]);
             }
 

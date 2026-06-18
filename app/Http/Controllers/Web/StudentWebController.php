@@ -53,6 +53,7 @@ class StudentWebController extends Controller
     public function store(StoreStudentRequest $request)
     {
         Student::create($request->validated());
+
         return redirect('/students')->with('status', 'Student created.');
     }
 
@@ -71,6 +72,7 @@ class StudentWebController extends Controller
     public function edit(Request $request, Student $student)
     {
         $this->authorizeAccess($request, $student);
+
         return view('students.edit', compact('student'));
     }
 
@@ -78,6 +80,7 @@ class StudentWebController extends Controller
     {
         $this->authorizeAccess($request, $student);
         $student->update($request->validated());
+
         return redirect('/students')->with('status', 'Student updated.');
     }
 
@@ -85,17 +88,24 @@ class StudentWebController extends Controller
     {
         $this->authorizeAccess($request, $student);
         $student->delete();
+
         return redirect('/students')->with('status', 'Student deleted.');
     }
 
     private function authorizeAccess(Request $request, Student $student): void
     {
         $user = $request->user();
-        if ($user->isAdmin()) return;
+        if ($user->isAdmin()) {
+            return;
+        }
         $teacher = $user->teacher;
-        if (! $teacher) abort(403);
+        if (! $teacher) {
+            abort(403);
+        }
         $classIds = SchoolClass::where('teacher_id', $teacher->id)->pluck('id');
         $enrolled = DB::table('class_students')->whereIn('class_id', $classIds)->where('student_id', $student->id)->exists();
-        if (! $enrolled) abort(403, 'You can only access students in your classes.');
+        if (! $enrolled) {
+            abort(403, 'You can only access students in your classes.');
+        }
     }
 }

@@ -8,6 +8,7 @@ use App\Models\SchoolClass;
 use App\Models\Student;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class StudentController extends Controller
 {
@@ -22,7 +23,7 @@ class StudentController extends Controller
                 return response()->json(['data' => []]);
             }
             $classIds = SchoolClass::where('teacher_id', $teacher->id)->pluck('id');
-            $studentIds = \Illuminate\Support\Facades\DB::table('class_students')
+            $studentIds = DB::table('class_students')
                 ->whereIn('class_id', $classIds)
                 ->pluck('student_id');
             $query->whereIn('id', $studentIds);
@@ -42,7 +43,7 @@ class StudentController extends Controller
 
         // Filter by class
         if ($classId = $request->query('class_id')) {
-            $studentIds = \Illuminate\Support\Facades\DB::table('class_students')
+            $studentIds = DB::table('class_students')
                 ->where('class_id', $classId)
                 ->pluck('student_id');
             $query->whereIn('id', $studentIds);
@@ -57,12 +58,14 @@ class StudentController extends Controller
     {
         $this->authorizeAccess($request, $student);
         $student->load('classes.teacher.user');
+
         return response()->json(['data' => $student]);
     }
 
     public function store(StoreStudentRequest $request): JsonResponse
     {
         $student = Student::create($request->validated());
+
         return response()->json(['data' => $student], 201);
     }
 
@@ -70,6 +73,7 @@ class StudentController extends Controller
     {
         $this->authorizeAccess($request, $student);
         $student->update($request->validated());
+
         return response()->json(['data' => $student]);
     }
 
@@ -77,22 +81,29 @@ class StudentController extends Controller
     {
         $this->authorizeAccess($request, $student);
         $student->delete();
+
         return response()->json(['message' => 'Student deleted.']);
     }
 
     private function authorizeAccess(Request $request, Student $student): void
     {
         $user = $request->user();
-        if ($user->isAdmin()) return;
+        if ($user->isAdmin()) {
+            return;
+        }
 
         $teacher = $user->teacher;
-        if (! $teacher) abort(403);
+        if (! $teacher) {
+            abort(403);
+        }
 
         $classIds = SchoolClass::where('teacher_id', $teacher->id)->pluck('id');
-        $enrolled = \Illuminate\Support\Facades\DB::table('class_students')
+        $enrolled = DB::table('class_students')
             ->whereIn('class_id', $classIds)
             ->where('student_id', $student->id)
             ->exists();
-        if (! $enrolled) abort(403, 'You can only access students in your classes.');
+        if (! $enrolled) {
+            abort(403, 'You can only access students in your classes.');
+        }
     }
 }

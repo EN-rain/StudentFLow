@@ -13,6 +13,7 @@ class AdminSchoolSettingController extends Controller
     public function index()
     {
         $settings = SchoolSetting::with(['histories.user'])->orderBy('setting_key')->get();
+
         return view('admin.settings.index', compact('settings'));
     }
 

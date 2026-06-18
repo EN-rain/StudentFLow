@@ -24,6 +24,15 @@
                     Submitted on {{ $attempt->submitted_at?->format('Y-m-d H:i') }}.
                     Score: <strong>{{ $attempt->score }}</strong> / {{ $attempt->exam->maximum_score }}
                 </div>
+            @elseif (! $attempt->started_at)
+                <p>{{ $attempt->exam->instructions }}</p>
+                @if ($attempt->exam->duration_minutes)
+                    <p class="text-warning">The {{ $attempt->exam->duration_minutes }}-minute timer starts when you press Start Exam.</p>
+                @endif
+                <form method="POST" action="/exam/magic/{{ $attempt->magic_token }}/start">
+                    @csrf
+                    <button class="btn btn-primary">Start Exam</button>
+                </form>
             @else
                 <p>{{ $attempt->exam->instructions }}</p>
                 <form method="POST" action="/exam/magic/{{ $attempt->magic_token }}">

@@ -7,6 +7,7 @@ use App\Models\Student;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
@@ -25,23 +26,27 @@ class AuthController extends Controller
 
         [$firstName, $lastName] = $this->splitName($payload['name']);
 
-        $student = Student::create([
-            'student_number' => $this->nextStudentNumber(),
-            'first_name' => $firstName,
-            'last_name' => $lastName,
-            'email' => strtolower($payload['email']),
-            'status' => 'active',
-        ]);
+        $student = null;
+        $user = null;
+        DB::transaction(function () use (&$student, &$user, $payload, $firstName, $lastName) {
+            $student = Student::create([
+                'student_number' => $this->nextStudentNumber(),
+                'first_name' => $firstName,
+                'last_name' => $lastName,
+                'email' => strtolower($payload['email']),
+                'status' => 'active',
+            ]);
 
-        $user = User::create([
-            'username' => $student->student_number,
-            'name' => $student->full_name,
-            'email' => $student->email,
-            'password' => Hash::make($payload['password']),
-            'role' => 'student',
-            'status' => 'active',
-            'student_id' => $student->id,
-        ]);
+            $user = User::create([
+                'username' => $student->student_number,
+                'name' => $student->full_name,
+                'email' => $student->email,
+                'password' => Hash::make($payload['password']),
+                'role' => 'student',
+                'status' => 'active',
+                'student_id' => $student->id,
+            ]);
+        }, 3);
 
         $token = $user->createToken('android-register')->plainTextToken;
 
@@ -192,6 +197,7 @@ class AuthController extends Controller
                 'password' => Hash::make($password),
                 'remember_token' => Str::random(60),
             ])->save();
+            $user->tokens()->delete();
         });
 
         if ($status !== Password::PASSWORD_RESET) {
@@ -204,16 +210,18 @@ class AuthController extends Controller
     private function splitName(string $name): array
     {
         $parts = preg_split('/\s+/', trim($name), 2);
+
         return [$parts[0] ?: 'Student', $parts[1] ?? 'User'];
     }
 
     private function nextStudentNumber(): string
     {
         $year = now()->format('Y');
-        $latest = Student::where('student_number', 'like', $year . '-%')
+        $latest = Student::where('student_number', 'like', $year.'-%')
             ->orderByDesc('student_number')
             ->value('student_number');
         $next = $latest ? ((int) substr($latest, -4)) + 1 : 1;
+
         return sprintf('%s-%04d', $year, $next);
     }
 }

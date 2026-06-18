@@ -17,6 +17,7 @@ class AssignmentSubmissionController extends Controller
     {
         $this->authorizeAssignment($request, $assignment);
         $assignment->load('schoolClass.students', 'submissions.student');
+
         return response()->json(['data' => $assignment]);
     }
 
@@ -56,15 +57,20 @@ class AssignmentSubmissionController extends Controller
         );
 
         ActivityLogger::log($request, 'assignment_submissions.saved', $assignment, ['count' => count($rows)]);
+
         return response()->json(['data' => AssignmentSubmission::where('assignment_id', $assignment->id)->with('student')->get()]);
     }
 
     private function authorizeAssignment(Request $request, Assignment $assignment): void
     {
         $user = $request->user();
-        if ($user->isAdmin()) return;
+        if ($user->isAdmin()) {
+            return;
+        }
         $teacher = $user->teacher;
         $class = SchoolClass::find($assignment->class_id);
-        if (! $teacher || ! $class || $class->teacher_id !== $teacher->id) abort(403);
+        if (! $teacher || ! $class || $class->teacher_id !== $teacher->id) {
+            abort(403);
+        }
     }
 }

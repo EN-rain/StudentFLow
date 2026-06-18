@@ -20,6 +20,7 @@ class GradeController extends Controller
     public function indexCategories(Request $request, SchoolClass $class): JsonResponse
     {
         $this->authorizeClass($request, $class);
+
         return response()->json(['data' => $class->gradeCategories()->orderBy('id')->get()]);
     }
 
@@ -30,27 +31,42 @@ class GradeController extends Controller
             'category_name' => 'required|string|max:128',
             'percentage_weight' => 'required|numeric|min:0|max:100',
         ]);
+        $newTotal = (float) $class->gradeCategories()->sum('percentage_weight') + (float) $payload['percentage_weight'];
+        if ($newTotal > 100) {
+            abort(422, 'Grade category weights cannot exceed 100%.');
+        }
         $cat = $class->gradeCategories()->create($payload);
+
         return response()->json(['data' => $cat], 201);
     }
 
     public function updateCategory(Request $request, SchoolClass $class, GradeCategory $category): JsonResponse
     {
         $this->authorizeClass($request, $class);
-        if ($category->class_id !== $class->id) abort(404);
+        if ($category->class_id !== $class->id) {
+            abort(404);
+        }
         $payload = $request->validate([
             'category_name' => 'required|string|max:128',
             'percentage_weight' => 'required|numeric|min:0|max:100',
         ]);
+        $newTotal = (float) $class->gradeCategories()->whereKeyNot($category->id)->sum('percentage_weight') + (float) $payload['percentage_weight'];
+        if ($newTotal > 100) {
+            abort(422, 'Grade category weights cannot exceed 100%.');
+        }
         $category->update($payload);
+
         return response()->json(['data' => $category]);
     }
 
     public function destroyCategory(Request $request, SchoolClass $class, GradeCategory $category): JsonResponse
     {
         $this->authorizeClass($request, $class);
-        if ($category->class_id !== $class->id) abort(404);
+        if ($category->class_id !== $class->id) {
+            abort(404);
+        }
         $category->delete();
+
         return response()->json(['message' => 'Category deleted.']);
     }
 
@@ -60,6 +76,7 @@ class GradeController extends Controller
     public function indexItems(Request $request, SchoolClass $class): JsonResponse
     {
         $this->authorizeClass($request, $class);
+
         return response()->json(['data' => $class->gradeItems()->with('category')->orderBy('id')->get()]);
     }
 
@@ -72,30 +89,42 @@ class GradeController extends Controller
             'maximum_score' => 'required|numeric|min:0',
             'date_given' => 'nullable|date',
         ]);
-        if (! $class->gradeCategories()->where('id', $payload['category_id'])->exists()) abort(422, 'Category does not belong to this class.');
+        if (! $class->gradeCategories()->where('id', $payload['category_id'])->exists()) {
+            abort(422, 'Category does not belong to this class.');
+        }
         $item = $class->gradeItems()->create($payload);
+
         return response()->json(['data' => $item->load('category')], 201);
     }
 
     public function updateItem(Request $request, SchoolClass $class, GradeItem $item): JsonResponse
     {
         $this->authorizeClass($request, $class);
-        if ($item->class_id !== $class->id) abort(404);
+        if ($item->class_id !== $class->id) {
+            abort(404);
+        }
         $payload = $request->validate([
             'category_id' => 'required|integer|exists:grade_categories,id',
             'title' => 'required|string|max:191',
             'maximum_score' => 'required|numeric|min:0',
             'date_given' => 'nullable|date',
         ]);
+        if (! $class->gradeCategories()->whereKey($payload['category_id'])->exists()) {
+            abort(422, 'Category does not belong to this class.');
+        }
         $item->update($payload);
+
         return response()->json(['data' => $item->load('category')]);
     }
 
     public function destroyItem(Request $request, SchoolClass $class, GradeItem $item): JsonResponse
     {
         $this->authorizeClass($request, $class);
-        if ($item->class_id !== $class->id) abort(404);
+        if ($item->class_id !== $class->id) {
+            abort(404);
+        }
         $item->delete();
+
         return response()->json(['message' => 'Grade item deleted.']);
     }
 
@@ -105,6 +134,7 @@ class GradeController extends Controller
     public function indexStudentGrades(Request $request, SchoolClass $class, int $studentId): JsonResponse
     {
         $this->authorizeClass($request, $class);
+
         return response()->json(['data' => StudentGrade::whereHas('gradeItem', fn ($q) => $q->where('class_id', $class->id))
             ->where('student_id', $studentId)->with('gradeItem.category')->get()]);
     }
@@ -177,9 +207,13 @@ class GradeController extends Controller
         foreach ($categories as $cat) {
             $ratios = [];
             foreach ($cat->items as $item) {
-                if ((float) $item->maximum_score <= 0) continue;
+                if ((float) $item->maximum_score <= 0) {
+                    continue;
+                }
                 $grade = $item->studentGrades->first();
-                if (! $grade) continue; // skip items with no recorded score
+                if (! $grade) {
+                    continue;
+                } // skip items with no recorded score
                 $ratios[] = ((float) $grade->score) / ((float) $item->maximum_score);
             }
             $categoryAverage = count($ratios) > 0 ? array_sum($ratios) / count($ratios) : 0.0;
@@ -208,8 +242,12 @@ class GradeController extends Controller
     private function authorizeClass(Request $request, SchoolClass $class): void
     {
         $user = $request->user();
-        if ($user->isAdmin()) return;
+        if ($user->isAdmin()) {
+            return;
+        }
         $teacher = $user->teacher;
-        if (! $teacher || $class->teacher_id !== $teacher->id) abort(403, 'You can only manage grades for your own classes.');
+        if (! $teacher || $class->teacher_id !== $teacher->id) {
+            abort(403, 'You can only manage grades for your own classes.');
+        }
     }
 }

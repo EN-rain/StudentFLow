@@ -28,6 +28,7 @@ class AdminTeacherController extends Controller
             });
         }
         $teachers = $q->orderBy('last_name')->get();
+
         return view('admin.teachers.index', compact('teachers'));
     }
 
@@ -55,13 +56,15 @@ class AdminTeacherController extends Controller
             return [$teacher, $this->teacherSetupUrl($user)];
         });
 
-        ActivityLogger::log($request, 'teacher.created', $teacher, ['setup_url' => $setupUrl]);
+        ActivityLogger::log($request, 'teacher.created', $teacher, ['invite_issued' => true]);
+
         return redirect('/admin/teachers')->with('status', 'Teacher created. Share the setup link below.')->with('teacher_setup_url', $setupUrl);
     }
 
     public function edit(Teacher $teacher)
     {
         $teacher->load('user');
+
         return view('admin.teachers.edit', compact('teacher'));
     }
 
@@ -78,13 +81,14 @@ class AdminTeacherController extends Controller
         });
 
         ActivityLogger::log($request, 'teacher.updated', $teacher);
+
         return redirect('/admin/teachers')->with('status', 'Teacher updated.');
     }
 
     public function invite(Request $request, Teacher $teacher)
     {
         $setupUrl = $this->teacherSetupUrl($teacher->user);
-        ActivityLogger::log($request, 'teacher.invite_regenerated', $teacher, ['setup_url' => $setupUrl]);
+        ActivityLogger::log($request, 'teacher.invite_regenerated', $teacher, ['invite_issued' => true]);
 
         return back()->with('status', 'Teacher setup link regenerated.')->with('teacher_setup_url', $setupUrl);
     }
@@ -94,13 +98,14 @@ class AdminTeacherController extends Controller
         $payload = $request->validate(['status' => 'required|in:active,disabled']);
         $teacher->user->update(['status' => $payload['status']]);
         ActivityLogger::log($request, 'teacher.status_changed', $teacher, ['status' => $payload['status']]);
+
         return back()->with('status', 'Teacher account status updated.');
     }
 
     private function pendingTeacherUsername(): string
     {
         do {
-            $candidate = User::TEACHER_INVITE_PREFIX . Str::lower(Str::random(12));
+            $candidate = User::TEACHER_INVITE_PREFIX.Str::lower(Str::random(12));
         } while (User::where('username', $candidate)->exists());
 
         return $candidate;
@@ -110,6 +115,6 @@ class AdminTeacherController extends Controller
     {
         $token = Password::broker()->createToken($user);
 
-        return url('/teacher/setup/' . $token . '?email=' . urlencode($user->email));
+        return url('/teacher/setup/'.$token.'?email='.urlencode($user->email));
     }
 }

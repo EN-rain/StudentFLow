@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Announcement;
 use App\Models\Assignment;
 use App\Models\Attendance;
-use App\Models\GradeItem;
 use App\Models\SchoolClass;
 use App\Models\Student;
 use App\Models\StudentGrade;
@@ -23,6 +22,7 @@ class DashboardController extends Controller
         if ($user->isAdmin()) {
             return $this->adminDashboard($user);
         }
+
         return $this->teacherDashboard($user);
     }
 

@@ -3,11 +3,15 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Support\StudentSocialUserResolver;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class StudentSocialAuthController extends Controller
@@ -39,7 +43,7 @@ class StudentSocialAuthController extends Controller
         return $this->tokenResponse($user, 'github');
     }
 
-    public function githubCallback(Request $request): JsonResponse|\Illuminate\Http\RedirectResponse
+    public function githubCallback(Request $request): JsonResponse|RedirectResponse
     {
         $payload = $request->validate([
             'code' => 'required|string',
@@ -50,12 +54,38 @@ class StudentSocialAuthController extends Controller
         $profile = $this->githubProfile($token);
         $user = StudentSocialUserResolver::resolve('github', $profile);
 
-        if (($payload['state'] ?? null) === 'android') {
-            $data = $this->tokenPayload($user, 'github');
-            return redirect()->away('studentflow://oauth/github?' . http_build_query([
-                'token' => $data['token'],
-                'user' => json_encode($data['user']),
+        $state = $payload['state'] ?? null;
+        if (is_string($state) && str_starts_with($state, 'android:')) {
+            $exchangeCode = Str::random(64);
+            Cache::put('mobile-oauth:'.$exchangeCode, [
+                'user_id' => $user->id,
+                'state' => $state,
+            ], now()->addMinutes(2));
+
+            return redirect()->away('studentflow://oauth/github?'.http_build_query([
+                'exchange_code' => $exchangeCode,
+                'state' => $state,
             ]));
+        }
+
+        return $this->tokenResponse($user, 'github');
+    }
+
+    public function mobileExchange(Request $request): JsonResponse
+    {
+        $payload = $request->validate([
+            'exchange_code' => 'required|string|size:64',
+            'state' => 'required|string|max:255',
+        ]);
+
+        $exchange = Cache::pull('mobile-oauth:'.$payload['exchange_code']);
+        if (! is_array($exchange) || ! hash_equals((string) ($exchange['state'] ?? ''), $payload['state'])) {
+            throw ValidationException::withMessages(['exchange_code' => ['OAuth exchange code is invalid or expired.']]);
+        }
+
+        $user = User::find($exchange['user_id'] ?? null);
+        if (! $user || ! $user->isStudent() || $user->status !== 'active') {
+            throw ValidationException::withMessages(['exchange_code' => ['OAuth account is unavailable.']]);
         }
 
         return $this->tokenResponse($user, 'github');
@@ -65,7 +95,8 @@ class StudentSocialAuthController extends Controller
     {
         if (app()->environment('local', 'testing') && str_starts_with($idToken, 'test-google:')) {
             $email = substr($idToken, strlen('test-google:'));
-            return ['sub' => 'test-google-' . md5($email), 'email' => $email, 'email_verified' => true, 'name' => strtok($email, '@')];
+
+            return ['sub' => 'test-google-'.md5($email), 'email' => $email, 'email_verified' => true, 'name' => strtok($email, '@')];
         }
 
         $response = Http::timeout(10)->get('https://oauth2.googleapis.com/tokeninfo', [
@@ -125,7 +156,8 @@ class StudentSocialAuthController extends Controller
     {
         if (app()->environment('local', 'testing') && str_starts_with($token, 'test-github:')) {
             $email = substr($token, strlen('test-github:'));
-            return ['id' => 'test-github-' . md5($email), 'username' => strtok($email, '@'), 'email' => $email];
+
+            return ['id' => 'test-github-'.md5($email), 'username' => strtok($email, '@'), 'email' => $email];
         }
 
         try {
@@ -143,6 +175,7 @@ class StudentSocialAuthController extends Controller
         }
 
         $user = $userResponse->json();
+
         return [
             'id' => (string) $user['id'],
             'username' => $user['login'] ?? null,
@@ -159,7 +192,7 @@ class StudentSocialAuthController extends Controller
     private function tokenPayload($user, string $provider): array
     {
         $user->tokens()->delete();
-        $token = $user->createToken('android-' . $provider)->plainTextToken;
+        $token = $user->createToken('android-'.$provider)->plainTextToken;
 
         return [
             'message' => 'Student social login successful.',

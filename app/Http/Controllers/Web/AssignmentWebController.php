@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreAssignmentRequest;
 use App\Models\Assignment;
-use App\Models\AssignmentSubmission;
 use App\Models\SchoolClass;
 use App\Support\ActivityLogger;
 use Illuminate\Http\Request;
@@ -28,7 +27,9 @@ class AssignmentWebController extends Controller
         $classes = SchoolClass::query();
         if ($request->user()->isTeacher()) {
             $teacher = $request->user()->teacher;
-            if ($teacher) $classes->where('teacher_id', $teacher->id);
+            if ($teacher) {
+                $classes->where('teacher_id', $teacher->id);
+            }
         }
         $classes = $classes->orderBy('class_name')->get();
 
@@ -38,6 +39,7 @@ class AssignmentWebController extends Controller
     public function create(Request $request)
     {
         $classes = $this->scopedClasses($request);
+
         return view('assignments.create', compact('classes'));
     }
 
@@ -46,6 +48,7 @@ class AssignmentWebController extends Controller
         $this->authorizeClassId($request, $request->class_id);
         $assignment = Assignment::create($request->validated());
         ActivityLogger::log($request, 'assignment.created', $assignment);
+
         return redirect('/assignments')->with('status', 'Assignment created.');
     }
 
@@ -53,6 +56,7 @@ class AssignmentWebController extends Controller
     {
         $this->authorizeAccess($request, $assignment);
         $assignment->load('class.students', 'submissions.student');
+
         return view('assignments.show', compact('assignment'));
     }
 
@@ -60,6 +64,7 @@ class AssignmentWebController extends Controller
     {
         $this->authorizeAccess($request, $assignment);
         $classes = $this->scopedClasses($request);
+
         return view('assignments.edit', compact('assignment', 'classes'));
     }
 
@@ -68,6 +73,7 @@ class AssignmentWebController extends Controller
         $this->authorizeAccess($request, $assignment);
         $assignment->update($request->validated());
         ActivityLogger::log($request, 'assignment.updated', $assignment);
+
         return redirect('/assignments')->with('status', 'Assignment updated.');
     }
 
@@ -76,6 +82,7 @@ class AssignmentWebController extends Controller
         $this->authorizeAccess($request, $assignment);
         $assignment->delete();
         ActivityLogger::log($request, 'assignment.deleted', $assignment);
+
         return redirect('/assignments')->with('status', 'Assignment deleted.');
     }
 
@@ -116,6 +123,7 @@ class AssignmentWebController extends Controller
         }
 
         ActivityLogger::log($request, 'assignment_submissions.saved', $assignment, ['count' => count($rows)]);
+
         return back()->with('status', 'Assignment submissions saved.');
     }
 
@@ -124,28 +132,43 @@ class AssignmentWebController extends Controller
         $q = SchoolClass::query();
         if ($request->user()->isTeacher()) {
             $teacher = $request->user()->teacher;
-            if ($teacher) $q->where('teacher_id', $teacher->id);
+            if ($teacher) {
+                $q->where('teacher_id', $teacher->id);
+            }
         }
+
         return $q->orderBy('class_name')->get();
     }
 
     private function authorizeAccess(Request $request, Assignment $assignment): void
     {
         $user = $request->user();
-        if ($user->isAdmin()) return;
+        if ($user->isAdmin()) {
+            return;
+        }
         $teacher = $user->teacher;
-        if (! $teacher) abort(403);
+        if (! $teacher) {
+            abort(403);
+        }
         $class = SchoolClass::find($assignment->class_id);
-        if (! $class || $class->teacher_id !== $teacher->id) abort(403);
+        if (! $class || $class->teacher_id !== $teacher->id) {
+            abort(403);
+        }
     }
 
     private function authorizeClassId(Request $request, int $classId): void
     {
         $user = $request->user();
-        if ($user->isAdmin()) return;
+        if ($user->isAdmin()) {
+            return;
+        }
         $teacher = $user->teacher;
-        if (! $teacher) abort(403);
+        if (! $teacher) {
+            abort(403);
+        }
         $class = SchoolClass::find($classId);
-        if (! $class || $class->teacher_id !== $teacher->id) abort(403);
+        if (! $class || $class->teacher_id !== $teacher->id) {
+            abort(403);
+        }
     }
 }

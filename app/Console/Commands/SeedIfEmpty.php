@@ -2,6 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Models\SchoolClass;
+use App\Models\SchoolSetting;
+use App\Models\Teacher;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
@@ -15,11 +18,19 @@ class SeedIfEmpty extends Command
     public function handle(): int
     {
         if (User::count() > 0) {
-            $this->info('Database already has users; skipping seed.');
+            if (Teacher::count() === 0 || SchoolClass::count() === 0 || SchoolSetting::count() === 0) {
+                $this->error('Database appears partially initialized. Refusing to skip or destructively reseed it.');
+
+                return self::FAILURE;
+            }
+
+            $this->info('Database already has initialized data; skipping seed.');
+
             return self::SUCCESS;
         }
 
         $this->warn('Database has no users; running initial demo seed.');
+        config(['studentflow.allow_demo_seed' => true]);
         Artisan::call('db:seed', ['--force' => true]);
         $this->output->write(Artisan::output());
 

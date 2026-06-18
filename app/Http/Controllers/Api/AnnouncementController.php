@@ -19,7 +19,9 @@ class AnnouncementController extends Controller
 
         if ($request->user()->isTeacher()) {
             $teacher = $request->user()->teacher;
-            if (! $teacher) return response()->json(['data' => []]);
+            if (! $teacher) {
+                return response()->json(['data' => []]);
+            }
             $query->where('teacher_id', $teacher->id);
         }
 
@@ -29,6 +31,7 @@ class AnnouncementController extends Controller
     public function show(Request $request, Announcement $announcement): JsonResponse
     {
         $this->authorizeAccess($request, $announcement);
+
         return response()->json(['data' => $announcement->load(['teacher.user', 'schoolClass'])]);
     }
 
@@ -39,7 +42,9 @@ class AnnouncementController extends Controller
 
         if ($user->isTeacher()) {
             $teacher = $user->teacher;
-            if (! $teacher) return response()->json(['message' => 'No teacher profile linked to this account.'], 403);
+            if (! $teacher) {
+                return response()->json(['message' => 'No teacher profile linked to this account.'], 403);
+            }
             if ($request->class_id) {
                 $class = SchoolClass::find($request->class_id);
                 if (! $class || $class->teacher_id !== $teacher->id) {
@@ -62,6 +67,7 @@ class AnnouncementController extends Controller
     {
         $this->authorizeAccess($request, $announcement);
         $announcement->update($request->validated());
+
         return response()->json(['data' => $announcement]);
     }
 
@@ -69,14 +75,19 @@ class AnnouncementController extends Controller
     {
         $this->authorizeAccess($request, $announcement);
         $announcement->delete();
+
         return response()->json(['message' => 'Announcement deleted.']);
     }
 
     private function authorizeAccess(Request $request, Announcement $announcement): void
     {
         $user = $request->user();
-        if ($user->isAdmin()) return;
+        if ($user->isAdmin()) {
+            return;
+        }
         $teacher = $user->teacher;
-        if (! $teacher || $announcement->teacher_id !== $teacher->id) abort(403);
+        if (! $teacher || $announcement->teacher_id !== $teacher->id) {
+            abort(403);
+        }
     }
 }

@@ -17,7 +17,9 @@ class AnnouncementWebController extends Controller
         $query = Announcement::with(['teacher.user', 'schoolClass']);
         if ($request->user()->isTeacher()) {
             $teacher = $request->user()->teacher;
-            if ($teacher) $query->where('teacher_id', $teacher->id);
+            if ($teacher) {
+                $query->where('teacher_id', $teacher->id);
+            }
         }
         $announcements = $query->orderBy('publish_date', 'desc')->get();
 
@@ -27,6 +29,7 @@ class AnnouncementWebController extends Controller
     public function create(Request $request)
     {
         $classes = $this->scopedClasses($request);
+
         return view('announcements.create', compact('classes'));
     }
 
@@ -36,10 +39,14 @@ class AnnouncementWebController extends Controller
         $teacher = null;
         if ($user->isTeacher()) {
             $teacher = $user->teacher;
-            if (! $teacher) abort(403);
+            if (! $teacher) {
+                abort(403);
+            }
             if ($request->class_id) {
                 $class = SchoolClass::find($request->class_id);
-                if (! $class || $class->teacher_id !== $teacher->id) abort(403);
+                if (! $class || $class->teacher_id !== $teacher->id) {
+                    abort(403);
+                }
             }
         } else {
             $teacher = Teacher::find($request->teacher_id) ?? null;
@@ -57,6 +64,7 @@ class AnnouncementWebController extends Controller
     {
         $this->authorizeAccess($request, $announcement);
         $announcement->load(['teacher.user', 'schoolClass']);
+
         return view('announcements.show', compact('announcement'));
     }
 
@@ -64,6 +72,7 @@ class AnnouncementWebController extends Controller
     {
         $this->authorizeAccess($request, $announcement);
         $classes = $this->scopedClasses($request);
+
         return view('announcements.edit', compact('announcement', 'classes'));
     }
 
@@ -71,6 +80,7 @@ class AnnouncementWebController extends Controller
     {
         $this->authorizeAccess($request, $announcement);
         $announcement->update($request->validated());
+
         return redirect('/announcements')->with('status', 'Announcement updated.');
     }
 
@@ -78,6 +88,7 @@ class AnnouncementWebController extends Controller
     {
         $this->authorizeAccess($request, $announcement);
         $announcement->delete();
+
         return redirect('/announcements')->with('status', 'Announcement deleted.');
     }
 
@@ -86,16 +97,23 @@ class AnnouncementWebController extends Controller
         $q = SchoolClass::query();
         if ($request->user()->isTeacher()) {
             $teacher = $request->user()->teacher;
-            if ($teacher) $q->where('teacher_id', $teacher->id);
+            if ($teacher) {
+                $q->where('teacher_id', $teacher->id);
+            }
         }
+
         return $q->orderBy('class_name')->get();
     }
 
     private function authorizeAccess(Request $request, Announcement $announcement): void
     {
         $user = $request->user();
-        if ($user->isAdmin()) return;
+        if ($user->isAdmin()) {
+            return;
+        }
         $teacher = $user->teacher;
-        if (! $teacher || $announcement->teacher_id !== $teacher->id) abort(403);
+        if (! $teacher || $announcement->teacher_id !== $teacher->id) {
+            abort(403);
+        }
     }
 }

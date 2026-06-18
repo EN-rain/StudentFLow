@@ -68,6 +68,7 @@ class ClassController extends Controller
     {
         $this->authorizeAccess($request, $class);
         $class->delete();
+
         return response()->json(['message' => 'Class deleted.']);
     }
 

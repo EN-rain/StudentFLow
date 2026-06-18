@@ -22,7 +22,7 @@ class ClassAnnouncementMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: '[' . ($this->announcement->priority ?? 'Normal') . '] ' . $this->announcement->title,
+            subject: '['.($this->announcement->priority ?? 'Normal').'] '.$this->announcement->title,
         );
     }
 

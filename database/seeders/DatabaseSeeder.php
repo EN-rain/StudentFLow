@@ -2,21 +2,18 @@
 
 namespace Database\Seeders;
 
-use App\Models\Announcement;
 use App\Models\Assignment;
 use App\Models\AssignmentSubmission;
 use App\Models\Attendance;
-use App\Models\ClassStudent;
 use App\Models\GradeCategory;
 use App\Models\GradeItem;
 use App\Models\SchoolClass;
 use App\Models\SchoolSetting;
 use App\Models\Student;
-use App\Models\StudentGrade;
 use App\Models\Teacher;
 use App\Models\User;
-use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -31,6 +28,10 @@ class DatabaseSeeder extends Seeder
 
     public function run(): void
     {
+        if (app()->environment('production') && ! config('studentflow.allow_demo_seed', false)) {
+            throw new \RuntimeException('Refusing to run the destructive demo seeder directly in production.');
+        }
+
         $driver = DB::connection()->getDriverName();
         $usesSqlitePragma = $driver === 'sqlite';
 
@@ -121,7 +122,7 @@ class DatabaseSeeder extends Seeder
         $actual = User::whereIn('username', $expected)->pluck('username')->all();
         $missing = array_values(array_diff($expected, $actual));
         if ($missing !== []) {
-            throw new \RuntimeException('Seeder failed to persist expected users: ' . implode(', ', $missing));
+            throw new \RuntimeException('Seeder failed to persist expected users: '.implode(', ', $missing));
         }
 
         $this->seededUsers = User::whereIn('username', $expected)->pluck('id', 'username')->all();
@@ -542,7 +543,9 @@ class DatabaseSeeder extends Seeder
         DB::table('assignment_submissions')->truncate();
 
         $assignment = Assignment::where('title', 'Java Student Record Program')->first();
-        if (! $assignment) return;
+        if (! $assignment) {
+            return;
+        }
 
         $statuses = [
             '2026-0001' => ['Submitted', 45, '2026-06-22 10:00:00'],
@@ -682,5 +685,3 @@ class DatabaseSeeder extends Seeder
         return Str::password(32);
     }
 }
-
-

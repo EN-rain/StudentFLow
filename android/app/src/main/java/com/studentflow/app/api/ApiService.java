@@ -27,6 +27,9 @@ public interface ApiService {
     @POST("auth/github")
     Call<LoginResponse> githubLogin(@Body JsonObject request);
 
+    @POST("auth/mobile-exchange")
+    Call<LoginResponse> mobileExchange(@Body JsonObject request);
+
     @POST("auth/logout")
     Call<JsonObject> logout();
 
@@ -155,6 +158,9 @@ public interface ApiService {
 
     @POST("student/exams/{attemptId}/submit")
     Call<JsonObject> submitStudentExam(@Path("attemptId") int attemptId, @Body JsonObject request);
+
+    @POST("exam/magic/{token}/start")
+    Call<JsonObject> startMagicExam(@Path("token") String token);
 
     @GET("exam/magic/{token}")
     Call<JsonObject> magicExam(@Path("token") String token);

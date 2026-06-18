@@ -22,6 +22,7 @@ class AdminActivityLogController extends Controller
         if ($to = $request->query('to')) {
             $query->whereDate('created_at', '<=', $to);
         }
+
         return response()->json(['data' => $query->limit(500)->get()]);
     }
 }

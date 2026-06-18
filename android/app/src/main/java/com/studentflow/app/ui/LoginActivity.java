@@ -30,6 +30,8 @@ import com.studentflow.app.data.TokenStore;
 import com.studentflow.app.models.LoginRequest;
 import com.studentflow.app.models.LoginResponse;
 
+import java.util.UUID;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -234,12 +236,14 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void startGithubLogin() {
+        String state = "android:" + UUID.randomUUID();
+        tokenStore.saveOauthState(state);
         Uri uri = Uri.parse("https://github.com/login/oauth/authorize")
                 .buildUpon()
                 .appendQueryParameter("client_id", Constants.GITHUB_CLIENT_ID)
                 .appendQueryParameter("redirect_uri", Constants.GITHUB_REDIRECT_URI)
                 .appendQueryParameter("scope", "read:user user:email")
-                .appendQueryParameter("state", "android")
+                .appendQueryParameter("state", state)
                 .build();
         message.setText("Opening GitHub sign-in...");
         new CustomTabsIntent.Builder().build().launchUrl(this, uri);
@@ -289,24 +293,38 @@ public class LoginActivity extends AppCompatActivity {
             message.setText("GitHub sign-in failed: " + error);
             return;
         }
-        String code = uri.getQueryParameter("code");
-        if (code != null && !code.trim().isEmpty()) {
-            submitSocial("github", code, Constants.GITHUB_REDIRECT_URI);
+        String returnedState = uri.getQueryParameter("state");
+        String expectedState = tokenStore.consumeOauthState();
+        if (expectedState == null || returnedState == null || !expectedState.equals(returnedState)) {
+            message.setText("GitHub sign-in state validation failed.");
             return;
         }
-        String token = uri.getQueryParameter("token");
-        String user = uri.getQueryParameter("user");
-        if (token == null || token.trim().isEmpty()) {
-            message.setText("GitHub sign-in did not return an app token.");
+
+        String exchangeCode = uri.getQueryParameter("exchange_code");
+        if (exchangeCode == null || exchangeCode.trim().isEmpty()) {
+            message.setText("GitHub sign-in did not return an exchange code.");
             return;
         }
-        try {
-            tokenStore.saveSession(token, user == null ? "{}" : JsonParser.parseString(user).getAsJsonObject().toString());
-            ApiClient.reset();
-            openMain();
-        } catch (RuntimeException e) {
-            message.setText("GitHub sign-in response was invalid.");
-        }
+
+        JsonObject payload = new JsonObject();
+        payload.addProperty("exchange_code", exchangeCode);
+        payload.addProperty("state", returnedState);
+        ApiClient.service(this).mobileExchange(payload).enqueue(new Callback<LoginResponse>() {
+            @Override
+            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+                LoginResponse body = response.body();
+                if (response.isSuccessful() && body != null && body.token != null) {
+                    saveAndOpen(body);
+                } else {
+                    message.setText("GitHub sign-in failed: " + errorMessage(response));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<LoginResponse> call, Throwable t) {
+                message.setText("Network error: " + t.getMessage());
+            }
+        });
     }
 
     private void submitSocial(String provider, String value) {

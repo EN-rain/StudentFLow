@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Assignment;
 use App\Models\SchoolClass;
 use App\Models\Student;
 use Illuminate\Http\JsonResponse;
@@ -26,10 +25,13 @@ class ReportController extends Controller
         if ($type === 'student-profile') {
             $student = Student::with('classes.teacher.user', 'attendance', 'grades.gradeItem.category', 'assignmentSubmissions.assignment')->findOrFail($request->query('student_id'));
             $this->authorizeStudent($request, $student);
+
             return response()->json(['data' => $student]);
         }
 
-        if (! $class) abort(400, 'class_id query parameter is required.');
+        if (! $class) {
+            abort(400, 'class_id query parameter is required.');
+        }
 
         return response()->json(['data' => [
             'type' => $type,
@@ -57,6 +59,7 @@ class ReportController extends Controller
             $records = $student->attendance()->where('class_id', $class->id)->get();
             $total = $records->count();
             $present = $records->whereIn('status', ['Present', 'Late'])->count();
+
             return [
                 'student_number' => $student->student_number,
                 'name' => $student->full_name,
@@ -79,20 +82,26 @@ class ReportController extends Controller
                 $ratios = [];
                 foreach ($cat->items as $item) {
                     $grade = $item->studentGrades->firstWhere('student_id', $student->id);
-                    if ($grade && (float) $item->maximum_score > 0) $ratios[] = (float) $grade->score / (float) $item->maximum_score;
+                    if ($grade && (float) $item->maximum_score > 0) {
+                        $ratios[] = (float) $grade->score / (float) $item->maximum_score;
+                    }
                 }
                 $final += (count($ratios) ? array_sum($ratios) / count($ratios) : 0) * (float) $cat->percentage_weight;
             }
             $rows[] = ['student_number' => $student->student_number, 'name' => $student->full_name, 'final_grade' => round($final, 2), 'status' => $final >= 75 ? 'Pass' : 'Fail'];
         }
         usort($rows, fn ($a, $b) => $b['final_grade'] <=> $a['final_grade']);
-        foreach ($rows as $i => &$row) $row['rank'] = $i + 1;
+        foreach ($rows as $i => &$row) {
+            $row['rank'] = $i + 1;
+        }
+
         return $rows;
     }
 
     private function performanceRows(SchoolClass $class): array
     {
         $grades = collect($this->gradeRows($class))->keyBy('student_number');
+
         return collect($this->attendanceRows($class))->map(fn ($r) => $r + ($grades[$r['student_number']] ?? []))->values()->all();
     }
 
@@ -113,21 +122,30 @@ class ReportController extends Controller
                 }
             }
         }
+
         return $rows;
     }
 
     private function authorizeClass(Request $request, SchoolClass $class): void
     {
-        if ($request->user()->isAdmin()) return;
+        if ($request->user()->isAdmin()) {
+            return;
+        }
         $teacher = $request->user()->teacher;
-        if (! $teacher || $class->teacher_id !== $teacher->id) abort(403);
+        if (! $teacher || $class->teacher_id !== $teacher->id) {
+            abort(403);
+        }
     }
 
     private function authorizeStudent(Request $request, Student $student): void
     {
-        if ($request->user()->isAdmin()) return;
+        if ($request->user()->isAdmin()) {
+            return;
+        }
         $teacher = $request->user()->teacher;
         $allowed = $teacher && $student->classes()->where('teacher_id', $teacher->id)->exists();
-        if (! $allowed) abort(403);
+        if (! $allowed) {
+            abort(403);
+        }
     }
 }

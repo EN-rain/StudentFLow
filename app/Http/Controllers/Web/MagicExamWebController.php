@@ -15,12 +15,32 @@ class MagicExamWebController extends Controller
             ->where('magic_token', $token)
             ->firstOrFail();
 
-        if (! $attempt->started_at && $attempt->status !== 'submitted') {
-            $attempt->update(['started_at' => now(), 'status' => 'in_progress']);
-            $attempt->refresh();
+        return view('exams.magic', compact('attempt'));
+    }
+
+    public function start(string $token)
+    {
+        $attempt = ExamAttempt::with('exam')->where('magic_token', $token)->firstOrFail();
+
+        if ($attempt->status === 'submitted') {
+            abort(422, 'Exam already submitted.');
+        }
+        if ($attempt->exam->status !== 'published') {
+            abort(422, 'Exam is not open.');
+        }
+        if ($attempt->exam->available_from && now()->lessThan($attempt->exam->available_from)) {
+            abort(422, 'Exam is not available yet.');
+        }
+        if ($attempt->exam->due_at && now()->greaterThan($attempt->exam->due_at)) {
+            $attempt->update(['status' => 'expired']);
+            abort(422, 'Exam link has expired.');
         }
 
-        return view('exams.magic', compact('attempt'));
+        if (! $attempt->started_at) {
+            $attempt->update(['started_at' => now(), 'status' => 'in_progress']);
+        }
+
+        return redirect("/exam/magic/{$token}");
     }
 
     public function submit(Request $request, string $token)

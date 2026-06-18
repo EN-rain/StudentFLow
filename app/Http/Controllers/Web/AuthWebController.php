@@ -26,7 +26,7 @@ class AuthWebController extends Controller
             'password' => 'required|string',
         ]);
 
-        $user = \App\Models\User::where('username', $payload['username'])
+        $user = User::where('username', $payload['username'])
             ->orWhere('email', $payload['username'])
             ->first();
 
@@ -42,6 +42,12 @@ class AuthWebController extends Controller
             ]);
         }
 
+        if ($user->isStudent()) {
+            throw ValidationException::withMessages([
+                'username' => 'Students must sign in through the StudentFlow mobile app.',
+            ]);
+        }
+
         Auth::login($user, $request->boolean('remember'));
         $request->session()->regenerate();
 
@@ -53,6 +59,7 @@ class AuthWebController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
         return redirect('/login');
     }
 
@@ -109,6 +116,7 @@ class AuthWebController extends Controller
                 'remember_token' => Str::random(60),
                 'status' => 'active',
             ])->save();
+            $user->tokens()->delete();
         });
 
         if ($status !== Password::PASSWORD_RESET) {
@@ -131,6 +139,7 @@ class AuthWebController extends Controller
                 'password' => Hash::make($password),
                 'remember_token' => Str::random(60),
             ])->save();
+            $user->tokens()->delete();
         });
 
         if ($status !== Password::PASSWORD_RESET) {
@@ -160,7 +169,10 @@ class AuthWebController extends Controller
         }
 
         $user->password = Hash::make($payload['new_password']);
+        $user->setRememberToken(Str::random(60));
         $user->save();
+        $user->tokens()->delete();
+        $request->session()->regenerate();
 
         return back()->with('status', 'Password changed.');
     }

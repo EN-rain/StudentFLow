@@ -40,13 +40,21 @@ class StudentPortalController extends Controller
     public function announcements(Request $request): JsonResponse
     {
         $classIds = $this->student($request)->classes()->pluck('classes.id');
+
         return response()->json(['data' => Announcement::with('teacher.user', 'schoolClass')->whereIn('class_id', $classIds)->orderByDesc('publish_date')->get()]);
     }
 
     public function assignments(Request $request): JsonResponse
     {
-        $classIds = $this->student($request)->classes()->pluck('classes.id');
-        return response()->json(['data' => Assignment::with('schoolClass', 'submissions')->whereIn('class_id', $classIds)->orderByDesc('deadline')->get()]);
+        $student = $this->student($request);
+        $classIds = $student->classes()->pluck('classes.id');
+
+        $assignments = Assignment::with([
+            'schoolClass',
+            'submissions' => fn ($query) => $query->where('student_id', $student->id),
+        ])->whereIn('class_id', $classIds)->orderByDesc('deadline')->get();
+
+        return response()->json(['data' => $assignments]);
     }
 
     public function grades(Request $request): JsonResponse
@@ -84,7 +92,10 @@ class StudentPortalController extends Controller
     private function student(Request $request)
     {
         $student = $request->user()->student;
-        if (! $student) abort(403, 'No student profile linked to this account.');
+        if (! $student) {
+            abort(403, 'No student profile linked to this account.');
+        }
+
         return $student;
     }
 }

@@ -144,6 +144,7 @@ class AttendanceController extends Controller
             'remarks' => 'nullable|string|max:255',
         ]);
         $attendance->update($payload);
+
         return response()->json(['data' => $attendance]);
     }
 
@@ -151,6 +152,7 @@ class AttendanceController extends Controller
     {
         $this->authorizeClassAccess($request, $attendance->class_id);
         $attendance->delete();
+
         return response()->json(['message' => 'Attendance record deleted.']);
     }
 
@@ -163,16 +165,23 @@ class AttendanceController extends Controller
         $present = Attendance::where('student_id', $studentId)
             ->whereIn('status', ['Present', 'Late'])->count();
         $pct = $total > 0 ? round($present / $total * 100, 1) : null;
+
         return response()->json(['data' => ['student_id' => $studentId, 'total' => $total, 'present_or_late' => $present, 'percentage' => $pct]]);
     }
 
     private function authorizeClassAccess(Request $request, int $classId): void
     {
         $user = $request->user();
-        if ($user->isAdmin()) return;
+        if ($user->isAdmin()) {
+            return;
+        }
         $teacher = $user->teacher;
-        if (! $teacher) abort(403);
+        if (! $teacher) {
+            abort(403);
+        }
         $class = SchoolClass::find($classId);
-        if (! $class || $class->teacher_id !== $teacher->id) abort(403, 'You can only manage attendance for your own classes.');
+        if (! $class || $class->teacher_id !== $teacher->id) {
+            abort(403, 'You can only manage attendance for your own classes.');
+        }
     }
 }

@@ -78,16 +78,18 @@ class StudentSocialUserResolver
     private static function splitName(string $name): array
     {
         $parts = preg_split('/\s+/', trim($name), 2);
+
         return [$parts[0] ?: 'Student', $parts[1] ?? 'User'];
     }
 
     private static function nextStudentNumber(): string
     {
         $year = now()->format('Y');
-        $latest = Student::where('student_number', 'like', $year . '-%')
+        $latest = Student::where('student_number', 'like', $year.'-%')
             ->orderByDesc('student_number')
             ->value('student_number');
         $next = $latest ? ((int) substr($latest, -4)) + 1 : 1;
+
         return sprintf('%s-%04d', $year, $next);
     }
 }

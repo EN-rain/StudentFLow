@@ -14,6 +14,7 @@ class EnrollmentController extends Controller
     public function index(Request $request, SchoolClass $class): JsonResponse
     {
         $this->authorizeClass($request, $class);
+
         return response()->json(['data' => $class->students()->orderBy('last_name')->get()]);
     }
 
@@ -43,6 +44,7 @@ class EnrollmentController extends Controller
         ]);
 
         ActivityLogger::log($request, 'enrollment.saved', $class, ['student_id' => $payload['student_id']]);
+
         return response()->json(['data' => Student::find($payload['student_id'])->load('classes')], 201);
     }
 
@@ -55,6 +57,7 @@ class EnrollmentController extends Controller
         ]);
         $class->students()->updateExistingPivot($student->id, $payload);
         ActivityLogger::log($request, 'enrollment.updated', $class, ['student_id' => $student->id, 'status' => $payload['status']]);
+
         return response()->json(['data' => $student->load('classes')]);
     }
 
@@ -63,14 +66,19 @@ class EnrollmentController extends Controller
         $this->authorizeClass($request, $class);
         $class->students()->detach($student->id);
         ActivityLogger::log($request, 'enrollment.removed', $class, ['student_id' => $student->id]);
+
         return response()->json(['message' => 'Student removed from class.']);
     }
 
     private function authorizeClass(Request $request, SchoolClass $class): void
     {
         $user = $request->user();
-        if ($user->isAdmin()) return;
+        if ($user->isAdmin()) {
+            return;
+        }
         $teacher = $user->teacher;
-        if (! $teacher || $class->teacher_id !== $teacher->id) abort(403);
+        if (! $teacher || $class->teacher_id !== $teacher->id) {
+            abort(403);
+        }
     }
 }

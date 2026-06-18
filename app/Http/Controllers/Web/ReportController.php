@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
-use App\Models\Assignment;
 use App\Models\SchoolClass;
 use App\Models\Student;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -21,9 +20,12 @@ class ReportController extends Controller
         $query = SchoolClass::query();
         if ($request->user()->isTeacher()) {
             $teacher = $request->user()->teacher;
-            if ($teacher) $query->where('teacher_id', $teacher->id);
+            if ($teacher) {
+                $query->where('teacher_id', $teacher->id);
+            }
         }
         $classes = $query->orderBy('class_name')->get();
+
         return view('reports.index', compact('classes'));
     }
 
@@ -35,11 +37,14 @@ class ReportController extends Controller
     {
         $this->authorizeType($type);
         $class = $type === 'student-profile' ? null : $this->resolveClass($request);
-        if ($class) $this->authorizeAccess($request, $class);
+        if ($class) {
+            $this->authorizeAccess($request, $class);
+        }
 
         $data = $this->buildReportData($request, $type, $class);
 
         $view = view()->exists("reports.{$type}") ? "reports.{$type}" : 'reports.table';
+
         return view($view, array_merge($data, ['class' => $class, 'type' => $type]));
     }
 
@@ -51,7 +56,9 @@ class ReportController extends Controller
     {
         $this->authorizeType($type);
         $class = $type === 'student-profile' ? null : $this->resolveClass($request);
-        if ($class) $this->authorizeAccess($request, $class);
+        if ($class) {
+            $this->authorizeAccess($request, $class);
+        }
 
         $data = $this->buildReportData($request, $type, $class);
         $viewName = view()->exists("reports.{$type}") ? "reports.{$type}" : 'reports.table';
@@ -59,6 +66,7 @@ class ReportController extends Controller
 
         $pdf = Pdf::loadHTML($view)->setPaper('a4', 'portrait');
         $suffix = $class ? "class{$class->id}" : 'student';
+
         return $pdf->download("{$type}_{$suffix}.pdf");
     }
 
@@ -70,7 +78,9 @@ class ReportController extends Controller
     {
         $this->authorizeType($type);
         $class = $type === 'student-profile' ? null : $this->resolveClass($request);
-        if ($class) $this->authorizeAccess($request, $class);
+        if ($class) {
+            $this->authorizeAccess($request, $class);
+        }
 
         $data = $this->buildReportData($request, $type, $class);
 
@@ -91,8 +101,11 @@ class ReportController extends Controller
     {
         if ($type === 'student-profile') {
             $student = Student::with('classes.teacher.user', 'attendance', 'grades.gradeItem.category', 'assignmentSubmissions.assignment')->find($request->query('student_id'));
-            if (! $student) abort(400, 'student_id query parameter is required.');
+            if (! $student) {
+                abort(400, 'student_id query parameter is required.');
+            }
             $this->authorizeStudent($request, $student);
+
             return [
                 'student' => $student,
                 'rows' => [[
@@ -119,10 +132,12 @@ class ReportController extends Controller
         }
         if ($type === 'failing-grades') {
             $grades = $this->gradesData($class);
+
             return ['rows' => array_values(array_filter($grades['rows'], fn ($r) => $r['final_grade'] < 75)), 'classAverage' => $grades['classAverage'], 'title' => 'Students With Failing Grades'];
         }
         if ($type === 'frequent-absences') {
             $attendance = $this->attendanceData($class);
+
             return ['rows' => array_values(array_filter($attendance['rows'], fn ($r) => $r['absent'] >= 2 || ($r['percentage'] !== null && $r['percentage'] < 80))), 'title' => 'Students With Frequent Absences'];
         }
 
@@ -143,6 +158,7 @@ class ReportController extends Controller
         // Sort by rank
         uasort($byStudent, fn ($a, $b) => ($a['rank'] ?? PHP_INT_MAX) <=> ($b['rank'] ?? PHP_INT_MAX));
         $rows = array_values($byStudent);
+
         return ['rows' => $rows, 'classAverage' => $grades['classAverage']];
     }
 
@@ -164,6 +180,7 @@ class ReportController extends Controller
                 }
             }
         }
+
         return $rows;
     }
 
@@ -190,6 +207,7 @@ class ReportController extends Controller
                 'percentage' => $pct,
             ];
         }
+
         return ['rows' => $rows, 'classSize' => $classSize];
     }
 
@@ -204,9 +222,13 @@ class ReportController extends Controller
             foreach ($class->gradeCategories as $cat) {
                 $ratios = [];
                 foreach ($cat->items as $item) {
-                    if ((float) $item->maximum_score <= 0) continue;
+                    if ((float) $item->maximum_score <= 0) {
+                        continue;
+                    }
                     $sg = $item->studentGrades->firstWhere('student_id', $student->id);
-                    if (! $sg) continue;
+                    if (! $sg) {
+                        continue;
+                    }
                     $ratios[] = ((float) $sg->score) / ((float) $item->maximum_score);
                 }
                 $catAvg = count($ratios) > 0 ? array_sum($ratios) / count($ratios) : 0.0;
@@ -253,6 +275,7 @@ class ReportController extends Controller
             foreach ($rows as $r) {
                 $out[] = [$r['student_number'], $r['name'], $r['total'], $r['present'], $r['absent'], $r['late'], $r['excused'], $r['percentage']];
             }
+
             return $out;
         }
         if ($type === 'grades') {
@@ -260,25 +283,36 @@ class ReportController extends Controller
             foreach ($rows as $r) {
                 $out[] = [$r['rank'], $r['student_number'], $r['name'], $r['final_grade'], $r['status']];
             }
+
             return $out;
         }
         if ($type === 'student-profile') {
             $row = $rows[0] ?? [];
+
             return [array_keys($row), array_values($row)];
         }
         if ($type === 'missing-assignments') {
             $out = [['Assignment', 'Student Number', 'Name', 'Deadline', 'Status']];
-            foreach ($rows as $r) $out[] = [$r['assignment'], $r['student_number'], $r['name'], $r['deadline'], $r['status']];
+            foreach ($rows as $r) {
+                $out[] = [$r['assignment'], $r['student_number'], $r['name'], $r['deadline'], $r['status']];
+            }
+
             return $out;
         }
         if ($type === 'failing-grades') {
             $out = [['Rank', 'Student Number', 'Name', 'Final Grade', 'Status']];
-            foreach ($rows as $r) $out[] = [$r['rank'], $r['student_number'], $r['name'], $r['final_grade'], $r['status']];
+            foreach ($rows as $r) {
+                $out[] = [$r['rank'], $r['student_number'], $r['name'], $r['final_grade'], $r['status']];
+            }
+
             return $out;
         }
         if ($type === 'frequent-absences') {
             $out = [['Student Number', 'Name', 'Total Records', 'Present/Late', 'Absent', 'Late', 'Excused', 'Attendance %']];
-            foreach ($rows as $r) $out[] = [$r['student_number'], $r['name'], $r['total'], $r['present'], $r['absent'], $r['late'], $r['excused'], $r['percentage']];
+            foreach ($rows as $r) {
+                $out[] = [$r['student_number'], $r['name'], $r['total'], $r['present'], $r['absent'], $r['late'], $r['excused'], $r['percentage']];
+            }
+
             return $out;
         }
         // class-performance: rows are already joined (attendance + grade per student)
@@ -287,20 +321,26 @@ class ReportController extends Controller
             $out[] = [
                 $r['student_number'],
                 $r['name'],
-                $r['percentage'] !== null ? $r['percentage'] . '%' : 'N/A',
+                $r['percentage'] !== null ? $r['percentage'].'%' : 'N/A',
                 $r['final_grade'] ?? 'N/A',
                 $r['status'] ?? 'N/A',
             ];
         }
+
         return $out;
     }
 
     private function resolveClass(Request $request): SchoolClass
     {
         $classId = $request->query('class_id');
-        if (! $classId) abort(400, 'class_id query parameter is required.');
+        if (! $classId) {
+            abort(400, 'class_id query parameter is required.');
+        }
         $class = SchoolClass::find($classId);
-        if (! $class) abort(404, 'Class not found.');
+        if (! $class) {
+            abort(404, 'Class not found.');
+        }
+
         return $class;
     }
 
@@ -314,16 +354,24 @@ class ReportController extends Controller
     private function authorizeAccess(Request $request, SchoolClass $class): void
     {
         $user = $request->user();
-        if ($user->isAdmin()) return;
+        if ($user->isAdmin()) {
+            return;
+        }
         $teacher = $user->teacher;
-        if (! $teacher || $class->teacher_id !== $teacher->id) abort(403);
+        if (! $teacher || $class->teacher_id !== $teacher->id) {
+            abort(403);
+        }
     }
 
     private function authorizeStudent(Request $request, Student $student): void
     {
         $user = $request->user();
-        if ($user->isAdmin()) return;
+        if ($user->isAdmin()) {
+            return;
+        }
         $teacher = $user->teacher;
-        if (! $teacher || ! $student->classes()->where('teacher_id', $teacher->id)->exists()) abort(403);
+        if (! $teacher || ! $student->classes()->where('teacher_id', $teacher->id)->exists()) {
+            abort(403);
+        }
     }
 }

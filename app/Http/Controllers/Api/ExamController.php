@@ -21,9 +21,12 @@ class ExamController extends Controller
         $query = Exam::with('schoolClass', 'questions', 'attempts.student');
         if ($request->user()->isTeacher()) {
             $teacher = $request->user()->teacher;
-            if (! $teacher) return response()->json(['data' => []]);
+            if (! $teacher) {
+                return response()->json(['data' => []]);
+            }
             $query->where('teacher_id', $teacher->id);
         }
+
         return response()->json(['data' => $query->orderByDesc('created_at')->get()]);
     }
 
@@ -52,7 +55,9 @@ class ExamController extends Controller
 
         if (! empty($payload['grade_item_id'])) {
             $item = GradeItem::findOrFail($payload['grade_item_id']);
-            if ($item->class_id !== $class->id) abort(422, 'Grade item must belong to the selected class.');
+            if ($item->class_id !== $class->id) {
+                abort(422, 'Grade item must belong to the selected class.');
+            }
         }
 
         $exam = DB::transaction(function () use ($payload, $class, $request) {
@@ -74,6 +79,7 @@ class ExamController extends Controller
             }
 
             ActivityLogger::log($request, 'exam.created', $exam);
+
             return $exam;
         });
 
@@ -83,6 +89,7 @@ class ExamController extends Controller
     public function show(Request $request, Exam $exam): JsonResponse
     {
         $this->authorizeExam($request, $exam);
+
         return response()->json(['data' => $exam->load('schoolClass', 'questions', 'attempts.student.user')]);
     }
 
@@ -92,6 +99,7 @@ class ExamController extends Controller
         $exam->update(['status' => 'published']);
         $exam->assignEnrolledStudents();
         ActivityLogger::log($request, 'exam.published', $exam);
+
         return response()->json(['data' => $exam->load('attempts.student')]);
     }
 
@@ -118,23 +126,40 @@ class ExamController extends Controller
                 'started_at' => $attempt->started_at,
                 'submitted_at' => $attempt->submitted_at,
                 'score' => $attempt->score,
-                'magic_url' => url('/exam/magic/' . $attempt->magic_token),
+                'magic_url' => url('/exam/magic/'.$attempt->magic_token),
             ])->values(),
         ]]);
+    }
+
+    public function startAttempt(Request $request, ExamAttempt $attempt): JsonResponse
+    {
+        $student = $request->user()->student;
+        if (! $student || $attempt->student_id !== $student->id) {
+            abort(403);
+        }
+
+        return $this->start($attempt);
     }
 
     public function submitAttempt(Request $request, ExamAttempt $attempt): JsonResponse
     {
         $student = $request->user()->student;
-        if (! $student || $attempt->student_id !== $student->id) abort(403);
+        if (! $student || $attempt->student_id !== $student->id) {
+            abort(403);
+        }
+
         return $this->submit($request, $attempt);
     }
 
     public function submit(Request $request, ExamAttempt $attempt): JsonResponse
     {
         $attempt->load('exam.questions', 'student');
-        if ($attempt->status === 'submitted') abort(422, 'Exam already submitted.');
-        if ($attempt->exam->status !== 'published') abort(422, 'Exam is not open.');
+        if ($attempt->status === 'submitted') {
+            abort(422, 'Exam already submitted.');
+        }
+        if ($attempt->exam->status !== 'published') {
+            abort(422, 'Exam is not open.');
+        }
         if ($attempt->exam->due_at && now()->greaterThan($attempt->exam->due_at)) {
             $attempt->update(['status' => 'expired']);
             abort(422, 'Exam link has expired.');
@@ -151,19 +176,90 @@ class ExamController extends Controller
         return response()->json(['data' => $attempt, 'score' => (float) $attempt->score]);
     }
 
+    public function magicStart(string $token): JsonResponse
+    {
+        $attempt = ExamAttempt::with('exam')->where('magic_token', $token)->firstOrFail();
+
+        return $this->start($attempt);
+    }
+
     public function magicShow(string $token): JsonResponse
     {
-        $attempt = ExamAttempt::with('exam.questions', 'exam.schoolClass', 'student')->where('magic_token', $token)->firstOrFail();
-        if (! $attempt->started_at) {
-            $attempt->update(['started_at' => now(), 'status' => 'in_progress']);
+        $attempt = ExamAttempt::with('exam.questions', 'exam.schoolClass', 'student')
+            ->where('magic_token', $token)
+            ->firstOrFail();
+
+        if (! $attempt->started_at && $attempt->status !== 'submitted') {
+            abort(409, 'Exam must be started before questions can be viewed.');
         }
-        return response()->json(['data' => $attempt->fresh('exam.questions', 'exam.schoolClass', 'student')]);
+        if ($attempt->exam->available_from && now()->lessThan($attempt->exam->available_from)) {
+            abort(422, 'Exam is not available yet.');
+        }
+
+        return response()->json(['data' => [
+            'id' => $attempt->id,
+            'status' => $attempt->status,
+            'started_at' => $attempt->started_at,
+            'submitted_at' => $attempt->submitted_at,
+            'score' => $attempt->score,
+            'student' => [
+                'student_number' => $attempt->student->student_number,
+                'name' => $attempt->student->full_name,
+            ],
+            'exam' => [
+                'id' => $attempt->exam->id,
+                'title' => $attempt->exam->title,
+                'instructions' => $attempt->exam->instructions,
+                'available_from' => $attempt->exam->available_from,
+                'due_at' => $attempt->exam->due_at,
+                'duration_minutes' => $attempt->exam->duration_minutes,
+                'maximum_score' => $attempt->exam->maximum_score,
+                'class' => [
+                    'id' => $attempt->exam->schoolClass->id,
+                    'class_name' => $attempt->exam->schoolClass->class_name,
+                    'subject' => $attempt->exam->schoolClass->subject,
+                ],
+                'questions' => $attempt->exam->questions->map(fn ($question) => [
+                    'id' => $question->id,
+                    'prompt' => $question->prompt,
+                    'type' => $question->type,
+                    'choices' => $question->choices,
+                    'points' => $question->points,
+                    'sort_order' => $question->sort_order,
+                ])->values(),
+            ],
+        ]]);
     }
 
     public function magicSubmit(Request $request, string $token): JsonResponse
     {
         $attempt = ExamAttempt::where('magic_token', $token)->firstOrFail();
+
         return $this->submit($request, $attempt);
+    }
+
+    private function start(ExamAttempt $attempt): JsonResponse
+    {
+        $attempt->loadMissing('exam');
+        if ($attempt->status === 'submitted') {
+            abort(422, 'Exam already submitted.');
+        }
+        if ($attempt->exam->status !== 'published') {
+            abort(422, 'Exam is not open.');
+        }
+        if ($attempt->exam->available_from && now()->lessThan($attempt->exam->available_from)) {
+            abort(422, 'Exam is not available yet.');
+        }
+        if ($attempt->exam->due_at && now()->greaterThan($attempt->exam->due_at)) {
+            $attempt->update(['status' => 'expired']);
+            abort(422, 'Exam link has expired.');
+        }
+
+        if (! $attempt->started_at) {
+            $attempt->update(['started_at' => now(), 'status' => 'in_progress']);
+        }
+
+        return response()->json(['data' => $attempt->fresh()]);
     }
 
     private function authorizeExam(Request $request, Exam $exam): void
@@ -175,8 +271,12 @@ class ExamController extends Controller
     private function authorizeClass(Request $request, SchoolClass $class): void
     {
         $user = $request->user();
-        if ($user->isAdmin()) return;
+        if ($user->isAdmin()) {
+            return;
+        }
         $teacher = $user->teacher;
-        if (! $teacher || $class->teacher_id !== $teacher->id) abort(403);
+        if (! $teacher || $class->teacher_id !== $teacher->id) {
+            abort(403);
+        }
     }
 }
