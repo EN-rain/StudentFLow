@@ -1,16 +1,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:checkableBehavior="single">
-        <item android:id="@+id/nav_dashboard" android:title="Dashboard" />
-        <item android:id="@+id/nav_classes" android:title="Classes" />
-        <item android:id="@+id/nav_students" android:title="Students" />
-        <item android:id="@+id/nav_attendance" android:title="Attendance" />
-        <item android:id="@+id/nav_grades" android:title="Grades" />
-        <item android:id="@+id/nav_assignments" android:title="Assignments" />
-        <item android:id="@+id/nav_announcements" android:title="Announcements" />
-        <item android:id="@+id/nav_exams" android:title="Exams" />
-        <item android:id="@+id/nav_reports" android:title="Reports" />
-        <item android:id="@+id/nav_qa_tests" android:title="QA Tests" />
-        <item android:id="@+id/nav_profile" android:title="Profile" />
+        <item android:id="@+id/nav_dashboard" android:icon="@android:drawable/ic_menu_view" android:title="Dashboard" />
+        <item android:id="@+id/nav_classes" android:icon="@android:drawable/ic_menu_agenda" android:title="Classes" />
+        <item android:id="@+id/nav_students" android:icon="@android:drawable/ic_menu_myplaces" android:title="Students" />
+        <item android:id="@+id/nav_attendance" android:icon="@android:drawable/ic_menu_today" android:title="Attendance" />
+        <item android:id="@+id/nav_grades" android:icon="@android:drawable/ic_menu_sort_by_size" android:title="Grades" />
+        <item android:id="@+id/nav_assignments" android:icon="@android:drawable/ic_menu_edit" android:title="Assignments" />
+        <item android:id="@+id/nav_announcements" android:icon="@android:drawable/ic_dialog_email" android:title="Announcements" />
+        <item android:id="@+id/nav_exams" android:icon="@android:drawable/ic_menu_help" android:title="Exams" />
+        <item android:id="@+id/nav_reports" android:icon="@android:drawable/ic_menu_info_details" android:title="Reports" />
+        <item android:id="@+id/nav_qa_tests" android:icon="@android:drawable/ic_menu_manage" android:title="QA Tests" />
+        <item android:id="@+id/nav_profile" android:icon="@android:drawable/ic_menu_preferences" android:title="Profile" />
     </group>
-    <item android:id="@+id/nav_logout" android:title="@string/logout" />
+    <item android:id="@+id/nav_logout" android:icon="@android:drawable/ic_lock_power_off" android:title="@string/logout" />
 </menu>

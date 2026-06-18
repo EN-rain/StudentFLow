@@ -4,9 +4,19 @@
     <div class="d-flex justify-content-between align-items-center mb-2">
         <h2 class="mb-0"><i class="bi bi-collection"></i> Classes</h2>
         @if (auth()->user()->isAdmin() || auth()->user()->isTeacher())
-            <a href="/classes/create" class="btn btn-primary">
-                <i class="bi bi-plus-lg"></i> New Class
-            </a>
+            <div class="d-flex gap-2">
+                @if (auth()->user()->isAdmin())
+                    <form method="POST" action="/classes/dummy">
+                        @csrf
+                        <button class="btn btn-outline-secondary" type="submit">
+                            <i class="bi bi-database-add"></i> Add Dummy Class
+                        </button>
+                    </form>
+                @endif
+                <a href="/classes/create" class="btn btn-primary">
+                    <i class="bi bi-plus-lg"></i> New Class
+                </a>
+            </div>
         @endif
     </div>
 

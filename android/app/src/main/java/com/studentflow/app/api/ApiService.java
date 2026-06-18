@@ -57,6 +57,9 @@ public interface ApiService {
     @POST("classes")
     Call<JsonObject> createClass(@Body JsonObject request);
 
+    @POST("classes/dummy")
+    Call<JsonObject> createDummyClass();
+
     @PUT("classes/{classId}")
     Call<JsonObject> updateClass(@Path("classId") int classId, @Body JsonObject request);
 

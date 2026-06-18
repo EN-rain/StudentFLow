@@ -8,6 +8,7 @@ use App\Models\SchoolClass;
 use App\Models\Student;
 use App\Models\Teacher;
 use App\Support\ActivityLogger;
+use App\Support\DummyClassGenerator;
 use Illuminate\Http\Request;
 
 class ClassWebController extends Controller
@@ -75,6 +76,16 @@ class ClassWebController extends Controller
         ActivityLogger::log($request, 'class.updated', $class);
 
         return redirect('/classes')->with('status', 'Class updated.');
+    }
+
+    public function dummy(Request $request)
+    {
+        abort_unless($request->user()->isAdmin(), 403);
+
+        $class = DummyClassGenerator::create();
+        ActivityLogger::log($request, 'class.dummy_created', $class);
+
+        return redirect('/classes/'.$class->id.'/edit')->with('status', 'Dummy class created. Edit any values before using it.');
     }
 
     public function destroy(Request $request, SchoolClass $class)

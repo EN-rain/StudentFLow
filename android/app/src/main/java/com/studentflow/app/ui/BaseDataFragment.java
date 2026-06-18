@@ -1,6 +1,8 @@
 package com.studentflow.app.ui;
 
+import android.graphics.Color;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +12,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.button.MaterialButton;
@@ -47,21 +50,31 @@ public abstract class BaseDataFragment extends Fragment {
     }
 
     protected MaterialButton addAction(String label, View.OnClickListener listener) {
-        MaterialButton button = new MaterialButton(requireContext());
+        MaterialButton button = new MaterialButton(requireContext(), null, com.google.android.material.R.attr.materialButtonOutlinedStyle);
         button.setText(label);
         button.setOnClickListener(listener);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1);
-        params.setMargins(0, 0, 8, 0);
+        button.setInsetTop(0);
+        button.setInsetBottom(0);
+        button.setCornerRadius(dp(18));
+        button.setStrokeWidth(dp(1));
+        button.setStrokeColorResource(R.color.studentflow_border);
+        button.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.studentflow_field));
+        button.setTextColor(ContextCompat.getColor(requireContext(), R.color.studentflow_primary));
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(48));
+        params.setMargins(0, 0, dp(10), 0);
         actionRow.addView(button, params);
         return button;
     }
 
     protected void renderData(JsonObject body, String emptyMessage) {
+        if (!isAdded() || getView() == null || listContainer == null || statusView == null) {
+            return;
+        }
         listContainer.removeAllViews();
         JsonElement data = body == null ? null : body.get("data");
         if (data != null && data.isJsonArray()) {
             JsonArray array = data.getAsJsonArray();
-            statusView.setText(array.size() + " records loaded.");
+            setStatus(array.size() + " records loaded.", false);
             for (JsonElement element : array) {
                 addCard(summarize(element));
             }
@@ -69,19 +82,28 @@ public abstract class BaseDataFragment extends Fragment {
                 addCard(emptyMessage);
             }
         } else if (data != null) {
-            statusView.setText("Loaded.");
+            setStatus("Loaded", false);
             addCard(summarize(data));
         } else if (body != null) {
-            statusView.setText("Loaded.");
+            setStatus("Loaded", false);
             addCard(summarize(body));
         } else {
-            statusView.setText(emptyMessage);
+            setStatus(emptyMessage, true);
         }
     }
 
     protected void showError(String message) {
+        if (!isAdded() || getView() == null || listContainer == null || statusView == null) {
+            return;
+        }
         listContainer.removeAllViews();
+        setStatus(message, true);
+    }
+
+    protected void setStatus(String message, boolean error) {
         statusView.setText(message);
+        statusView.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), error ? R.color.studentflow_error : R.color.studentflow_surface_alt));
+        statusView.setTextColor(ContextCompat.getColor(requireContext(), error ? android.R.color.white : R.color.studentflow_text));
     }
 
     protected void addCard(String text) {
@@ -89,26 +111,51 @@ public abstract class BaseDataFragment extends Fragment {
     }
 
     protected void addCard(String text, View.OnClickListener listener) {
+        if (!isAdded() || getView() == null || listContainer == null) {
+            return;
+        }
         MaterialCardView card = new MaterialCardView(requireContext());
-        card.setRadius(8);
-        card.setCardElevation(1);
+        card.setRadius(dp(22));
+        card.setCardElevation(0f);
+        card.setStrokeWidth(dp(1));
+        card.setStrokeColor(ContextCompat.getColor(requireContext(), R.color.studentflow_border));
+        card.setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.studentflow_field));
+        card.setUseCompatPadding(false);
         if (listener != null) {
             card.setClickable(true);
+            card.setFocusable(true);
             card.setOnClickListener(listener);
+            card.setRippleColor(ContextCompat.getColorStateList(requireContext(), R.color.studentflow_surface_alt));
         }
-        TextView content = new TextView(requireContext());
-        content.setText(text);
-        content.setTextSize(15);
-        content.setTextColor(getResources().getColor(R.color.studentflow_text));
-        int pad = (int) (12 * getResources().getDisplayMetrics().density);
-        content.setPadding(pad, pad, pad, pad);
-        card.addView(content);
+
+        LinearLayout wrapper = new LinearLayout(requireContext());
+        wrapper.setOrientation(LinearLayout.VERTICAL);
+        int pad = dp(18);
+        wrapper.setPadding(pad, pad, pad, pad);
+
+        String[] lines = text.split("\\n");
+        for (int i = 0; i < lines.length; i++) {
+            TextView content = new TextView(requireContext());
+            content.setText(lines[i]);
+            content.setTextColor(ContextCompat.getColor(requireContext(), i == 0 ? R.color.studentflow_text : R.color.studentflow_text_muted));
+            content.setTextSize(TypedValue.COMPLEX_UNIT_SP, i == 0 ? 16 : 14);
+            content.setLineSpacing(0f, 1.2f);
+            if (i == 0) {
+                content.setTypeface(content.getTypeface(), android.graphics.Typeface.BOLD);
+            }
+            wrapper.addView(content);
+        }
+
+        card.addView(wrapper);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        params.setMargins(0, 0, 0, pad);
+        params.setMargins(0, 0, 0, dp(12));
         listContainer.addView(card, params);
     }
 
     protected void confirm(String title, String message, Runnable onConfirm) {
+        if (!isAdded()) {
+            return;
+        }
         new AlertDialog.Builder(requireContext())
                 .setTitle(title)
                 .setMessage(message)
@@ -187,5 +234,9 @@ public abstract class BaseDataFragment extends Fragment {
     private String value(JsonObject object, String key) {
         JsonElement value = object.get(key);
         return value == null || value.isJsonNull() ? "" : value.getAsString();
+    }
+
+    protected int dp(int value) {
+        return Math.round(value * getResources().getDisplayMetrics().density);
     }
 }

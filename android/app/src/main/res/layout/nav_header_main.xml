@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_nav_header"
+    android:gravity="bottom"
+    android:orientation="vertical"
+    android:paddingLeft="24dp"
+    android:paddingTop="36dp"
+    android:paddingRight="24dp"
+    android:paddingBottom="24dp">
+
+    <ImageView
+        android:id="@+id/navHeaderLogo"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/studentflow_logo" />
+
+    <TextView
+        android:id="@+id/navHeaderTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:text="StudentFlow"
+        android:textColor="@android:color/white"
+        android:textSize="22sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/navHeaderSubtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:text="Academic workspace"
+        android:textColor="#CCF8FAFC"
+        android:textSize="13sp" />
+</LinearLayout>

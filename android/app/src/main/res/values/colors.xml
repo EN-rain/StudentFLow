@@ -1,13 +1,16 @@
 <resources>
-    <color name="studentflow_primary">#0891B2</color>
-    <color name="studentflow_primary_dark">#164E63</color>
-    <color name="studentflow_accent">#059669</color>
-    <color name="studentflow_surface">#ECFEFF</color>
-    <color name="studentflow_surface_alt">#DFF7FB</color>
+    <color name="studentflow_primary">#0F172A</color>
+    <color name="studentflow_primary_dark">#020617</color>
+    <color name="studentflow_accent">#0F766E</color>
+    <color name="studentflow_surface">#F8FAFC</color>
+    <color name="studentflow_surface_alt">#EFF6FF</color>
+    <color name="studentflow_panel">#FFFFFF</color>
     <color name="studentflow_text">#0F172A</color>
-    <color name="studentflow_text_muted">#475569</color>
+    <color name="studentflow_text_muted">#64748B</color>
     <color name="studentflow_field">#FFFFFF</color>
-    <color name="studentflow_border">#94A3B8</color>
-    <color name="studentflow_border_active">#0891B2</color>
+    <color name="studentflow_border">#CBD5E1</color>
+    <color name="studentflow_border_active">#0F766E</color>
+    <color name="studentflow_nav_text">#1E293B</color>
+    <color name="studentflow_nav_icon">#334155</color>
     <color name="studentflow_error">#B91C1C</color>
 </resources>

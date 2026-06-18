@@ -68,6 +68,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('role:admin,teacher')->group(function () {
         Route::get('/classes', [ClassController::class, 'index']);
         Route::post('/classes', [ClassController::class, 'store']);
+        Route::post('/classes/dummy', [ClassController::class, 'dummy']);
         Route::get('/classes/{class}', [ClassController::class, 'show']);
         Route::put('/classes/{class}', [ClassController::class, 'update']);
         Route::patch('/classes/{class}', [ClassController::class, 'update']);

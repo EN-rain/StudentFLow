@@ -2,30 +2,49 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_app_shell">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
+            android:layout_height="wrap_content"
             android:background="@color/studentflow_primary"
+            android:minHeight="72dp"
+            android:paddingLeft="8dp"
+            android:paddingTop="10dp"
+            android:paddingRight="16dp"
+            android:paddingBottom="10dp"
             android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"
-            app:title="Dashboard" />
+            app:navigationIconTint="@android:color/white"
+            app:subtitleTextColor="#B6CBD5"
+            app:title="Dashboard"
+            app:titleTextColor="@android:color/white" />
+
         <FrameLayout
             android:id="@+id/contentFrame"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:background="@drawable/bg_content_surface"
+            android:paddingTop="8dp" />
     </LinearLayout>
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigationView"
-        android:layout_width="280dp"
+        android:layout_width="304dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        android:background="@color/studentflow_panel"
+        app:headerLayout="@layout/nav_header_main"
+        app:itemBackground="@drawable/bg_nav_item"
+        app:itemHorizontalPadding="18dp"
+        app:itemIconTint="@color/studentflow_nav_icon"
+        app:itemTextColor="@color/studentflow_nav_text"
         app:menu="@menu/drawer_menu" />
 </androidx.drawerlayout.widget.DrawerLayout>

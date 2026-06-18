@@ -57,7 +57,11 @@ public class StudentEndpointFragment extends BaseDataFragment {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (response.isSuccessful()) {
-                    renderData(response.body(), "No student records found.");
+                    if ("dashboard".equals(endpoint)) {
+                        renderDashboard(response.body());
+                    } else {
+                        renderData(response.body(), "No student records found.");
+                    }
                 } else {
                     showError("Request failed: HTTP " + response.code());
                 }
@@ -68,5 +72,41 @@ public class StudentEndpointFragment extends BaseDataFragment {
                 showError("Network error: " + t.getMessage());
             }
         });
+    }
+
+    private void renderDashboard(JsonObject body) {
+        if (!isAdded() || getView() == null || body == null || !body.has("data")) {
+            return;
+        }
+
+        JsonObject data = body.getAsJsonObject("data");
+        JsonObject student = data.has("student") && data.get("student").isJsonObject()
+                ? data.getAsJsonObject("student")
+                : new JsonObject();
+
+        listContainer.removeAllViews();
+        statusView.setText("Overview loaded");
+
+        String name = stringValue(student, "full_name");
+        if (name.isEmpty()) {
+            name = (stringValue(student, "first_name") + " " + stringValue(student, "last_name")).trim();
+        }
+        String studentNumber = stringValue(student, "student_number");
+        String email = stringValue(student, "email");
+
+        StringBuilder profile = new StringBuilder();
+        if (!name.isEmpty()) profile.append(name);
+        if (!studentNumber.isEmpty()) profile.append("\nStudent #: ").append(studentNumber);
+        if (!email.isEmpty()) profile.append("\nEmail: ").append(email);
+        addCard(profile.length() == 0 ? "Student profile unavailable." : profile.toString());
+
+        addCard("Classes\n" + intOrZero(data, "classes_count"));
+        addCard("Announcements\n" + intOrZero(data, "announcements_count"));
+        addCard("Assignments\n" + intOrZero(data, "assignments_count"));
+        addCard("Pending exams\n" + intOrZero(data, "pending_exams_count"));
+    }
+
+    private int intOrZero(JsonObject object, String key) {
+        return object.has(key) && !object.get(key).isJsonNull() ? object.get(key).getAsInt() : 0;
     }
 }

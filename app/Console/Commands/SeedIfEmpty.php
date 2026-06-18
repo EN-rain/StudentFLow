@@ -2,9 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\SchoolClass;
 use App\Models\SchoolSetting;
-use App\Models\Teacher;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
@@ -18,13 +16,13 @@ class SeedIfEmpty extends Command
     public function handle(): int
     {
         if (User::count() > 0) {
-            if (Teacher::count() === 0 || SchoolClass::count() === 0 || SchoolSetting::count() === 0) {
+            if (SchoolSetting::count() === 0) {
                 $this->error('Database appears partially initialized. Refusing to skip or destructively reseed it.');
 
                 return self::FAILURE;
             }
 
-            $this->info('Database already has initialized data; skipping seed.');
+            $this->info('Database already has initialized data; skipping seed. Classes are managed from the admin Classes page.');
 
             return self::SUCCESS;
         }

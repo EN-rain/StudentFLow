@@ -9,7 +9,9 @@ import com.google.android.material.button.MaterialButton;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.studentflow.app.api.ApiClient;
+import com.studentflow.app.data.TokenStore;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -33,6 +35,9 @@ public class CrudFragment extends BaseDataFragment {
         setHeader(title(), subtitle());
         addAction("Refresh", v -> load());
         addAction("Add", v -> openForm(null));
+        if ("classes".equals(type) && isAdmin()) {
+            addAction("Add Dummy", v -> submit(ApiClient.service(requireContext()).createDummyClass()));
+        }
         load();
     }
 
@@ -255,6 +260,17 @@ public class CrudFragment extends BaseDataFragment {
                 FormDialog.text("publish_date", "Publish date: YYYY-MM-DD", true),
                 FormDialog.text("expiration_date", "Expiration date: YYYY-MM-DD", false)
         };
+    }
+
+    private boolean isAdmin() {
+        try {
+            String json = new TokenStore(requireContext()).getUserJson();
+            return json != null
+                    && JsonParser.parseString(json).getAsJsonObject().has("role")
+                    && "admin".equals(JsonParser.parseString(json).getAsJsonObject().get("role").getAsString());
+        } catch (RuntimeException e) {
+            return false;
+        }
     }
 
     private String title() {

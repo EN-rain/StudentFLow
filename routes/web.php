@@ -55,6 +55,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/classes', [ClassWebController::class, 'index']);
         Route::get('/classes/create', [ClassWebController::class, 'create']);
         Route::post('/classes', [ClassWebController::class, 'store']);
+        Route::post('/classes/dummy', [ClassWebController::class, 'dummy']);
         Route::get('/classes/{class}', [ClassWebController::class, 'show']);
         Route::post('/classes/{class}/enrollments', [ClassWebController::class, 'storeEnrollment']);
         Route::put('/classes/{class}/enrollments/{student}', [ClassWebController::class, 'updateEnrollment']);

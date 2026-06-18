@@ -3,9 +3,13 @@ package com.studentflow.app.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -30,6 +34,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        configureSystemBars();
         tokenStore = new TokenStore(this);
         if (!tokenStore.hasToken()) {
             openLogin();
@@ -40,13 +45,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawerLayout = findViewById(R.id.drawerLayout);
         NavigationView navigationView = findViewById(R.id.navigationView);
         configureMenu(navigationView);
+        configureHeader(navigationView);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.app_name, R.string.app_name);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
         if (savedInstanceState == null) {
             navigationView.setCheckedItem(R.id.nav_dashboard);
-            show("Dashboard", isStudent() ? StudentEndpointFragment.newInstance("Dashboard", "Your classes, announcements, assignments, and pending exams.", "dashboard") : DashboardFragment.newInstance());
+            show("Dashboard", isStudent() ? "Overview" : "Teaching workspace", isStudent() ? StudentEndpointFragment.newInstance("Dashboard", "Your classes, announcements, assignments, and pending exams.", "dashboard") : DashboardFragment.newInstance());
         }
     }
 
@@ -56,34 +62,35 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (id == R.id.nav_logout) {
             logout();
         } else if (id == R.id.nav_dashboard) {
-            show("Dashboard", isStudent() ? StudentEndpointFragment.newInstance("Dashboard", "Your classes, announcements, assignments, and pending exams.", "dashboard") : DashboardFragment.newInstance());
+            show("Dashboard", isStudent() ? "Overview" : "Teaching workspace", isStudent() ? StudentEndpointFragment.newInstance("Dashboard", "Your classes, announcements, assignments, and pending exams.", "dashboard") : DashboardFragment.newInstance());
         } else if (id == R.id.nav_classes) {
-            show(isStudent() ? "My Classes" : "Classes", isStudent() ? StudentEndpointFragment.newInstance("My Classes", "Classes where you are currently enrolled.", "classes") : CrudFragment.newInstance("classes"));
+            show(isStudent() ? "My Classes" : "Classes", isStudent() ? "Current enrollment" : "Active sections", isStudent() ? StudentEndpointFragment.newInstance("My Classes", "Classes where you are currently enrolled.", "classes") : CrudFragment.newInstance("classes"));
         } else if (id == R.id.nav_students) {
-            show("Students", CrudFragment.newInstance("students"));
+            show("Students", "Roster and records", CrudFragment.newInstance("students"));
         } else if (id == R.id.nav_attendance) {
-            show(isStudent() ? "My Attendance" : "Attendance", isStudent() ? StudentEndpointFragment.newInstance("My Attendance", "Your attendance history across classes.", "attendance") : AttendanceFragment.newInstance());
+            show(isStudent() ? "My Attendance" : "Attendance", isStudent() ? "Attendance history" : "Class attendance", isStudent() ? StudentEndpointFragment.newInstance("My Attendance", "Your attendance history across classes.", "attendance") : AttendanceFragment.newInstance());
         } else if (id == R.id.nav_grades) {
-            show("Grades", isStudent() ? StudentEndpointFragment.newInstance("Grades", "Scores synced from teacher gradebook and exams.", "grades") : GradesFragment.newInstance());
+            show("Grades", isStudent() ? "Academic standing" : "Gradebook", isStudent() ? StudentEndpointFragment.newInstance("Grades", "Scores synced from teacher gradebook and exams.", "grades") : GradesFragment.newInstance());
         } else if (id == R.id.nav_assignments) {
-            show(isStudent() ? "My Assignments" : "Assignments", isStudent() ? StudentEndpointFragment.newInstance("My Assignments", "Assignments from your enrolled classes.", "assignments") : CrudFragment.newInstance("assignments"));
+            show(isStudent() ? "My Assignments" : "Assignments", isStudent() ? "Due and submitted work" : "Coursework and submissions", isStudent() ? StudentEndpointFragment.newInstance("My Assignments", "Assignments from your enrolled classes.", "assignments") : CrudFragment.newInstance("assignments"));
         } else if (id == R.id.nav_announcements) {
-            show("Announcements", isStudent() ? StudentEndpointFragment.newInstance("Announcements", "Class announcements for your enrolled classes.", "announcements") : CrudFragment.newInstance("announcements"));
+            show("Announcements", isStudent() ? "Class updates" : "Broadcasts and reminders", isStudent() ? StudentEndpointFragment.newInstance("Announcements", "Class announcements for your enrolled classes.", "announcements") : CrudFragment.newInstance("announcements"));
         } else if (id == R.id.nav_exams) {
-            show("Exams", isStudent() ? StudentExamsFragment.newInstance() : TeacherExamsFragment.newInstance());
+            show("Exams", isStudent() ? "Assessments" : "Exam builder", isStudent() ? StudentExamsFragment.newInstance() : TeacherExamsFragment.newInstance());
         } else if (id == R.id.nav_reports) {
-            show("Reports", isStudent() ? StudentEndpointFragment.newInstance("Grades", "Scores synced from teacher gradebook and exams.", "grades") : ReportsFragment.newInstance());
+            show("Reports", isStudent() ? "Performance summary" : "Analytics and exports", isStudent() ? StudentEndpointFragment.newInstance("Grades", "Scores synced from teacher gradebook and exams.", "grades") : ReportsFragment.newInstance());
         } else if (id == R.id.nav_qa_tests) {
-            show("QA Tests", QaTestFragment.newInstance());
+            show("QA Tests", "Automation tools", QaTestFragment.newInstance());
         } else if (id == R.id.nav_profile) {
-            show("Profile", isStudent() ? StudentEndpointFragment.newInstance("Profile", "Your StudentFlow profile and linked social identity.", "profile") : ProfileFragment.newInstance());
+            show("Profile", isStudent() ? "Identity and linked accounts" : "Account settings", isStudent() ? StudentEndpointFragment.newInstance("Profile", "Your StudentFlow profile and linked social identity.", "profile") : ProfileFragment.newInstance());
         }
         drawerLayout.closeDrawers();
         return true;
     }
 
-    private void show(String title, Fragment fragment) {
+    private void show(String title, String subtitle, Fragment fragment) {
         toolbar.setTitle(title);
+        toolbar.setSubtitle(subtitle);
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.contentFrame, fragment)
                 .commit();
@@ -109,6 +116,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         finish();
     }
 
+    private void configureSystemBars() {
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), true);
+        WindowInsetsControllerCompat controller = WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        controller.hide(WindowInsetsCompat.Type.statusBars());
+        controller.setSystemBarsBehavior(WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+        controller.setAppearanceLightNavigationBars(true);
+        getWindow().setNavigationBarColor(getColor(R.color.studentflow_surface));
+    }
+
     private void configureMenu(NavigationView navigationView) {
         boolean student = isStudent();
         navigationView.getMenu().findItem(R.id.nav_students).setVisible(!student);
@@ -116,6 +132,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.getMenu().findItem(R.id.nav_classes).setTitle(student ? "My Classes" : "Classes");
         navigationView.getMenu().findItem(R.id.nav_assignments).setTitle(student ? "My Assignments" : "Assignments");
         navigationView.getMenu().findItem(R.id.nav_attendance).setTitle(student ? "My Attendance" : "Attendance");
+    }
+
+    private void configureHeader(NavigationView navigationView) {
+        TextView title = navigationView.getHeaderView(0).findViewById(R.id.navHeaderTitle);
+        TextView subtitle = navigationView.getHeaderView(0).findViewById(R.id.navHeaderSubtitle);
+        try {
+            String json = tokenStore.getUserJson();
+            if (json == null) {
+                return;
+            }
+            JsonObject user = JsonParser.parseString(json).getAsJsonObject();
+            title.setText(user.get("name").getAsString());
+            String role = user.get("role").getAsString();
+            subtitle.setText(("student".equals(role) ? "Student workspace" : "Teacher workspace") + " • " + user.get("email").getAsString());
+        } catch (RuntimeException ignored) {
+        }
     }
 
     private boolean isStudent() {

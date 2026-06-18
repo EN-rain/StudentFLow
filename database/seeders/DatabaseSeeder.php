@@ -53,16 +53,19 @@ class DatabaseSeeder extends Seeder
         $this->seedStudents();
         $this->seedUsers();
         $this->seedTeachers();
-        $this->seedClasses();
-        $this->seedEnrollments();
-        $this->seedAttendance();
-        $this->seedGradeCategories();
-        $this->seedGradeItems();
-        $this->seedStudentGrades();
-        $this->seedAssignments();
-        $this->seedAssignmentSubmissions();
-        $this->seedAnnouncements();
         $this->seedSchoolSettings();
+
+        if (config('studentflow.seed_demo_data')) {
+            $this->seedClasses();
+            $this->seedEnrollments();
+            $this->seedAttendance();
+            $this->seedGradeCategories();
+            $this->seedGradeItems();
+            $this->seedStudentGrades();
+            $this->seedAssignments();
+            $this->seedAssignmentSubmissions();
+            $this->seedAnnouncements();
+        }
 
         if ($usesSqlitePragma) {
             DB::statement('PRAGMA foreign_keys = ON');
