@@ -16,6 +16,7 @@ use App\Models\StudentGrade;
 use App\Models\Teacher;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
@@ -103,15 +104,22 @@ class DatabaseSeeder extends Seeder
         ];
 
         DB::table('users')->insert($users);
+
+        $expected = collect($users)->pluck('username')->all();
+        $actual = User::whereIn('username', $expected)->pluck('username')->all();
+        $missing = array_values(array_diff($expected, $actual));
+        if ($missing !== []) {
+            throw new \RuntimeException('Seeder failed to persist expected users: ' . implode(', ', $missing));
+        }
     }
 
     private function seedTeachers(): void
     {
         DB::table('teachers')->truncate();
 
-        $john = User::where('username', 'john.reyes')->first();
-        $angela = User::where('username', 'angela.cruz')->first();
-        $roberto = User::where('username', 'roberto.delapena')->first();
+        $john = $this->requiredUser('john.reyes');
+        $angela = $this->requiredUser('angela.cruz');
+        $roberto = $this->requiredUser('roberto.delapena');
 
         $teachers = [
             [
@@ -212,9 +220,9 @@ class DatabaseSeeder extends Seeder
     {
         DB::table('classes')->truncate();
 
-        $john = Teacher::where('employee_number', 'TCH-2026-001')->first();
-        $angela = Teacher::where('employee_number', 'TCH-2026-002')->first();
-        $roberto = Teacher::where('employee_number', 'TCH-2026-003')->first();
+        $john = $this->requiredTeacher('TCH-2026-001');
+        $angela = $this->requiredTeacher('TCH-2026-002');
+        $roberto = $this->requiredTeacher('TCH-2026-003');
 
         $classes = [
             [
@@ -609,5 +617,25 @@ class DatabaseSeeder extends Seeder
                 'label' => ucwords(str_replace('_', ' ', $key)),
             ]);
         }
+    }
+
+    private function requiredUser(string $username): User
+    {
+        $user = User::where('username', $username)->first();
+        if (! $user) {
+            throw new ModelNotFoundException("Seeder expected user [{$username}] to exist.");
+        }
+
+        return $user;
+    }
+
+    private function requiredTeacher(string $employeeNumber): Teacher
+    {
+        $teacher = Teacher::where('employee_number', $employeeNumber)->first();
+        if (! $teacher) {
+            throw new ModelNotFoundException("Seeder expected teacher [{$employeeNumber}] to exist.");
+        }
+
+        return $teacher;
     }
 }
