@@ -1,124 +1,236 @@
 # StudentFlow
 
-StudentFlow is a Laravel web application and native Java Android client for managing teachers, students, programming classes, attendance, grades, assignments, announcements, quizzes, exams, and classroom membership requests.
+Student management system with a Laravel web application, Laravel API, and native Java Android client.
 
-Both clients use the same Laravel API and database. Changes made on web or Android appear on the other client after refresh.
+## Structure
 
-## Local installation
-
-```cmd
-C:\php\php.exe C:\composer\composer.phar install
-copy .env.example .env
-C:\php\php.exe artisan key:generate
-type nul > database\database.sqlite
-C:\php\php.exe artisan migrate --seed
-C:\php\php.exe artisan serve --host=127.0.0.1 --port=8000
+```text
+app/          Laravel controllers, models, middleware, mail, and services
+routes/       Web, API, and console routes
+resources/    Blade views, CSS, and JavaScript
+database/     Migrations, seeders, SQLite databases, and factories
+tests/        PHPUnit feature tests
+android/      Native Java Android application
+docs/         API, Android, deployment, and user documentation
+scripts/      PowerShell QA scripts
 ```
 
-Open `http://127.0.0.1:8000`.
+## Stack
 
-## Starter data
+- PHP 8.2 and Laravel 12
+- Laravel Sanctum bearer-token authentication
+- Blade, Vite, CSS, and JavaScript
+- SQLite for local development
+- Dompdf for PDF reports
+- Native Android with Java 17 and XML layouts
+- Retrofit, Gson, OkHttp, Material Components, and AndroidX Security
+- PHPUnit and Laravel Pint
 
-Production should normally use:
+## Features
 
-```env
+- Administrator, teacher, and student roles
+- Teacher and student management
+- Classes and enrollment
+- Classroom join requests
+- Attendance
+- Grade categories, grade items, and student scores
+- Assignments and submissions
+- Announcements and email delivery
+- Exams, questions, attempts, answers, and magic exam links
+- Student Google and GitHub sign-in
+- Reports and PDF export
+- Activity logs and school settings
+
+## Requirements
+
+- PHP 8.2 or newer
+- Composer
+- Node.js and npm
+- SQLite or another Laravel-supported database
+- Android Studio with Android SDK 35
+- Java 17
+
+## Web and API setup
+
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+```
+
+Create the local SQLite database when it does not exist:
+
+```bash
+mkdir -p database
+touch database/database.sqlite
+```
+
+Windows Command Prompt:
+
+```cmd
+type nul > database\database.sqlite
+```
+
+Run migrations and seed data:
+
+```bash
+php artisan migrate --seed
+```
+
+Install and build frontend assets:
+
+```bash
+npm install
+npm run build
+```
+
+Start the application:
+
+```bash
+php artisan serve
+```
+
+Default URL:
+
+```text
+http://127.0.0.1:8000
+```
+
+## Seed data
+
+Starter data is controlled through environment values.
+
+For a clean environment:
+
+```text
 STUDENTFLOW_SEED_STARTER_DATA=false
 ```
 
-With starter data disabled, seeding creates only the initial administrator and school settings. Teachers, students, classes, subjects, assessments, and enrollments are created from the application.
+For local development or QA:
 
-For local development and QA, use:
-
-```env
+```text
 STUDENTFLOW_SEED_STARTER_DATA=true
-STUDENTFLOW_SEED_ADMIN_PASSWORD=AdminPass123!
-STUDENTFLOW_SEED_TEACHER_PASSWORD=TeacherPass123!
-STUDENTFLOW_SEED_STUDENT_PASSWORD=StudentPass123!
 ```
 
-These values are environment-controlled, not embedded as fixed application passwords. Change them before seeding another environment. Every user can later change their password from the web or Android password-change screen.
+The seed passwords for administrator, teacher, and student accounts are also configured through `.env`. Do not use development credentials in production.
 
-## Starter accounts
+When starter data is enabled, the seeder creates an administrator, teachers, students, classes, enrollments, assessments, grades, and attendance records.
 
-### Administrator
+## Authentication
 
-| Username | Password |
-|---|---|
-| `admin` | `AdminPass123!` |
+Web sessions are used by the Blade application. API clients use Laravel Sanctum bearer tokens.
 
-### Teachers
+Main authentication routes:
 
-All five teachers use `TeacherPass123!` unless `STUDENTFLOW_SEED_TEACHER_PASSWORD` is changed before seeding.
-
-| Username | Assigned subject |
-|---|---|
-| `john.reyes` | Object-Oriented Programming with Java |
-| `angela.cruz` | Introduction to Programming with Python |
-| `roberto.delapena` | Web Application Development |
-| `paolo.mercado` | Mobile Application Development |
-| `sophia.tan` | Software Engineering and Testing |
-
-### Students
-
-All ten students use `StudentPass123!` unless `STUDENTFLOW_SEED_STUDENT_PASSWORD` is changed before seeding.
-
-| Username | Verification |
-|---|---|
-| `2026-0001` | Verified: Google and GitHub linked |
-| `2026-0002` | Not verified |
-| `2026-0003` | Not verified |
-| `2026-0004` | Not verified |
-| `2026-0005` | Not verified |
-| `2026-0006` | Not verified |
-| `2026-0007` | Not verified |
-| `2026-0008` | Not verified |
-| `2026-0009` | Not verified |
-| `2026-0010` | Not verified |
-
-Never reuse these local starter passwords in production.
-
-## Academic context
-
-The starter dataset represents School Year `2025-2026`, Second Semester.
-
-It contains exactly:
-
-- 1 administrator
-- 5 teachers
-- 10 students
-- 5 classes
-- 1 programming-related subject per teacher
-- Completed quizzes with submitted answers
-- Completed examinations with submitted answers
-- Upcoming quizzes
-- Upcoming examinations
-
-Each class has two enrolled students. Completed attempts include answer and score records. Upcoming assessments are published and assigned but not yet submitted.
-
-## Student verification and classroom joining
-
-A student is marked **Verified** only when both a verified Google account and a verified GitHub account are linked.
-
-Verified students can enter a classroom join code from Android. The assigned teacher or an administrator can approve or reject the request from web or Android. Approval creates the enrollment record in the shared backend database.
-
-## API and Android
-
-Core routes are under `/api` and authenticated routes require a Sanctum bearer token.
-
-Open the `android/` directory in Android Studio. Google Sign-In requires an Android OAuth client for package `com.studentflow.app`, the signing SHA-1, and the matching Web OAuth client ID.
-
-## Verification
-
-```cmd
-C:\php\php.exe artisan migrate:fresh --seed
-C:\php\php.exe artisan test
-C:\php\php.exe vendor\bin\pint --test
+```text
+POST /api/auth/login
+POST /api/auth/google
+POST /api/auth/github
+POST /api/auth/forgot-password
+POST /api/auth/reset-password
+GET  /api/auth/me
+POST /api/auth/change-password
+POST /api/auth/logout
 ```
 
-Documentation:
+Google and GitHub student sign-in require provider credentials in `.env`.
 
-- [API Reference](docs/API.md)
-- [User Manual](docs/USER_MANUAL.md)
-- [Deployment Guide](docs/DEPLOYMENT.md)
-- [Render Deployment](docs/RENDER.md)
-- [Android Build Guide](docs/ANDROID.md)
+## Android setup
+
+Open the `android/` directory in Android Studio.
+
+Android configuration:
+
+```text
+Package:    com.studentflow.app
+Min SDK:    23
+Target SDK: 35
+Java:       17
+```
+
+The API base URL is defined in:
+
+```text
+android/app/src/main/java/com/studentflow/app/Constants.java
+```
+
+For an Android emulator connected to a local Laravel server, use:
+
+```text
+http://10.0.2.2:8000/api/
+```
+
+For a physical device, use the computer's local network IP address.
+
+Google Sign-In requires a Web OAuth client ID supplied through the `GOOGLE_WEB_CLIENT_ID` Gradle property or environment variable. Keep provider client secrets in the Laravel environment only.
+
+Build the debug APK from Android Studio or Gradle:
+
+```bash
+cd android
+gradle :app:assembleDebug
+```
+
+APK output:
+
+```text
+android/app/build/outputs/apk/debug/app-debug.apk
+```
+
+## API modules
+
+```text
+/api/admin
+/api/classes
+/api/students
+/api/attendance
+/api/assignments
+/api/announcements
+/api/exams
+/api/reports
+/api/student
+```
+
+The complete route list is documented in [`docs/API.md`](docs/API.md).
+
+## Tests and checks
+
+Run backend tests:
+
+```bash
+php artisan test
+```
+
+Check PHP formatting:
+
+```bash
+vendor/bin/pint --test
+```
+
+Rebuild the database and run seed data:
+
+```bash
+php artisan migrate:fresh --seed
+```
+
+PowerShell QA scripts:
+
+```powershell
+.\scripts\qa-all.ps1
+.\scripts\qa-api.ps1
+.\scripts\qa-web.ps1
+```
+
+## Deployment
+
+Deployment files include `Dockerfile`, `render.yaml`, and scripts under `docker/`.
+
+References:
+
+- [`docs/API.md`](docs/API.md)
+- [`docs/ANDROID.md`](docs/ANDROID.md)
+- [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md)
+- [`docs/RENDER.md`](docs/RENDER.md)
+- [`docs/USER_MANUAL.md`](docs/USER_MANUAL.md)
+
+Do not commit `.env`, OAuth secrets, access tokens, or production database files.

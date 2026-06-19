@@ -1,47 +1,137 @@
-# StudentFlow Deployment Guide
+# StudentFlow Deployment
 
-## Local Production Check
+StudentFlow can run on a PHP host, a container platform, or Render through the included Docker files.
 
-```cmd
-C:\php\php.exe artisan migrate:fresh --seed
-C:\php\php.exe artisan test
-C:\php\php.exe artisan route:list
-```
+## Server requirements
 
-## Server Requirements
-
-- PHP 8.2+
+- PHP 8.2 or newer
 - Composer
-- MySQL or MariaDB for production
-- Web server pointing to `public/`
+- PostgreSQL, MySQL, MariaDB, or SQLite
+- Web server document root set to `public/`
 - Writable `storage/` and `bootstrap/cache/`
-- SMTP credentials for real password reset email delivery
+- Node.js and npm when frontend assets are built on the server
+- SMTP or another mail driver for password reset and announcement email delivery
 
-## Environment
-
-Set production values in `.env`:
+## Production environment
 
 ```env
+APP_NAME=StudentFlow
 APP_ENV=production
 APP_DEBUG=false
 APP_URL=https://your-domain.example
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=studentflow
-DB_USERNAME=studentflow
-DB_PASSWORD=change-me
+APP_KEY=
+
+DB_CONNECTION=pgsql
+DB_HOST=
+DB_PORT=5432
+DB_DATABASE=
+DB_USERNAME=
+DB_PASSWORD=
+
+SESSION_DRIVER=database
+CACHE_STORE=database
+QUEUE_CONNECTION=database
+
 MAIL_MAILER=smtp
+MAIL_HOST=
+MAIL_PORT=587
+MAIL_USERNAME=
+MAIL_PASSWORD=
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=
+MAIL_FROM_NAME=StudentFlow
 ```
 
-Then run:
+OAuth values are required only when student social sign-in is enabled:
 
-```cmd
-C:\php\php.exe artisan key:generate
-C:\php\php.exe artisan migrate --force
-C:\php\php.exe artisan config:cache
-C:\php\php.exe artisan route:cache
-C:\php\php.exe artisan view:cache
+```env
+GOOGLE_CLIENT_ID=
+GITHUB_CLIENT_ID=
+GITHUB_CLIENT_SECRET=
 ```
 
-Actual live deployment requires hosting credentials and DNS access.
+Seed configuration:
+
+```env
+STUDENTFLOW_SEED_STARTER_DATA=false
+STUDENTFLOW_SEED_ADMIN_PASSWORD=
+STUDENTFLOW_SEED_TEACHER_PASSWORD=
+STUDENTFLOW_SEED_STUDENT_PASSWORD=
+```
+
+Keep starter data disabled in normal production deployments.
+
+## Build and deploy
+
+```bash
+composer install --no-dev --optimize-autoloader
+npm ci
+npm run build
+php artisan migrate --force
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+```
+
+Ensure these directories are writable by the application process:
+
+```text
+storage/
+bootstrap/cache/
+```
+
+## Web server
+
+The document root must point to:
+
+```text
+public/
+```
+
+Do not expose the repository root directly.
+
+## Pre-deployment checks
+
+```bash
+php artisan test
+vendor/bin/pint --test
+php artisan route:list
+npm run build
+```
+
+## Post-deployment checks
+
+Verify:
+
+```text
+GET /
+POST /api/auth/login
+GET /api/auth/me
+```
+
+Also test:
+
+- administrator login
+- teacher login
+- student social login when enabled
+- class and student access rules
+- attendance and grade updates
+- PDF report generation
+- email delivery
+- Android API access over HTTPS
+
+## Database notes
+
+Use one database configuration per environment. Run migrations before serving new application code that depends on schema changes.
+
+Back up the production database before destructive migrations or `migrate:fresh`. Never run `migrate:fresh --seed` in production.
+
+## Security
+
+- Set `APP_DEBUG=false`.
+- Use HTTPS.
+- Keep `.env`, OAuth secrets, mail credentials, and database passwords outside Git.
+- Rotate credentials exposed in logs or repository history.
+- Restrict database network access.
+- Use production OAuth callback URLs.
+- Review Laravel logs without publishing them through the web server.
