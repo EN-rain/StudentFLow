@@ -44,3 +44,31 @@ dependencies {
     implementation "androidx.security:security-crypto:1.1.0-alpha06"
     implementation "com.google.android.gms:play-services-auth:21.2.0"
 }
+
+def canonicalStudentFlowIcon = rootProject.file("../StudentFlow_Icon.png")
+
+tasks.register("syncStudentFlowBranding") {
+    doLast {
+        if (!canonicalStudentFlowIcon.exists()) {
+            throw new GradleException("Missing canonical StudentFlow icon")
+        }
+
+        copy {
+            from canonicalStudentFlowIcon
+            into file("src/main/res/drawable-nodpi")
+            rename { "studentflow_logo.png" }
+        }
+
+        ["mdpi", "hdpi", "xhdpi", "xxhdpi", "xxxhdpi"].each { density ->
+            copy {
+                from canonicalStudentFlowIcon
+                into file("src/main/res/mipmap-${density}")
+                rename { "ic_launcher.png" }
+            }
+        }
+    }
+}
+
+tasks.named("preBuild").configure {
+    dependsOn("syncStudentFlowBranding")
+}
