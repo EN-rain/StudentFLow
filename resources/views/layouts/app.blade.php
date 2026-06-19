@@ -34,6 +34,8 @@
             min-height: 100vh;
             color: var(--sf-text);
             background:
+                linear-gradient(180deg, rgba(2, 6, 23, 0.86) 0, rgba(15, 23, 42, 0.72) 280px, rgba(248, 250, 252, 0.94) 280px, rgba(248, 250, 252, 0.98) 100%),
+                url('/images/studentflow-background.jpg') center top / cover fixed,
                 radial-gradient(circle at top left, rgba(15, 118, 110, 0.26), transparent 28%),
                 linear-gradient(180deg, var(--sf-primary-dark) 0, var(--sf-primary) 280px, var(--sf-surface) 280px, var(--sf-surface) 100%);
         }
