@@ -2,12 +2,13 @@ package com.studentflow.app.api;
 
 import com.google.gson.JsonObject;
 import com.studentflow.app.models.ChangePasswordRequest;
-import com.studentflow.app.models.LoginRequest;
 import com.studentflow.app.models.LoginResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PATCH;
@@ -16,11 +17,18 @@ import retrofit2.http.PUT;
 import retrofit2.http.Query;
 
 public interface ApiService {
+    @FormUrlEncoded
     @POST("auth/login")
-    Call<LoginResponse> login(@Body LoginRequest request);
+    Call<LoginResponse> login(@Field("username") String username, @Field("password") String password);
 
+    @FormUrlEncoded
     @POST("auth/register")
-    Call<LoginResponse> register(@Body JsonObject request);
+    Call<LoginResponse> register(
+            @Field("name") String name,
+            @Field("email") String email,
+            @Field("password") String password,
+            @Field("password_confirmation") String passwordConfirmation
+    );
 
     @POST("auth/google")
     Call<LoginResponse> googleLogin(@Body JsonObject request);
@@ -40,8 +48,9 @@ public interface ApiService {
     @POST("auth/change-password")
     Call<JsonObject> changePassword(@Body ChangePasswordRequest request);
 
+    @FormUrlEncoded
     @POST("auth/forgot-password")
-    Call<JsonObject> forgotPassword(@Body JsonObject request);
+    Call<JsonObject> forgotPassword(@Field("email") String email);
 
     @GET("classes")
     Call<JsonObject> classes();

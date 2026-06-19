@@ -31,7 +31,6 @@ import com.studentflow.app.Constants;
 import com.studentflow.app.R;
 import com.studentflow.app.api.ApiClient;
 import com.studentflow.app.data.TokenStore;
-import com.studentflow.app.models.LoginRequest;
 import com.studentflow.app.models.LoginResponse;
 
 import java.util.UUID;
@@ -236,7 +235,7 @@ public class LoginActivity extends AppCompatActivity {
         }
         setAuthControlsEnabled(false, "Signing in...");
         ApiClient.reset();
-        ApiClient.service(this).login(new LoginRequest(username, password)).enqueue(new Callback<LoginResponse>() {
+        ApiClient.service(this).login(username, password).enqueue(new Callback<LoginResponse>() {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                 setAuthControlsEnabled(true);
@@ -265,14 +264,9 @@ public class LoginActivity extends AppCompatActivity {
             showError("Enter name, email, password, and confirmation.");
             return;
         }
-        JsonObject payload = new JsonObject();
-        payload.addProperty("name", name);
-        payload.addProperty("email", email);
-        payload.addProperty("password", password);
-        payload.addProperty("password_confirmation", confirm);
         setAuthControlsEnabled(false, "Registering...");
         ApiClient.reset();
-        ApiClient.service(this).register(payload).enqueue(new Callback<LoginResponse>() {
+        ApiClient.service(this).register(name, email, password, confirm).enqueue(new Callback<LoginResponse>() {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                 setAuthControlsEnabled(true);
@@ -298,11 +292,9 @@ public class LoginActivity extends AppCompatActivity {
             showError("Enter your email.");
             return;
         }
-        JsonObject payload = new JsonObject();
-        payload.addProperty("email", email);
         setAuthControlsEnabled(false, "Sending reset link...");
         ApiClient.reset();
-        ApiClient.service(this).forgotPassword(payload).enqueue(new Callback<JsonObject>() {
+        ApiClient.service(this).forgotPassword(email).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 setAuthControlsEnabled(true);

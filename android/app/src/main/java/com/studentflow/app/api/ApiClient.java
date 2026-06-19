@@ -28,8 +28,7 @@ public class ApiClient {
                     .writeTimeout(20, TimeUnit.SECONDS)
                     .addInterceptor(chain -> {
                         okhttp3.Request.Builder builder = chain.request().newBuilder()
-                                .header("Accept", "application/json")
-                                .header("Content-Type", "application/json");
+                                .header("Accept", "application/json");
                         String token = tokenStore.getToken();
                         if (token != null && !token.trim().isEmpty()) {
                             builder.header("Authorization", "Bearer " + token);

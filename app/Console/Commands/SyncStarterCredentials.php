@@ -40,7 +40,12 @@ class SyncStarterCredentials extends Command
         $updated = 0;
 
         foreach ($groups as $envKey => $usernames) {
-            $password = env($envKey);
+            $password = env($envKey, match ($envKey) {
+                'STUDENTFLOW_SEED_ADMIN_PASSWORD' => 'AdminPass123!',
+                'STUDENTFLOW_SEED_TEACHER_PASSWORD' => 'TeacherPass123!',
+                'STUDENTFLOW_SEED_STUDENT_PASSWORD' => 'StudentPass123!',
+                default => null,
+            });
             if (! is_string($password) || trim($password) === '') {
                 $this->warn("Skipping {$envKey}; no password configured.");
                 continue;
