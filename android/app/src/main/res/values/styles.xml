@@ -37,6 +37,7 @@
         <item name="boxCornerRadiusBottomEnd">18dp</item>
         <item name="hintTextColor">@color/studentflow_text_muted</item>
         <item name="android:textColorHint">@color/studentflow_text_muted</item>
+        <item name="endIconTint">@color/studentflow_text_muted</item>
     </style>
 
     <style name="StudentFlow.AuthToggle" parent="Widget.MaterialComponents.Button.OutlinedButton">

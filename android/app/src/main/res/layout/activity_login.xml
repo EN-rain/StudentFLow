@@ -133,6 +133,7 @@
                 android:layout_marginTop="14dp"
                 android:hint="Password"
                 app:boxBackgroundMode="outline"
+                app:endIconTint="@color/studentflow_text_muted"
                 app:endIconMode="password_toggle">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -154,6 +155,7 @@
                 android:hint="Confirm password"
                 android:visibility="gone"
                 app:boxBackgroundMode="outline"
+                app:endIconTint="@color/studentflow_text_muted"
                 app:endIconMode="password_toggle">
 
                 <com.google.android.material.textfield.TextInputEditText

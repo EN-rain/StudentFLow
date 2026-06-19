@@ -41,6 +41,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             openLogin();
             return;
         }
+        if (isAdmin()) {
+            tokenStore.clear();
+            ApiClient.reset();
+            openLogin();
+            return;
+        }
         setContentView(R.layout.activity_main);
         toolbar = findViewById(R.id.toolbar);
         drawerLayout = findViewById(R.id.drawerLayout);

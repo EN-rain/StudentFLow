@@ -39,6 +39,12 @@ services:
         value: database
       - key: MAIL_MAILER
         value: log
+      - key: STUDENTFLOW_SEED_ADMIN_PASSWORD
+        value: AdminPass123!
+      - key: STUDENTFLOW_SEED_TEACHER_PASSWORD
+        value: TeacherPass123!
+      - key: STUDENTFLOW_SEED_STUDENT_PASSWORD
+        value: StudentPass123!
       - key: GOOGLE_CLIENT_ID
         sync: false
       - key: GITHUB_CLIENT_ID

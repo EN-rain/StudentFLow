@@ -9,6 +9,7 @@ php artisan route:clear
 php artisan view:clear
 php artisan migrate --force
 php artisan app:seed-if-empty
+php artisan app:sync-starter-credentials
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache

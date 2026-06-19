@@ -115,7 +115,7 @@ public class LoginActivity extends AppCompatActivity {
         confirmPasswordLayout.setVisibility(mode == Mode.REGISTER ? View.VISIBLE : View.GONE);
         socialRow.setVisibility(mode == Mode.FORGOT ? View.GONE : View.VISIBLE);
         usernameLayout.setHint(mode == Mode.LOGIN ? "Username or email" : "Email");
-        loginButton.setText(mode == Mode.LOGIN ? "Login" : mode == Mode.REGISTER ? "Register" : "Send reset link");
+        loginButton.setText(primaryActionText());
         forgotPasswordButton.setText(mode == Mode.FORGOT ? "Back to login" : "Forgot password?");
         showLoginButton.setEnabled(true);
         showRegisterButton.setEnabled(true);
@@ -158,10 +158,6 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void showStatus(String text) {
-        showPopup(text, false);
-    }
-
     private void showError(String text) {
         showPopup(text, true);
         View panel = findViewById(R.id.authPanel);
@@ -176,6 +172,10 @@ public class LoginActivity extends AppCompatActivity {
                 .start();
     }
 
+    private void showStatus(String text) {
+        showPopup(text, false);
+    }
+
     private void showPopup(String text, boolean error) {
         Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), text, Snackbar.LENGTH_LONG);
         snackbar.setBackgroundTint(getColor(error ? R.color.studentflow_error : R.color.studentflow_primary));
@@ -184,6 +184,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void setAuthControlsEnabled(boolean enabled) {
+        setAuthControlsEnabled(enabled, null);
+    }
+
+    private void setAuthControlsEnabled(boolean enabled, String busyText) {
         nameInput.setEnabled(enabled);
         usernameInput.setEnabled(enabled);
         passwordInput.setEnabled(enabled);
@@ -199,7 +203,18 @@ public class LoginActivity extends AppCompatActivity {
         googleLoginButton.setEnabled(enabled);
         githubLoginButton.setEnabled(enabled);
         socialRow.setAlpha(enabled ? 1f : 0.5f);
-        loginButton.setAlpha(enabled ? 1f : 0.7f);
+        loginButton.animate().alpha(enabled ? 1f : 0.78f).setDuration(140).start();
+        loginButton.setText(enabled ? primaryActionText() : busyText == null ? "Working..." : busyText);
+    }
+
+    private String primaryActionText() {
+        if (mode == Mode.REGISTER) {
+            return "Register";
+        }
+        if (mode == Mode.FORGOT) {
+            return "Send reset link";
+        }
+        return "Login";
     }
 
     private void submitPrimary() {
@@ -219,8 +234,7 @@ public class LoginActivity extends AppCompatActivity {
             showError("Enter username and password.");
             return;
         }
-        setAuthControlsEnabled(false);
-        showStatus("Signing in...");
+        setAuthControlsEnabled(false, "Signing in...");
         ApiClient.reset();
         ApiClient.service(this).login(new LoginRequest(username, password)).enqueue(new Callback<LoginResponse>() {
             @Override
@@ -256,8 +270,7 @@ public class LoginActivity extends AppCompatActivity {
         payload.addProperty("email", email);
         payload.addProperty("password", password);
         payload.addProperty("password_confirmation", confirm);
-        setAuthControlsEnabled(false);
-        showStatus("Registering...");
+        setAuthControlsEnabled(false, "Registering...");
         ApiClient.reset();
         ApiClient.service(this).register(payload).enqueue(new Callback<LoginResponse>() {
             @Override
@@ -287,8 +300,7 @@ public class LoginActivity extends AppCompatActivity {
         }
         JsonObject payload = new JsonObject();
         payload.addProperty("email", email);
-        setAuthControlsEnabled(false);
-        showStatus("Sending reset link...");
+        setAuthControlsEnabled(false, "Sending reset link...");
         ApiClient.reset();
         ApiClient.service(this).forgotPassword(payload).enqueue(new Callback<JsonObject>() {
             @Override
@@ -310,9 +322,10 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void startGoogleLogin() {
-        showStatus("Opening Google sign-in...");
+        setAuthControlsEnabled(false, "Opening Google...");
         googleSignInClient.signOut().addOnCompleteListener(task ->
                 startActivityForResult(googleSignInClient.getSignInIntent(), GOOGLE_SIGN_IN_REQUEST));
+        setAuthControlsEnabled(true);
     }
 
     private void startGithubLogin() {
@@ -325,8 +338,9 @@ public class LoginActivity extends AppCompatActivity {
                 .appendQueryParameter("scope", "read:user user:email")
                 .appendQueryParameter("state", state)
                 .build();
-        showStatus("Opening GitHub sign-in...");
+        setAuthControlsEnabled(false, "Opening GitHub...");
         new CustomTabsIntent.Builder().build().launchUrl(this, uri);
+        setAuthControlsEnabled(true);
     }
 
     @Override
@@ -426,8 +440,7 @@ public class LoginActivity extends AppCompatActivity {
                 payload.addProperty("redirect_uri", redirectUri);
             }
         }
-        showStatus("Signing in with " + provider + "...");
-        setAuthControlsEnabled(false);
+        setAuthControlsEnabled(false, "Signing in...");
         ApiClient.reset();
         (provider.equals("google")
                 ? ApiClient.service(this).googleLogin(payload)
@@ -453,6 +466,12 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void saveAndOpen(LoginResponse body) {
+        if (body.user != null && body.user.has("role") && "admin".equals(body.user.get("role").getAsString())) {
+            tokenStore.clear();
+            setAuthControlsEnabled(true);
+            showError("Admin accounts use the web dashboard.");
+            return;
+        }
         tokenStore.saveSession(body.token, body.user == null ? "{}" : body.user.toString());
         ApiClient.reset();
         openMain();
