@@ -101,7 +101,7 @@ public abstract class BaseDataFragment extends Fragment {
         JsonElement data = body == null ? null : body.get("data");
         if (data != null && data.isJsonArray()) {
             JsonArray array = data.getAsJsonArray();
-            setStatus(array.size() + " records loaded.", false);
+            setStatus(statusForArray(body, array), false);
             for (JsonElement element : array) {
                 addCard(summarize(element));
             }
@@ -119,6 +119,20 @@ public abstract class BaseDataFragment extends Fragment {
         }
     }
 
+    private String statusForArray(JsonObject body, JsonArray array) {
+        JsonElement metaElement = body.get("meta");
+        if (metaElement != null && metaElement.isJsonObject()) {
+            JsonObject meta = metaElement.getAsJsonObject();
+            Integer currentPage = intValue(meta, "current_page");
+            Integer lastPage = intValue(meta, "last_page");
+            Integer total = intValue(meta, "total");
+            if (currentPage != null && lastPage != null && total != null) {
+                return array.size() + " shown of " + total + " records. Page " + currentPage + " of " + lastPage + ".";
+            }
+        }
+        return array.size() + " records loaded.";
+    }
+
     protected void showError(String message) {
         if (!isAdded() || getView() == null || listContainer == null || statusView == null) {
             return;
@@ -129,6 +143,9 @@ public abstract class BaseDataFragment extends Fragment {
     }
 
     protected void setStatus(String message, boolean error) {
+        if (!isAdded() || statusView == null) {
+            return;
+        }
         statusView.setVisibility(message == null || message.trim().isEmpty() ? View.GONE : View.VISIBLE);
         statusView.setText(message);
         statusView.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), error ? R.color.studentflow_error : R.color.studentflow_surface_alt));

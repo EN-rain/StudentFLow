@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreAssignmentRequest;
 use App\Models\Assignment;
 use App\Models\SchoolClass;
+use App\Support\ApiPagination;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -28,7 +29,7 @@ class AssignmentController extends Controller
             $query->whereIn('class_id', $classIds);
         }
 
-        return response()->json(['data' => $query->orderBy('deadline')->get()]);
+        return response()->json(ApiPagination::paginate($query->orderBy('deadline'), $request));
     }
 
     public function show(Request $request, Assignment $assignment): JsonResponse

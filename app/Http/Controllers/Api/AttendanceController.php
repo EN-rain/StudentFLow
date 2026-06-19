@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
 use App\Models\SchoolClass;
+use App\Support\ApiPagination;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -40,7 +41,10 @@ class AttendanceController extends Controller
             $query->whereIn('class_id', $classIds);
         }
 
-        return response()->json(['data' => $query->orderBy('attendance_date', 'desc')->orderBy('student_id')->limit(500)->get()]);
+        return response()->json(ApiPagination::paginate(
+            $query->orderBy('attendance_date', 'desc')->orderBy('student_id'),
+            $request
+        ));
     }
 
     /**

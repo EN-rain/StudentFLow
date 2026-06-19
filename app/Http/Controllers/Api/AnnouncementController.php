@@ -7,6 +7,7 @@ use App\Http\Requests\StoreAnnouncementRequest;
 use App\Models\Announcement;
 use App\Models\SchoolClass;
 use App\Models\Teacher;
+use App\Support\ApiPagination;
 use App\Support\AnnouncementMailer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -25,7 +26,7 @@ class AnnouncementController extends Controller
             $query->where('teacher_id', $teacher->id);
         }
 
-        return response()->json(['data' => $query->orderBy('publish_date', 'desc')->get()]);
+        return response()->json(ApiPagination::paginate($query->orderBy('publish_date', 'desc'), $request));
     }
 
     public function show(Request $request, Announcement $announcement): JsonResponse

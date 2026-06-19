@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreStudentRequest;
 use App\Models\SchoolClass;
 use App\Models\Student;
+use App\Support\ApiPagination;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -49,9 +50,10 @@ class StudentController extends Controller
             $query->whereIn('id', $studentIds);
         }
 
-        return response()->json([
-            'data' => $query->orderBy('last_name')->orderBy('first_name')->limit(200)->get(),
-        ]);
+        return response()->json(ApiPagination::paginate(
+            $query->orderBy('last_name')->orderBy('first_name'),
+            $request
+        ));
     }
 
     public function show(Request $request, Student $student): JsonResponse

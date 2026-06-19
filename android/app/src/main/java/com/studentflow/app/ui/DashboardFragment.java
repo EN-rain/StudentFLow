@@ -16,7 +16,7 @@ public class DashboardFragment extends BaseDataFragment {
     @Override
     protected void configure() {
         setHeader("Dashboard", "Track teaching activity, student records, attendance, and class updates from one place.");
-        addAction("Refresh", v -> load());
+        addTopIconAction(com.studentflow.app.R.drawable.ic_refresh, "Refresh dashboard", v -> load());
         load();
     }
 

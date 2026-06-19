@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreClassRequest;
 use App\Models\SchoolClass;
-use App\Models\Teacher;
+use App\Support\ApiPagination;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -26,7 +26,7 @@ class ClassController extends Controller
             $query->where('teacher_id', $teacher->id);
         }
 
-        return response()->json(['data' => $query->orderBy('class_name')->get()]);
+        return response()->json(ApiPagination::paginate($query->orderBy('class_name'), $request));
     }
 
     public function show(Request $request, SchoolClass $class): JsonResponse

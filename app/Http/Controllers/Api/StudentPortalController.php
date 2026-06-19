@@ -8,6 +8,7 @@ use App\Models\Assignment;
 use App\Models\Attendance;
 use App\Models\ExamAttempt;
 use App\Models\StudentGrade;
+use App\Support\ApiPagination;
 use App\Support\StudentUsername;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -75,7 +76,10 @@ class StudentPortalController extends Controller
     {
         $classIds = $this->student($request)->classes()->pluck('classes.id');
 
-        return response()->json(['data' => Announcement::with('teacher.user', 'schoolClass')->whereIn('class_id', $classIds)->orderByDesc('publish_date')->get()]);
+        return response()->json(ApiPagination::paginate(
+            Announcement::with('teacher.user', 'schoolClass')->whereIn('class_id', $classIds)->orderByDesc('publish_date'),
+            $request
+        ));
     }
 
     public function assignments(Request $request): JsonResponse
@@ -86,9 +90,9 @@ class StudentPortalController extends Controller
         $assignments = Assignment::with([
             'schoolClass',
             'submissions' => fn ($query) => $query->where('student_id', $student->id),
-        ])->whereIn('class_id', $classIds)->orderByDesc('deadline')->get();
+        ])->whereIn('class_id', $classIds)->orderByDesc('deadline');
 
-        return response()->json(['data' => $assignments]);
+        return response()->json(ApiPagination::paginate($assignments, $request));
     }
 
     public function grades(Request $request): JsonResponse
@@ -110,7 +114,10 @@ class StudentPortalController extends Controller
 
     public function attendance(Request $request): JsonResponse
     {
-        return response()->json(['data' => Attendance::with('schoolClass')->where('student_id', $this->student($request)->id)->orderByDesc('attendance_date')->get()]);
+        return response()->json(ApiPagination::paginate(
+            Attendance::with('schoolClass')->where('student_id', $this->student($request)->id)->orderByDesc('attendance_date'),
+            $request
+        ));
     }
 
     public function exams(Request $request): JsonResponse
@@ -118,9 +125,9 @@ class StudentPortalController extends Controller
         $attempts = ExamAttempt::with('exam.schoolClass')
             ->where('student_id', $this->student($request)->id)
             ->orderByDesc('created_at')
-            ->get();
+            ->paginate(ApiPagination::perPage($request));
 
-        return response()->json(['data' => $attempts]);
+        return response()->json(ApiPagination::response($attempts));
     }
 
     private function student(Request $request)
