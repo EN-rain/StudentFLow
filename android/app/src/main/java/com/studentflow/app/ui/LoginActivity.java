@@ -9,6 +9,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -58,6 +59,7 @@ public class LoginActivity extends AppCompatActivity {
     private MaterialButton showRegisterButton;
     private ImageButton googleLoginButton;
     private ImageButton githubLoginButton;
+    private CheckBox rememberMeCheckbox;
     private LinearLayout socialRow;
     private TokenStore tokenStore;
     private GoogleSignInClient googleSignInClient;
@@ -87,6 +89,9 @@ public class LoginActivity extends AppCompatActivity {
         configureLayoutMotion();
         googleLoginButton = findViewById(R.id.googleLoginButton);
         githubLoginButton = findViewById(R.id.githubLoginButton);
+        rememberMeCheckbox = findViewById(R.id.rememberMeCheckbox);
+        rememberMeCheckbox.setChecked(tokenStore.shouldRememberLogin());
+        usernameInput.setText(tokenStore.getRememberedUsername());
         googleSignInClient = GoogleSignIn.getClient(this, new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .requestIdToken(Constants.GOOGLE_WEB_CLIENT_ID)
@@ -113,6 +118,7 @@ public class LoginActivity extends AppCompatActivity {
         passwordLayout.setVisibility(mode == Mode.FORGOT ? View.GONE : View.VISIBLE);
         confirmPasswordLayout.setVisibility(mode == Mode.REGISTER ? View.VISIBLE : View.GONE);
         socialRow.setVisibility(mode == Mode.FORGOT ? View.GONE : View.VISIBLE);
+        rememberMeCheckbox.setVisibility(mode == Mode.LOGIN ? View.VISIBLE : View.GONE);
         usernameLayout.setHint(mode == Mode.LOGIN ? "Username or email" : "Email");
         loginButton.setText(primaryActionText());
         forgotPasswordButton.setText(mode == Mode.FORGOT ? "Back to login" : "Forgot password?");
@@ -199,6 +205,7 @@ public class LoginActivity extends AppCompatActivity {
         showLoginButton.setEnabled(enabled);
         showRegisterButton.setEnabled(enabled);
         forgotPasswordButton.setEnabled(enabled);
+        rememberMeCheckbox.setEnabled(enabled);
         googleLoginButton.setEnabled(enabled);
         githubLoginButton.setEnabled(enabled);
         socialRow.setAlpha(enabled ? 1f : 0.5f);
@@ -234,6 +241,7 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
         setAuthControlsEnabled(false, "Signing in...");
+        tokenStore.saveRememberedLogin(rememberMeCheckbox.isChecked(), username);
         ApiClient.reset();
         ApiClient.service(this).login(username, password).enqueue(new Callback<LoginResponse>() {
             @Override

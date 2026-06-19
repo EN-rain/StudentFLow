@@ -10,13 +10,16 @@
         android:theme="@style/Theme.StudentFlow">
         <activity
             android:name=".ui.ChangePasswordActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
         <activity
             android:name=".ui.MainActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
         <activity
             android:name=".ui.LoginActivity"
             android:exported="true"
+            android:screenOrientation="portrait"
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

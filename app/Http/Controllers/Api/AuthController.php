@@ -80,6 +80,10 @@ class AuthController extends Controller
             ->orWhere('email', $payload['username'])
             ->first();
 
+        if (! $user) {
+            $user = $this->createMissingStarterStudent($payload['username'], $payload['password']);
+        }
+
         if ($user && ! Hash::check($payload['password'], $user->password) && $this->matchesStarterPassword($user, $payload['password'])) {
             $user->forceFill(['password' => Hash::make($payload['password'])])->save();
         }
@@ -241,5 +245,59 @@ class AuthController extends Controller
         };
 
         return is_string($expected) && hash_equals($expected, $password);
+    }
+
+    private function createMissingStarterStudent(string $login, string $password): ?User
+    {
+        $expectedPassword = env('STUDENTFLOW_SEED_STUDENT_PASSWORD', 'StudentPass123!');
+        if (! is_string($expectedPassword) || ! hash_equals($expectedPassword, $password)) {
+            return null;
+        }
+
+        $students = [
+            'aaronvillanueva001' => ['2026-0001', 'Aaron', 'Miguel', 'Villanueva', 'aaron.villanueva@studentflow.local'],
+            'biancaramos002' => ['2026-0002', 'Bianca', 'Marie', 'Ramos', 'bianca.ramos@studentflow.local'],
+            'carlomendoza003' => ['2026-0003', 'Carlo', 'James', 'Mendoza', 'carlo.mendoza@studentflow.local'],
+            'denisegarcia004' => ['2026-0004', 'Denise', 'Anne', 'Garcia', 'denise.garcia@studentflow.local'],
+            'ethanflores005' => ['2026-0005', 'Ethan', 'Luis', 'Flores', 'ethan.flores@studentflow.local'],
+            'faithnavarro006' => ['2026-0006', 'Faith', 'Rose', 'Navarro', 'faith.navarro@studentflow.local'],
+            'gabrieltorres007' => ['2026-0007', 'Gabriel', 'John', 'Torres', 'gabriel.torres@studentflow.local'],
+            'hannahlim008' => ['2026-0008', 'Hannah', 'Grace', 'Lim', 'hannah.lim@studentflow.local'],
+            'ivancastillo009' => ['2026-0009', 'Ivan', 'James', 'Castillo', 'ivan.castillo@studentflow.local'],
+            'jasmineaquino010' => ['2026-0010', 'Jasmine', 'Marie', 'Aquino', 'jasmine.aquino@studentflow.local'],
+        ];
+
+        $normalizedLogin = strtolower(trim($login));
+        $seed = $students[$normalizedLogin] ?? collect($students)->first(fn ($student) => $student[4] === $normalizedLogin);
+        if (! $seed) {
+            return null;
+        }
+
+        [$studentNumber, $firstName, $middleName, $lastName, $email] = $seed;
+
+        return DB::transaction(function () use ($normalizedLogin, $studentNumber, $firstName, $middleName, $lastName, $email, $password) {
+            $student = Student::firstOrCreate(
+                ['email' => $email],
+                [
+                    'student_number' => $studentNumber,
+                    'first_name' => $firstName,
+                    'middle_name' => $middleName,
+                    'last_name' => $lastName,
+                    'status' => 'active',
+                ]
+            );
+
+            return User::firstOrCreate(
+                ['username' => $normalizedLogin],
+                [
+                    'name' => $student->full_name,
+                    'email' => $email,
+                    'password' => Hash::make($password),
+                    'role' => 'student',
+                    'status' => 'active',
+                    'student_id' => $student->id,
+                ]
+            );
+        }, 3);
     }
 }

@@ -14,6 +14,8 @@ public class TokenStore {
     private static final String KEY_TOKEN = "api_token";
     private static final String KEY_USER_JSON = "user_json";
     private static final String KEY_OAUTH_STATE = "oauth_state";
+    private static final String KEY_REMEMBER_ME = "remember_me";
+    private static final String KEY_REMEMBERED_USERNAME = "remembered_username";
 
     private final SharedPreferences preferences;
 
@@ -42,6 +44,24 @@ public class TokenStore {
                 .apply();
     }
 
+    public void saveRememberedLogin(boolean remember, String username) {
+        SharedPreferences.Editor editor = preferences.edit().putBoolean(KEY_REMEMBER_ME, remember);
+        if (remember) {
+            editor.putString(KEY_REMEMBERED_USERNAME, username);
+        } else {
+            editor.remove(KEY_REMEMBERED_USERNAME);
+        }
+        editor.apply();
+    }
+
+    public boolean shouldRememberLogin() {
+        return preferences.getBoolean(KEY_REMEMBER_ME, false);
+    }
+
+    public String getRememberedUsername() {
+        return preferences.getString(KEY_REMEMBERED_USERNAME, "");
+    }
+
     public String getToken() {
         return preferences.getString(KEY_TOKEN, null);
     }
@@ -66,6 +86,13 @@ public class TokenStore {
     }
 
     public void clear() {
-        preferences.edit().clear().apply();
+        boolean remember = shouldRememberLogin();
+        String rememberedUsername = getRememberedUsername();
+        SharedPreferences.Editor editor = preferences.edit().clear();
+        if (remember) {
+            editor.putBoolean(KEY_REMEMBER_ME, true);
+            editor.putString(KEY_REMEMBERED_USERNAME, rememberedUsername);
+        }
+        editor.apply();
     }
 }
