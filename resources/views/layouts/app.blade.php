@@ -41,6 +41,13 @@
                 linear-gradient(180deg, var(--sf-primary-dark) 0, var(--sf-primary) 280px, var(--sf-surface) 280px, var(--sf-surface) 100%);
         }
 
+        body.page-login {
+            background:
+                linear-gradient(90deg, rgba(2, 6, 23, 0.72), rgba(15, 23, 42, 0.34)),
+                url('/images/studentflow-login-bg.png') center center / cover fixed,
+                var(--sf-primary-dark);
+        }
+
         a {
             color: var(--sf-accent);
             text-decoration: none;
@@ -425,6 +432,15 @@
             border-radius: 28px;
         }
 
+        body.page-login .login-card {
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(14px);
+        }
+
+        body.page-login .login-card .card {
+            background: transparent;
+        }
+
         .auth-logo {
             width: 48px;
             height: 48px;
@@ -564,7 +580,7 @@
     </style>
     @stack('head')
 </head>
-<body>
+<body class="@yield('body_class')">
     @auth
         <nav class="navbar navbar-expand-lg navbar-dark topbar">
             <div class="container-fluid">
