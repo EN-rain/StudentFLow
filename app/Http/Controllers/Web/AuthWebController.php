@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -21,37 +22,79 @@ class AuthWebController extends Controller
 
     public function login(Request $request)
     {
+        $startedAt = microtime(true);
+        $marks = [];
+        $outcome = 'failed';
+        $user = null;
+
         $payload = $request->validate([
             'username' => 'required|string',
             'password' => 'required|string',
         ]);
+        $marks['validated_ms'] = $this->elapsedMs($startedAt);
 
+        $lookupStartedAt = microtime(true);
         $user = User::where('username', $payload['username'])
             ->orWhere('email', $payload['username'])
             ->first();
+        $marks['lookup_ms'] = $this->elapsedMs($lookupStartedAt);
 
+        $hashStartedAt = microtime(true);
         if (! $user || ! Hash::check($payload['password'], $user->password)) {
+            $marks['hash_ms'] = $this->elapsedMs($hashStartedAt);
+            $this->logAuthTiming($request, $startedAt, $marks, $outcome, $user);
             throw ValidationException::withMessages([
                 'username' => 'Invalid credentials.',
             ]);
         }
+        $marks['hash_ms'] = $this->elapsedMs($hashStartedAt);
 
         if ($user->status !== 'active') {
+            $this->logAuthTiming($request, $startedAt, $marks, $outcome, $user);
             throw ValidationException::withMessages([
                 'username' => 'This account has been disabled.',
             ]);
         }
 
         if ($user->isStudent()) {
+            $this->logAuthTiming($request, $startedAt, $marks, $outcome, $user);
             throw ValidationException::withMessages([
                 'username' => 'Students must sign in through the StudentFlow mobile app.',
             ]);
         }
 
+        $sessionStartedAt = microtime(true);
         Auth::login($user, $request->boolean('remember'));
         $request->session()->regenerate();
+        $marks['session_ms'] = $this->elapsedMs($sessionStartedAt);
+        $outcome = 'success';
+        $this->logAuthTiming($request, $startedAt, $marks, $outcome, $user);
 
         return redirect()->intended('/dashboard');
+    }
+
+    private function elapsedMs(float $startedAt): int
+    {
+        return (int) round((microtime(true) - $startedAt) * 1000);
+    }
+
+    private function logAuthTiming(Request $request, float $startedAt, array $marks, string $outcome, ?User $user): void
+    {
+        if (! filter_var(env('PERF_LOG_AUTH', false), FILTER_VALIDATE_BOOLEAN)) {
+            return;
+        }
+
+        $totalMs = $this->elapsedMs($startedAt);
+        $level = $totalMs >= 1000 ? 'warning' : 'info';
+
+        Log::log($level, 'web login timing', [
+            'outcome' => $outcome,
+            'total_ms' => $totalMs,
+            'steps' => $marks,
+            'role' => $user?->role,
+            'user_id' => $user?->id,
+            'ip' => $request->ip(),
+        ]);
     }
 
     public function logout(Request $request)

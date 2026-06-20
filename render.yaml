@@ -37,6 +37,12 @@ services:
         value: database
       - key: QUEUE_CONNECTION
         value: database
+      - key: RUN_MIGRATIONS_ON_START
+        value: "false"
+      - key: RUN_SEED_ON_START
+        value: "false"
+      - key: PERF_LOG_AUTH
+        value: "true"
       - key: MAIL_MAILER
         value: log
       - key: STUDENTFLOW_SEED_ADMIN_PASSWORD

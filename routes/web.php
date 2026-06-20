@@ -16,6 +16,12 @@ use App\Http\Controllers\Web\ReportController;
 use App\Http\Controllers\Web\StudentWebController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/health', fn () => response()->json([
+    'status' => 'ok',
+    'service' => 'studentflow',
+    'timestamp' => now()->toIso8601String(),
+]))->name('health');
+
 Route::get('/', fn () => redirect('/dashboard'));
 Route::get('/exam/magic/{token}', [MagicExamWebController::class, 'show'])->middleware('throttle:60,1');
 Route::post('/exam/magic/{token}/start', [MagicExamWebController::class, 'start'])->middleware('throttle:20,1');
