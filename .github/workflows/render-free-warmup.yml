@@ -1,0 +1,28 @@
+name: Render Free Warmup
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Ping free Render services
+        run: |
+          set -euo pipefail
+
+          urls=(
+            "https://studentflow-rbog.onrender.com/health"
+            "https://pockettrade-ebaq.onrender.com/health"
+          )
+
+          for url in "${urls[@]}"; do
+            echo "Pinging ${url}"
+            curl --fail --silent --show-error --location --max-time 90 "$url" >/dev/null
+          done
