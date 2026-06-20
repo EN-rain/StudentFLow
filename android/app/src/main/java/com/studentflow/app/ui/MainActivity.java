@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (isAdmin()) {
             tokenStore.clear();
             ApiClient.reset();
+            StudentEndpointFragment.clearCache();
             openLogin();
             return;
         }
@@ -121,6 +122,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
         tokenStore.clear();
         ApiClient.reset();
+        StudentEndpointFragment.clearCache();
         openLogin();
     }
 

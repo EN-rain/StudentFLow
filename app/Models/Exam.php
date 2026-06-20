@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class Exam extends Model
@@ -54,17 +55,22 @@ class Exam extends Model
     public function assignEnrolledStudents(): void
     {
         $this->loadMissing('schoolClass.students');
-        foreach ($this->schoolClass->students as $student) {
-            if ($student->pivot?->status !== 'enrolled') {
-                continue;
-            }
-            ExamAttempt::firstOrCreate([
+        $now = now();
+        $rows = $this->schoolClass->students
+            ->filter(fn ($student) => $student->pivot?->status === 'enrolled')
+            ->map(fn ($student) => [
                 'exam_id' => $this->id,
                 'student_id' => $student->id,
-            ], [
                 'magic_token' => Str::random(64),
                 'status' => 'assigned',
-            ]);
+                'created_at' => $now,
+                'updated_at' => $now,
+            ])
+            ->values()
+            ->all();
+
+        if ($rows) {
+            DB::table('exam_attempts')->insertOrIgnore($rows);
         }
     }
 }

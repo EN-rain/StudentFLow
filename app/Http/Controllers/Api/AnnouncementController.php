@@ -59,9 +59,9 @@ class AnnouncementController extends Controller
         $announcement = Announcement::create(array_merge($request->validated(), [
             'teacher_id' => $teacher?->id ?? $request->teacher_id,
         ]));
-        $sent = AnnouncementMailer::sendToEnrolledStudents($announcement);
+        $queued = AnnouncementMailer::queueForEnrolledStudents($announcement);
 
-        return response()->json(['data' => $announcement, 'emails_sent' => $sent], 201);
+        return response()->json(['data' => $announcement, 'emails_queued' => $queued], 201);
     }
 
     public function update(StoreAnnouncementRequest $request, Announcement $announcement): JsonResponse

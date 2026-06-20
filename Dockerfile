@@ -3,7 +3,7 @@ WORKDIR /app
 COPY package*.json vite.config.js ./
 COPY resources ./resources
 COPY public ./public
-RUN npm install && npm run build
+RUN npm ci && npm run build
 
 FROM php:8.3-apache-bookworm
 WORKDIR /var/www/html

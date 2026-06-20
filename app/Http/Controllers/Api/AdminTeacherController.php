@@ -7,6 +7,7 @@ use App\Http\Requests\StoreTeacherRequest;
 use App\Models\Teacher;
 use App\Models\User;
 use App\Support\ActivityLogger;
+use App\Support\ApiPagination;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -18,9 +19,10 @@ class AdminTeacherController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $teachers = Teacher::with('user')->withCount('classes')->orderBy('last_name')->get();
-
-        return response()->json(['data' => $teachers]);
+        return response()->json(ApiPagination::paginate(
+            Teacher::with('user')->withCount('classes')->orderBy('last_name'),
+            $request
+        ));
     }
 
     public function store(StoreTeacherRequest $request): JsonResponse

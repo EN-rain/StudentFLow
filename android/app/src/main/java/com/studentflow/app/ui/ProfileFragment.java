@@ -53,7 +53,7 @@ public class ProfileFragment extends BaseDataFragment {
         if (!isAdded() || getView() == null) {
             return;
         }
-        listContainer.removeAllViews();
+        clearCards();
         setStatus("Account loaded", false);
         addCard(summary("Account", body));
         JsonElement teacher = body.get("teacher");

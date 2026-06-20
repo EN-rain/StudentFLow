@@ -45,7 +45,7 @@ public class QaTestFragment extends BaseDataFragment {
         currentExamId = 0;
         role = readRole();
         steps.clear();
-        listContainer.removeAllViews();
+        clearCards();
         statusView.setText("Running QA tests...");
         buildPlan();
         runStep(0);

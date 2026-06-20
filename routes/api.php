@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\AttendanceController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ClassController;
 use App\Http\Controllers\Api\ClassJoinRequestController;
+use App\Http\Controllers\Api\DashboardStatsController;
 use App\Http\Controllers\Api\EnrollmentController;
 use App\Http\Controllers\Api\ExamController;
 use App\Http\Controllers\Api\GradeController;
@@ -70,6 +71,8 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::middleware('role:admin,teacher')->group(function () {
+        Route::get('/dashboard/stats', DashboardStatsController::class);
+
         Route::get('/classes', [ClassController::class, 'index']);
         Route::post('/classes', [ClassController::class, 'store']);
         Route::get('/classes/{class}', [ClassController::class, 'show']);

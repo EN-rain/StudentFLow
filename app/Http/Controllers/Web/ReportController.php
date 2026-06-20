@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Models\Attendance;
 use App\Models\SchoolClass;
 use App\Models\Student;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -100,7 +101,7 @@ class ReportController extends Controller
     private function buildReportData(Request $request, string $type, ?SchoolClass $class): array
     {
         if ($type === 'student-profile') {
-            $student = Student::with('classes.teacher.user', 'attendance', 'grades.gradeItem.category', 'assignmentSubmissions.assignment')->find($request->query('student_id'));
+            $student = Student::with('classes.teacher.user')->find($request->query('student_id'));
             if (! $student) {
                 abort(400, 'student_id query parameter is required.');
             }
@@ -119,7 +120,14 @@ class ReportController extends Controller
             ];
         }
 
-        $class->load(['students', 'gradeCategories.items.studentGrades']);
+        $relations = ['students'];
+        if (in_array($type, ['grades', 'class-performance', 'failing-grades'], true)) {
+            $relations[] = 'gradeCategories.items.studentGrades';
+        }
+        if ($type === 'missing-assignments') {
+            $relations[] = 'assignments.submissions';
+        }
+        $class->loadMissing($relations);
 
         if ($type === 'attendance') {
             return $this->attendanceData($class);
@@ -167,8 +175,9 @@ class ReportController extends Controller
         $class->loadMissing('students', 'assignments.submissions');
         $rows = [];
         foreach ($class->assignments as $assignment) {
+            $submissionsByStudent = $assignment->submissions->keyBy('student_id');
             foreach ($class->students as $student) {
-                $submission = $assignment->submissions->firstWhere('student_id', $student->id);
+                $submission = $submissionsByStudent->get($student->id);
                 if (! $submission || $submission->status === 'Missing') {
                     $rows[] = [
                         'assignment' => $assignment->title,
@@ -186,35 +195,52 @@ class ReportController extends Controller
 
     private function attendanceData(SchoolClass $class): array
     {
-        $students = $class->students()->orderBy('last_name')->get();
+        $students = $class->students->sortBy('last_name')->values();
+        $statsByStudent = Attendance::query()
+            ->select('student_id')
+            ->selectRaw('COUNT(*) as total')
+            ->selectRaw("SUM(CASE WHEN status IN ('Present', 'Late') THEN 1 ELSE 0 END) as present")
+            ->selectRaw("SUM(CASE WHEN status = 'Absent' THEN 1 ELSE 0 END) as absent")
+            ->selectRaw("SUM(CASE WHEN status = 'Late' THEN 1 ELSE 0 END) as late")
+            ->selectRaw("SUM(CASE WHEN status = 'Excused' THEN 1 ELSE 0 END) as excused")
+            ->where('class_id', $class->id)
+            ->whereIn('student_id', $students->pluck('id'))
+            ->groupBy('student_id')
+            ->get()
+            ->keyBy('student_id');
+
         $rows = [];
-        $classSize = max(count($students), 1);
-        foreach ($students as $s) {
-            $total = $s->attendance()->where('class_id', $class->id)->count();
-            $present = $s->attendance()->where('class_id', $class->id)->whereIn('status', ['Present', 'Late'])->count();
-            $absent = $s->attendance()->where('class_id', $class->id)->where('status', 'Absent')->count();
-            $late = $s->attendance()->where('class_id', $class->id)->where('status', 'Late')->count();
-            $excused = $s->attendance()->where('class_id', $class->id)->where('status', 'Excused')->count();
-            $pct = $total > 0 ? round($present / $total * 100, 1) : null;
+        foreach ($students as $student) {
+            $stats = $statsByStudent->get($student->id);
+            $total = (int) ($stats->total ?? 0);
+            $present = (int) ($stats->present ?? 0);
             $rows[] = [
-                'student_number' => $s->student_number,
-                'name' => $s->full_name,
+                'student_number' => $student->student_number,
+                'name' => $student->full_name,
                 'total' => $total,
                 'present' => $present,
-                'absent' => $absent,
-                'late' => $late,
-                'excused' => $excused,
-                'percentage' => $pct,
+                'absent' => (int) ($stats->absent ?? 0),
+                'late' => (int) ($stats->late ?? 0),
+                'excused' => (int) ($stats->excused ?? 0),
+                'percentage' => $total > 0 ? round($present / $total * 100, 1) : null,
             ];
         }
 
-        return ['rows' => $rows, 'classSize' => $classSize];
+        return ['rows' => $rows, 'classSize' => max($students->count(), 1)];
     }
 
     private function gradesData(SchoolClass $class): array
     {
-        $students = $class->students()->orderBy('last_name')->get();
+        $students = $class->students->sortBy('last_name')->values();
+        $studentsById = $students->keyBy('id');
         $rows = [];
+
+        $gradesByItem = [];
+        foreach ($class->gradeCategories as $category) {
+            foreach ($category->items as $item) {
+                $gradesByItem[$item->id] = $item->studentGrades->keyBy('student_id');
+            }
+        }
 
         $studentFinals = [];
         foreach ($students as $student) {
@@ -225,7 +251,7 @@ class ReportController extends Controller
                     if ((float) $item->maximum_score <= 0) {
                         continue;
                     }
-                    $sg = $item->studentGrades->firstWhere('student_id', $student->id);
+                    $sg = $gradesByItem[$item->id]->get($student->id);
                     if (! $sg) {
                         continue;
                     }
@@ -251,7 +277,7 @@ class ReportController extends Controller
             } else {
                 $rank = $lastRank; // tie
             }
-            $student = $students->firstWhere('id', $sid);
+            $student = $studentsById->get($sid);
             $rows[] = [
                 'rank' => $rank,
                 'student_number' => $student->student_number,

@@ -15,6 +15,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.ListAdapter;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
@@ -23,6 +27,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.studentflow.app.R;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+
 public abstract class BaseDataFragment extends Fragment {
     protected TextView titleView;
     protected TextView subtitleView;
@@ -30,7 +39,9 @@ public abstract class BaseDataFragment extends Fragment {
     protected ProgressBar loadingLine;
     protected LinearLayout topActionRow;
     protected LinearLayout actionRow;
-    protected LinearLayout listContainer;
+    protected RecyclerView listContainer;
+    private final List<Call<?>> activeCalls = new ArrayList<>();
+    private CardAdapter cardAdapter;
 
     @Nullable
     @Override
@@ -43,11 +54,52 @@ public abstract class BaseDataFragment extends Fragment {
         topActionRow = view.findViewById(R.id.topActionRow);
         actionRow = view.findViewById(R.id.actionRow);
         listContainer = view.findViewById(R.id.listContainer);
+        cardAdapter = new CardAdapter();
+        listContainer.setLayoutManager(new LinearLayoutManager(requireContext()));
+        listContainer.setAdapter(cardAdapter);
+        listContainer.setHasFixedSize(false);
         configure();
         return view;
     }
 
     protected abstract void configure();
+
+    protected <T> Call<T> track(Call<T> call) {
+        activeCalls.add(call);
+        return call;
+    }
+
+    protected boolean isViewActive() {
+        return isAdded() && getView() != null;
+    }
+
+    protected void clearCards() {
+        if (cardAdapter != null) {
+            cardAdapter.clear();
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        for (Call<?> call : activeCalls) {
+            if (!call.isCanceled()) {
+                call.cancel();
+            }
+        }
+        activeCalls.clear();
+        titleView = null;
+        subtitleView = null;
+        statusView = null;
+        loadingLine = null;
+        topActionRow = null;
+        actionRow = null;
+        if (listContainer != null) {
+            listContainer.setAdapter(null);
+        }
+        listContainer = null;
+        cardAdapter = null;
+        super.onDestroyView();
+    }
 
     protected void setHeader(String title, String subtitle) {
         titleView.setText(title);
@@ -96,7 +148,7 @@ public abstract class BaseDataFragment extends Fragment {
         if (!isAdded() || getView() == null || listContainer == null || statusView == null) {
             return;
         }
-        listContainer.removeAllViews();
+        clearCards();
         setLoading(false);
         JsonElement data = body == null ? null : body.get("data");
         if (data != null && data.isJsonArray()) {
@@ -137,7 +189,7 @@ public abstract class BaseDataFragment extends Fragment {
         if (!isAdded() || getView() == null || listContainer == null || statusView == null) {
             return;
         }
-        listContainer.removeAllViews();
+        clearCards();
         setLoading(false);
         setStatus(message, true);
     }
@@ -163,45 +215,193 @@ public abstract class BaseDataFragment extends Fragment {
     }
 
     protected void addCard(String text, View.OnClickListener listener) {
-        if (!isAdded() || getView() == null || listContainer == null) {
+        addCardWithActions(text, listener);
+    }
+
+    protected CardAction cardAction(String label, View.OnClickListener listener) {
+        return new CardAction(label, listener);
+    }
+
+    protected void addCardWithActions(String text, View.OnClickListener listener, CardAction... actions) {
+        if (!isViewActive() || cardAdapter == null) {
             return;
         }
-        MaterialCardView card = new MaterialCardView(requireContext());
-        card.setRadius(dp(22));
-        card.setCardElevation(0f);
-        card.setStrokeWidth(dp(1));
-        card.setStrokeColor(ContextCompat.getColor(requireContext(), R.color.studentflow_border));
-        card.setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.studentflow_field));
-        card.setUseCompatPadding(false);
-        if (listener != null) {
-            card.setClickable(true);
-            card.setFocusable(true);
-            card.setOnClickListener(listener);
-            card.setRippleColor(ContextCompat.getColorStateList(requireContext(), R.color.studentflow_surface_alt));
+        cardAdapter.add(text, listener, actions);
+    }
+
+    protected void addPaginationCard(int currentPage, int lastPage, Runnable previous, Runnable next) {
+        if (lastPage <= 1) {
+            return;
+        }
+        List<CardAction> actions = new ArrayList<>();
+        if (currentPage > 1) {
+            actions.add(cardAction("Previous", v -> previous.run()));
+        }
+        if (currentPage < lastPage) {
+            actions.add(cardAction("Next", v -> next.run()));
+        }
+        addCardWithActions(
+                "Page " + currentPage + " of " + lastPage,
+                null,
+                actions.toArray(new CardAction[0])
+        );
+    }
+
+    protected static final class CardAction {
+        private final String label;
+        private final View.OnClickListener listener;
+
+        private CardAction(String label, View.OnClickListener listener) {
+            this.label = label;
+            this.listener = listener;
+        }
+    }
+
+    private static final class CardItem {
+        private final long id;
+        private final String text;
+        private final View.OnClickListener listener;
+        private final CardAction[] actions;
+
+        private CardItem(long id, String text, View.OnClickListener listener, CardAction[] actions) {
+            this.id = id;
+            this.text = text;
+            this.listener = listener;
+            this.actions = actions;
+        }
+    }
+
+    private final class CardAdapter extends ListAdapter<CardItem, CardViewHolder> {
+        private final List<CardItem> pendingItems = new ArrayList<>();
+        private boolean submitScheduled = false;
+
+        private CardAdapter() {
+            super(new DiffUtil.ItemCallback<CardItem>() {
+                @Override
+                public boolean areItemsTheSame(@NonNull CardItem oldItem, @NonNull CardItem newItem) {
+                    return oldItem.id == newItem.id;
+                }
+
+                @Override
+                public boolean areContentsTheSame(@NonNull CardItem oldItem, @NonNull CardItem newItem) {
+                    return oldItem.text.equals(newItem.text) && oldItem.listener == newItem.listener;
+                }
+            });
         }
 
-        LinearLayout wrapper = new LinearLayout(requireContext());
-        wrapper.setOrientation(LinearLayout.VERTICAL);
-        int pad = dp(18);
-        wrapper.setPadding(pad, pad, pad, pad);
+        private void add(String text, View.OnClickListener listener, CardAction... actions) {
+            String safeText = text == null ? "" : text;
+            CardAction[] safeActions = actions == null ? new CardAction[0] : actions;
+            pendingItems.add(new CardItem(stableId(safeText, safeActions), safeText, listener, safeActions));
+            scheduleSubmit();
+        }
 
-        String[] lines = text.split("\\n");
-        for (int i = 0; i < lines.length; i++) {
-            TextView content = new TextView(requireContext());
-            content.setText(lines[i]);
-            content.setTextColor(ContextCompat.getColor(requireContext(), i == 0 ? R.color.studentflow_text : R.color.studentflow_text_muted));
-            content.setTextSize(TypedValue.COMPLEX_UNIT_SP, i == 0 ? 16 : 14);
-            content.setLineSpacing(0f, 1.2f);
-            if (i == 0) {
-                content.setTypeface(content.getTypeface(), android.graphics.Typeface.BOLD);
+        private void clear() {
+            pendingItems.clear();
+            submitScheduled = false;
+            submitList(new ArrayList<>());
+        }
+
+        private void scheduleSubmit() {
+            if (submitScheduled || listContainer == null) {
+                return;
             }
-            wrapper.addView(content);
+            submitScheduled = true;
+            listContainer.post(() -> {
+                submitScheduled = false;
+                submitList(new ArrayList<>(pendingItems));
+            });
         }
 
-        card.addView(wrapper);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        params.setMargins(0, 0, 0, dp(12));
-        listContainer.addView(card, params);
+        private long stableId(String text, CardAction[] actions) {
+            long id = 1125899906842597L;
+            id = 31 * id + text.hashCode();
+            for (CardAction action : actions) {
+                id = 31 * id + action.label.hashCode();
+            }
+            return id;
+        }
+
+        @NonNull
+        @Override
+        public CardViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            MaterialCardView card = new MaterialCardView(parent.getContext());
+            card.setRadius(dp(22));
+            card.setCardElevation(0f);
+            card.setStrokeWidth(dp(1));
+            card.setStrokeColor(ContextCompat.getColor(parent.getContext(), R.color.studentflow_border));
+            card.setCardBackgroundColor(ContextCompat.getColor(parent.getContext(), R.color.studentflow_field));
+            card.setUseCompatPadding(false);
+            card.setRippleColor(ContextCompat.getColorStateList(parent.getContext(), R.color.studentflow_surface_alt));
+
+            LinearLayout wrapper = new LinearLayout(parent.getContext());
+            wrapper.setOrientation(LinearLayout.VERTICAL);
+            int padding = dp(18);
+            wrapper.setPadding(padding, padding, padding, padding);
+            card.addView(wrapper, new MaterialCardView.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            ));
+
+            RecyclerView.LayoutParams params = new RecyclerView.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            );
+            params.setMargins(0, 0, 0, dp(12));
+            card.setLayoutParams(params);
+            return new CardViewHolder(card, wrapper);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull CardViewHolder holder, int position) {
+            CardItem item = getItem(position);
+            holder.wrapper.removeAllViews();
+            String[] lines = item.text.split("\\n");
+            for (int index = 0; index < lines.length; index++) {
+                TextView content = new TextView(holder.itemView.getContext());
+                content.setText(lines[index]);
+                content.setTextColor(ContextCompat.getColor(
+                        holder.itemView.getContext(),
+                        index == 0 ? R.color.studentflow_text : R.color.studentflow_text_muted
+                ));
+                content.setTextSize(TypedValue.COMPLEX_UNIT_SP, index == 0 ? 16 : 14);
+                content.setLineSpacing(0f, 1.2f);
+                if (index == 0) {
+                    content.setTypeface(content.getTypeface(), android.graphics.Typeface.BOLD);
+                }
+                holder.wrapper.addView(content);
+            }
+
+            if (item.actions.length > 0) {
+                LinearLayout buttons = new LinearLayout(holder.itemView.getContext());
+                buttons.setOrientation(LinearLayout.HORIZONTAL);
+                LinearLayout.LayoutParams buttonRowParams = new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT
+                );
+                buttonRowParams.setMargins(0, dp(12), 0, 0);
+                for (CardAction action : item.actions) {
+                    MaterialButton button = new MaterialButton(holder.itemView.getContext(), null, com.google.android.material.R.attr.materialButtonOutlinedStyle);
+                    button.setText(action.label);
+                    button.setOnClickListener(action.listener);
+                    buttons.addView(button, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+                }
+                holder.wrapper.addView(buttons, buttonRowParams);
+            }
+
+            holder.itemView.setClickable(item.listener != null);
+            holder.itemView.setFocusable(item.listener != null);
+            holder.itemView.setOnClickListener(item.listener);
+        }
+    }
+
+    private static final class CardViewHolder extends RecyclerView.ViewHolder {
+        private final LinearLayout wrapper;
+
+        private CardViewHolder(@NonNull View itemView, LinearLayout wrapper) {
+            super(itemView);
+            this.wrapper = wrapper;
+        }
     }
 
     protected void confirm(String title, String message, Runnable onConfirm) {

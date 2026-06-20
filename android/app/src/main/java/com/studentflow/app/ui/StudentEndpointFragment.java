@@ -18,7 +18,11 @@ public class StudentEndpointFragment extends BaseDataFragment {
     private static final String ARG_TITLE = "title";
     private static final String ARG_SUBTITLE = "subtitle";
     private static final String ARG_ENDPOINT = "endpoint";
-    private static final Map<String, JsonObject> CACHE = new HashMap<>();
+    private static final long CACHE_TTL_MS = 60_000L;
+    private static final int PER_PAGE = 25;
+    private static final Map<String, CacheEntry> CACHE = new HashMap<>();
+    private int currentPage = 1;
+    private int lastPage = 1;
     private JsonObject currentProfile;
 
     public static StudentEndpointFragment newInstance(String title, String subtitle, String endpoint) {
@@ -29,6 +33,10 @@ public class StudentEndpointFragment extends BaseDataFragment {
         args.putString(ARG_ENDPOINT, endpoint);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    public static void clearCache() {
+        CACHE.clear();
     }
 
     @Override
@@ -42,9 +50,9 @@ public class StudentEndpointFragment extends BaseDataFragment {
             addAction("Edit Profile", v -> openProfileForm());
         }
         String endpoint = requireArguments().getString(ARG_ENDPOINT);
-        JsonObject cached = CACHE.get(endpoint);
-        if (cached != null) {
-            renderEndpoint(endpoint, cached);
+        CacheEntry cached = CACHE.get(cacheKey(endpoint, currentPage));
+        if (cached != null && !cached.isExpired()) {
+            renderEndpoint(endpoint, cached.body);
             setLoading(true);
             load(false);
         } else {
@@ -53,9 +61,14 @@ public class StudentEndpointFragment extends BaseDataFragment {
     }
 
     private void load(boolean showInitialLoading) {
+        loadPage(currentPage, showInitialLoading);
+    }
+
+    private void loadPage(int page, boolean showInitialLoading) {
         String endpoint = requireArguments().getString(ARG_ENDPOINT);
-        if (showInitialLoading && !CACHE.containsKey(endpoint)) {
-            listContainer.removeAllViews();
+        currentPage = Math.max(1, page);
+        if (showInitialLoading && !CACHE.containsKey(cacheKey(endpoint, currentPage))) {
+            clearCards();
         }
         setLoading(true);
         setStatus("", false);
@@ -67,25 +80,28 @@ public class StudentEndpointFragment extends BaseDataFragment {
         } else if ("classes".equals(endpoint)) {
             call = ApiClient.service(requireContext()).studentClasses();
         } else if ("announcements".equals(endpoint)) {
-            call = ApiClient.service(requireContext()).studentAnnouncements();
+            call = ApiClient.service(requireContext()).studentAnnouncements(currentPage, PER_PAGE);
         } else if ("assignments".equals(endpoint)) {
-            call = ApiClient.service(requireContext()).studentAssignments();
+            call = ApiClient.service(requireContext()).studentAssignments(currentPage, PER_PAGE);
         } else if ("grades".equals(endpoint)) {
-            call = ApiClient.service(requireContext()).studentGrades();
+            call = ApiClient.service(requireContext()).studentGrades(currentPage, PER_PAGE);
         } else if ("attendance".equals(endpoint)) {
-            call = ApiClient.service(requireContext()).studentAttendance();
+            call = ApiClient.service(requireContext()).studentAttendance(currentPage, PER_PAGE);
         } else {
             setLoading(false);
             showError("Unknown student endpoint.");
             return;
         }
-        call.enqueue(new Callback<JsonObject>() {
+        track(call).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 setLoading(false);
+                if (!isViewActive()) {
+                    return;
+                }
                 if (response.isSuccessful()) {
                     if (response.body() != null) {
-                        CACHE.put(endpoint, response.body());
+                        CACHE.put(cacheKey(endpoint, currentPage), new CacheEntry(response.body()));
                     }
                     renderEndpoint(endpoint, response.body());
                 } else {
@@ -96,7 +112,9 @@ public class StudentEndpointFragment extends BaseDataFragment {
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
                 setLoading(false);
-                showError("Network error: " + t.getMessage());
+                if (isViewActive() && !call.isCanceled()) {
+                    showError("Network error: " + t.getMessage());
+                }
             }
         });
     }
@@ -108,7 +126,25 @@ public class StudentEndpointFragment extends BaseDataFragment {
             renderProfile(body);
         } else {
             renderData(body, "No student records found.");
+            addStudentPagination(body);
         }
+    }
+
+    private void addStudentPagination(JsonObject body) {
+        if (body == null || !body.has("meta") || !body.get("meta").isJsonObject()) {
+            return;
+        }
+        JsonObject meta = body.getAsJsonObject("meta");
+        Integer pageValue = intValue(meta, "current_page");
+        Integer lastValue = intValue(meta, "last_page");
+        currentPage = pageValue == null ? currentPage : pageValue;
+        lastPage = lastValue == null ? 1 : lastValue;
+        addPaginationCard(
+                currentPage,
+                lastPage,
+                () -> loadPage(currentPage - 1, true),
+                () -> loadPage(currentPage + 1, true)
+        );
     }
 
     private void renderDashboard(JsonObject body) {
@@ -121,7 +157,7 @@ public class StudentEndpointFragment extends BaseDataFragment {
                 ? data.getAsJsonObject("student")
                 : new JsonObject();
 
-        listContainer.removeAllViews();
+        clearCards();
         setLoading(false);
         setStatus("Overview loaded", false);
 
@@ -151,7 +187,7 @@ public class StudentEndpointFragment extends BaseDataFragment {
         }
         JsonObject profile = body.getAsJsonObject("data");
         currentProfile = profile;
-        listContainer.removeAllViews();
+        clearCards();
         setLoading(false);
         setStatus("Profile loaded", false);
 
@@ -168,7 +204,7 @@ public class StudentEndpointFragment extends BaseDataFragment {
 
     private void loadJoinRequests() {
         setStatus("Loading join requests...", false);
-        ApiClient.service(requireContext()).studentJoinRequests().enqueue(new Callback<JsonObject>() {
+        track(ApiClient.service(requireContext()).studentJoinRequests()).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (!isAdded() || getView() == null) {
@@ -180,7 +216,7 @@ public class StudentEndpointFragment extends BaseDataFragment {
                 }
 
                 JsonObject data = response.body().getAsJsonObject("data");
-                listContainer.removeAllViews();
+                clearCards();
                 boolean verified = data != null && data.has("verified") && data.get("verified").getAsBoolean();
                 addCard(verified
                         ? "Verified\nGoogle and GitHub are linked."
@@ -222,7 +258,7 @@ public class StudentEndpointFragment extends BaseDataFragment {
         }, null, payload -> {
             setLoading(true);
             setStatus("Sending join request...", false);
-            ApiClient.service(requireContext()).requestClassJoin(payload).enqueue(new Callback<JsonObject>() {
+            track(ApiClient.service(requireContext()).requestClassJoin(payload)).enqueue(new Callback<JsonObject>() {
                 @Override
                 public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                     setLoading(false);
@@ -231,7 +267,7 @@ public class StudentEndpointFragment extends BaseDataFragment {
                     }
                     if (response.isSuccessful()) {
                         setStatus("Join request sent. Waiting for teacher approval.", false);
-                        CACHE.remove("classes");
+                        clearCache();
                         load(false);
                     } else {
                         setStatus("Join request failed: HTTP " + response.code() + ". Link both Google and GitHub before joining.", true);
@@ -263,7 +299,7 @@ public class StudentEndpointFragment extends BaseDataFragment {
         }, profile, payload -> {
             setLoading(true);
             setStatus("Saving profile...", false);
-            ApiClient.service(requireContext()).updateStudentProfile(payload).enqueue(new Callback<JsonObject>() {
+            track(ApiClient.service(requireContext()).updateStudentProfile(payload)).enqueue(new Callback<JsonObject>() {
                 @Override
                 public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                     setLoading(false);
@@ -271,7 +307,8 @@ public class StudentEndpointFragment extends BaseDataFragment {
                         return;
                     }
                     if (response.isSuccessful() && response.body() != null) {
-                        CACHE.put("profile", response.body());
+                        CACHE.put(cacheKey("profile", 1), new CacheEntry(response.body()));
+                        CACHE.remove(cacheKey("dashboard", 1));
                         renderProfile(response.body());
                     } else {
                         setStatus("Profile update failed: HTTP " + response.code(), true);
@@ -311,5 +348,23 @@ public class StudentEndpointFragment extends BaseDataFragment {
     private String githubLabel(JsonObject profile) {
         String username = stringValue(profile, "github_username");
         return boolLabel(profile, "github_linked") + (username.isEmpty() ? "" : " (" + username + ")");
+    }
+
+    private String cacheKey(String endpoint, int page) {
+        return endpoint + ":" + page;
+    }
+
+    private static final class CacheEntry {
+        private final JsonObject body;
+        private final long cachedAt;
+
+        private CacheEntry(JsonObject body) {
+            this.body = body;
+            this.cachedAt = System.currentTimeMillis();
+        }
+
+        private boolean isExpired() {
+            return System.currentTimeMillis() - cachedAt > CACHE_TTL_MS;
+        }
     }
 }

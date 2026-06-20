@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Attendance;
 use App\Models\SchoolClass;
 use App\Models\Student;
 use Illuminate\Http\JsonResponse;
@@ -18,12 +19,23 @@ class ReportController extends Controller
 
         $class = null;
         if ($request->query('class_id')) {
-            $class = SchoolClass::with(['students', 'gradeCategories.items.studentGrades', 'assignments.submissions'])->findOrFail($request->query('class_id'));
+            $relations = ['students'];
+            if (in_array($type, ['grades', 'class-performance', 'failing-grades'], true)) {
+                $relations[] = 'gradeCategories.items.studentGrades';
+            }
+            if ($type === 'missing-assignments') {
+                $relations[] = 'assignments.submissions';
+            }
+
+            $class = SchoolClass::query()
+                ->select(['id', 'teacher_id', 'class_name', 'subject'])
+                ->with($relations)
+                ->findOrFail($request->query('class_id'));
             $this->authorizeClass($request, $class);
         }
 
         if ($type === 'student-profile') {
-            $student = Student::with('classes.teacher.user', 'attendance', 'grades.gradeItem.category', 'assignmentSubmissions.assignment')->findOrFail($request->query('student_id'));
+            $student = Student::with('classes.teacher.user')->findOrFail($request->query('student_id'));
             $this->authorizeStudent($request, $student);
 
             return response()->json(['data' => $student]);
@@ -35,7 +47,11 @@ class ReportController extends Controller
 
         return response()->json(['data' => [
             'type' => $type,
-            'class' => $class,
+            'class' => [
+                'id' => $class->id,
+                'class_name' => $class->class_name,
+                'subject' => $class->subject,
+            ],
             'rows' => $this->rows($type, $class),
         ]]);
     }
@@ -55,19 +71,32 @@ class ReportController extends Controller
 
     private function attendanceRows(SchoolClass $class): array
     {
-        return $class->students->map(function ($student) use ($class) {
-            $records = $student->attendance()->where('class_id', $class->id)->get();
-            $total = $records->count();
-            $present = $records->whereIn('status', ['Present', 'Late'])->count();
+        $statsByStudent = Attendance::query()
+            ->select('student_id')
+            ->selectRaw('COUNT(*) as total')
+            ->selectRaw("SUM(CASE WHEN status IN ('Present', 'Late') THEN 1 ELSE 0 END) as present")
+            ->selectRaw("SUM(CASE WHEN status = 'Absent' THEN 1 ELSE 0 END) as absent")
+            ->selectRaw("SUM(CASE WHEN status = 'Late' THEN 1 ELSE 0 END) as late")
+            ->selectRaw("SUM(CASE WHEN status = 'Excused' THEN 1 ELSE 0 END) as excused")
+            ->where('class_id', $class->id)
+            ->whereIn('student_id', $class->students->pluck('id'))
+            ->groupBy('student_id')
+            ->get()
+            ->keyBy('student_id');
+
+        return $class->students->map(function ($student) use ($statsByStudent) {
+            $stats = $statsByStudent->get($student->id);
+            $total = (int) ($stats->total ?? 0);
+            $present = (int) ($stats->present ?? 0);
 
             return [
                 'student_number' => $student->student_number,
                 'name' => $student->full_name,
                 'total' => $total,
                 'present' => $present,
-                'absent' => $records->where('status', 'Absent')->count(),
-                'late' => $records->where('status', 'Late')->count(),
-                'excused' => $records->where('status', 'Excused')->count(),
+                'absent' => (int) ($stats->absent ?? 0),
+                'late' => (int) ($stats->late ?? 0),
+                'excused' => (int) ($stats->excused ?? 0),
                 'percentage' => $total > 0 ? round($present / $total * 100, 1) : null,
             ];
         })->values()->all();
@@ -75,25 +104,39 @@ class ReportController extends Controller
 
     private function gradeRows(SchoolClass $class): array
     {
+        $gradesByItem = [];
+        foreach ($class->gradeCategories as $category) {
+            foreach ($category->items as $item) {
+                $gradesByItem[$item->id] = $item->studentGrades->keyBy('student_id');
+            }
+        }
+
         $rows = [];
         foreach ($class->students as $student) {
             $final = 0.0;
-            foreach ($class->gradeCategories as $cat) {
+            foreach ($class->gradeCategories as $category) {
                 $ratios = [];
-                foreach ($cat->items as $item) {
-                    $grade = $item->studentGrades->firstWhere('student_id', $student->id);
+                foreach ($category->items as $item) {
+                    $grade = $gradesByItem[$item->id]->get($student->id);
                     if ($grade && (float) $item->maximum_score > 0) {
                         $ratios[] = (float) $grade->score / (float) $item->maximum_score;
                     }
                 }
-                $final += (count($ratios) ? array_sum($ratios) / count($ratios) : 0) * (float) $cat->percentage_weight;
+                $final += ($ratios ? array_sum($ratios) / count($ratios) : 0) * (float) $category->percentage_weight;
             }
-            $rows[] = ['student_number' => $student->student_number, 'name' => $student->full_name, 'final_grade' => round($final, 2), 'status' => $final >= 75 ? 'Pass' : 'Fail'];
+            $rows[] = [
+                'student_number' => $student->student_number,
+                'name' => $student->full_name,
+                'final_grade' => round($final, 2),
+                'status' => $final >= 75 ? 'Pass' : 'Fail',
+            ];
         }
+
         usort($rows, fn ($a, $b) => $b['final_grade'] <=> $a['final_grade']);
-        foreach ($rows as $i => &$row) {
-            $row['rank'] = $i + 1;
+        foreach ($rows as $index => &$row) {
+            $row['rank'] = $index + 1;
         }
+        unset($row);
 
         return $rows;
     }
@@ -109,8 +152,9 @@ class ReportController extends Controller
     {
         $rows = [];
         foreach ($class->assignments as $assignment) {
+            $submissionsByStudent = $assignment->submissions->keyBy('student_id');
             foreach ($class->students as $student) {
-                $submission = $assignment->submissions->firstWhere('student_id', $student->id);
+                $submission = $submissionsByStudent->get($student->id);
                 if (! $submission || $submission->status === 'Missing') {
                     $rows[] = [
                         'assignment' => $assignment->title,

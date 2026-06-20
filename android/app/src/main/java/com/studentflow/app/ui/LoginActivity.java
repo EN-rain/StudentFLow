@@ -468,10 +468,12 @@ public class LoginActivity extends AppCompatActivity {
     private void saveAndOpen(LoginResponse body) {
         if (body.user != null && body.user.has("role") && "admin".equals(body.user.get("role").getAsString())) {
             tokenStore.clear();
+            StudentEndpointFragment.clearCache();
             setAuthControlsEnabled(true);
             showError("Admin accounts use the web dashboard.");
             return;
         }
+        StudentEndpointFragment.clearCache();
         tokenStore.saveSession(body.token, body.user == null ? "{}" : body.user.toString());
         ApiClient.reset();
         openMain();

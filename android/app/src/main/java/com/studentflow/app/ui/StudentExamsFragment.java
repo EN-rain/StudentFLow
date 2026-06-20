@@ -53,7 +53,7 @@ public class StudentExamsFragment extends BaseDataFragment {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 setLoading(false);
-                listContainer.removeAllViews();
+                clearCards();
                 if (!response.isSuccessful() || response.body() == null) {
                     showError("Exam list failed: HTTP " + response.code());
                     return;

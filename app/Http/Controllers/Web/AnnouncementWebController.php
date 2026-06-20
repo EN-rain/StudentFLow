@@ -55,9 +55,9 @@ class AnnouncementWebController extends Controller
         $announcement = Announcement::create(array_merge($request->validated(), [
             'teacher_id' => $teacher?->id ?? $request->teacher_id,
         ]));
-        $sent = AnnouncementMailer::sendToEnrolledStudents($announcement);
+        $queued = AnnouncementMailer::queueForEnrolledStudents($announcement);
 
-        return redirect('/announcements')->with('status', "Announcement posted. Email notifications sent to {$sent} enrolled student(s).");
+        return redirect('/announcements')->with('status', "Announcement posted. Email notifications queued for {$queued} enrolled student(s).");
     }
 
     public function show(Request $request, Announcement $announcement)

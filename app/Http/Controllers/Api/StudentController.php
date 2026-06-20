@@ -9,7 +9,6 @@ use App\Models\Student;
 use App\Support\ApiPagination;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class StudentController extends Controller
 {
@@ -23,11 +22,7 @@ class StudentController extends Controller
             if (! $teacher) {
                 return response()->json(['data' => []]);
             }
-            $classIds = SchoolClass::where('teacher_id', $teacher->id)->pluck('id');
-            $studentIds = DB::table('class_students')
-                ->whereIn('class_id', $classIds)
-                ->pluck('student_id');
-            $query->whereIn('id', $studentIds);
+            $query->whereHas('classes', fn ($classQuery) => $classQuery->where('teacher_id', $teacher->id));
         }
 
         // Search
@@ -44,10 +39,7 @@ class StudentController extends Controller
 
         // Filter by class
         if ($classId = $request->query('class_id')) {
-            $studentIds = DB::table('class_students')
-                ->where('class_id', $classId)
-                ->pluck('student_id');
-            $query->whereIn('id', $studentIds);
+            $query->whereHas('classes', fn ($classQuery) => $classQuery->where('classes.id', $classId));
         }
 
         return response()->json(ApiPagination::paginate(
@@ -99,11 +91,7 @@ class StudentController extends Controller
             abort(403);
         }
 
-        $classIds = SchoolClass::where('teacher_id', $teacher->id)->pluck('id');
-        $enrolled = DB::table('class_students')
-            ->whereIn('class_id', $classIds)
-            ->where('student_id', $student->id)
-            ->exists();
+        $enrolled = $student->classes()->where('teacher_id', $teacher->id)->exists();
         if (! $enrolled) {
             abort(403, 'You can only access students in your classes.');
         }

@@ -45,15 +45,50 @@ services:
         value: "true"
       - key: MAIL_MAILER
         value: log
-      - key: STUDENTFLOW_SEED_ADMIN_PASSWORD
-        value: AdminPass123!
-      - key: STUDENTFLOW_SEED_TEACHER_PASSWORD
-        value: TeacherPass123!
-      - key: STUDENTFLOW_SEED_STUDENT_PASSWORD
-        value: StudentPass123!
       - key: GOOGLE_CLIENT_ID
         sync: false
       - key: GITHUB_CLIENT_ID
         sync: false
       - key: GITHUB_CLIENT_SECRET
         sync: false
+  - type: worker
+    name: studentflow-queue
+    runtime: docker
+    plan: free
+    autoDeploy: true
+    dockerCommand: php artisan queue:work database --sleep=3 --tries=3 --timeout=90
+    envVars:
+      - key: APP_NAME
+        value: StudentFlow
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_URL
+        value: https://studentflow-rbog.onrender.com
+      - key: APP_KEY
+        sync: false
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: LOG_LEVEL
+        value: warning
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: "5432"
+      - key: DB_DATABASE
+        sync: false
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: SESSION_DRIVER
+        value: database
+      - key: CACHE_STORE
+        value: database
+      - key: QUEUE_CONNECTION
+        value: database
+      - key: MAIL_MAILER
+        value: log

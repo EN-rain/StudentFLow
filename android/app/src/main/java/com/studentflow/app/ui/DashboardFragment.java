@@ -1,6 +1,5 @@
 package com.studentflow.app.ui;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.studentflow.app.api.ApiClient;
 
@@ -21,35 +20,41 @@ public class DashboardFragment extends BaseDataFragment {
     }
 
     private void load() {
-        listContainer.removeAllViews();
+        clearCards();
+        setLoading(true);
         setStatus("Refreshing overview...", false);
-        loadCount("Classes", "Active sections under your account.", ApiClient.service(requireContext()).classes());
-        loadCount("Students", "Student records visible to your classes.", ApiClient.service(requireContext()).students(null, null));
-        loadCount("Attendance", "Saved attendance entries.", ApiClient.service(requireContext()).attendance(null, null));
-        loadCount("Assignments", "Assignments currently tracked.", ApiClient.service(requireContext()).assignments());
-        loadCount("Announcements", "Published class updates.", ApiClient.service(requireContext()).announcements());
-    }
-
-    private void loadCount(String label, String detail, Call<JsonObject> call) {
-        call.enqueue(new Callback<JsonObject>() {
+        track(ApiClient.service(requireContext()).dashboardStats()).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                if (!response.isSuccessful() || response.body() == null) {
-                    addCard(label + "\nUnavailable\nHTTP " + response.code());
-                    setStatus("Overview loaded with warnings", true);
+                setLoading(false);
+                if (!isViewActive()) {
                     return;
                 }
-                JsonElement data = response.body().get("data");
-                int count = data != null && data.isJsonArray() ? data.getAsJsonArray().size() : 1;
-                addCard(label + "\n" + count + " total\n" + detail);
+                if (!response.isSuccessful() || response.body() == null || !response.body().has("data")) {
+                    showError("Dashboard request failed: HTTP " + response.code());
+                    return;
+                }
+
+                JsonObject data = response.body().getAsJsonObject("data");
+                addMetric("Classes", intValue(data, "classes"), "Active sections under your account.");
+                addMetric("Students", intValue(data, "students"), "Unique students visible to your classes.");
+                addMetric("Attendance", intValue(data, "attendance_records"), "Saved attendance entries.");
+                addMetric("Assignments", intValue(data, "assignments"), "Assignments currently tracked.");
+                addMetric("Announcements", intValue(data, "announcements"), "Published class updates.");
                 setStatus("Overview ready", false);
             }
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
-                addCard(label + "\nNetwork error\nCheck API connectivity.");
-                setStatus("Overview loaded with warnings", true);
+                setLoading(false);
+                if (isViewActive() && !call.isCanceled()) {
+                    showError("Network error: " + t.getMessage());
+                }
             }
         });
+    }
+
+    private void addMetric(String label, Integer value, String detail) {
+        addCard(label + "\n" + (value == null ? 0 : value) + " total\n" + detail);
     }
 }

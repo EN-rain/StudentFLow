@@ -22,6 +22,8 @@ import retrofit2.Response;
 public class CrudFragment extends BaseDataFragment {
     private static final String ARG_TYPE = "type";
     private String type;
+    private int currentPage = 1;
+    private int lastPage = 1;
 
     public static CrudFragment newInstance(String type) {
         CrudFragment fragment = new CrudFragment();
@@ -41,13 +43,21 @@ public class CrudFragment extends BaseDataFragment {
     }
 
     private void load() {
+        loadPage(1);
+    }
+
+    private void loadPage(int page) {
+        currentPage = Math.max(1, page);
         setLoading(true);
         setStatus("", false);
-        listContainer.removeAllViews();
-        listCall().enqueue(new Callback<JsonObject>() {
+        clearCards();
+        track(listCall(currentPage)).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 setLoading(false);
+                if (!isViewActive()) {
+                    return;
+                }
                 if (!response.isSuccessful()) {
                     showError(title() + " request failed: HTTP " + response.code());
                     return;
@@ -58,13 +68,15 @@ public class CrudFragment extends BaseDataFragment {
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
                 setLoading(false);
-                showError("Network error: " + t.getMessage());
+                if (isViewActive() && !call.isCanceled()) {
+                    showError("Network error: " + t.getMessage());
+                }
             }
         });
     }
 
     private void renderList(JsonObject body) {
-        listContainer.removeAllViews();
+        clearCards();
         JsonElement data = body == null ? null : body.get("data");
         if (data == null || !data.isJsonArray()) {
             setStatus("Loaded.", false);
@@ -72,7 +84,17 @@ public class CrudFragment extends BaseDataFragment {
             return;
         }
         JsonArray rows = data.getAsJsonArray();
-        setStatus(rows.size() + " records loaded.", false);
+        JsonObject meta = body.has("meta") && body.get("meta").isJsonObject()
+                ? body.getAsJsonObject("meta")
+                : new JsonObject();
+        Integer pageValue = intValue(meta, "current_page");
+        Integer lastValue = intValue(meta, "last_page");
+        Integer total = intValue(meta, "total");
+        currentPage = pageValue == null ? currentPage : pageValue;
+        lastPage = lastValue == null ? 1 : lastValue;
+        setStatus(total == null
+                ? rows.size() + " records loaded."
+                : rows.size() + " shown of " + total + ". Page " + currentPage + " of " + lastPage + ".", false);
         if (rows.size() == 0) {
             addCard("No records found.");
             return;
@@ -82,37 +104,35 @@ public class CrudFragment extends BaseDataFragment {
                 renderCrudCard(element.getAsJsonObject());
             }
         }
+        addPaginationCard(
+                currentPage,
+                lastPage,
+                () -> loadPage(currentPage - 1),
+                () -> loadPage(currentPage + 1)
+        );
     }
 
     private void renderCrudCard(JsonObject row) {
-        addCard(summarize(row), v -> openForm(row));
-        LinearLayout buttons = new LinearLayout(requireContext());
-        buttons.setOrientation(LinearLayout.HORIZONTAL);
-        MaterialButton edit = new MaterialButton(requireContext());
-        edit.setText("Edit");
-        edit.setOnClickListener(v -> openForm(row));
-        MaterialButton delete = new MaterialButton(requireContext());
-        delete.setText("Delete");
-        delete.setOnClickListener(v -> {
+        CardAction editAction = cardAction("Edit", v -> openForm(row));
+        CardAction deleteAction = cardAction("Delete", v -> {
             Integer id = intValue(row, "id");
             if (id != null) {
                 confirm("Delete", "Delete this record?", () -> delete(id));
             }
         });
-        buttons.addView(edit, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
+
         if ("classes".equals(type)) {
-            MaterialButton requests = new MaterialButton(requireContext());
-            requests.setText("Requests");
-            requests.setOnClickListener(v -> {
+            CardAction requestsAction = cardAction("Requests", v -> {
                 Integer id = intValue(row, "id");
                 if (id != null) {
                     openJoinRequests(id);
                 }
             });
-            buttons.addView(requests, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
+            addCardWithActions(summarize(row), v -> openForm(row), editAction, requestsAction, deleteAction);
+            return;
         }
-        buttons.addView(delete, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
-        listContainer.addView(buttons);
+
+        addCardWithActions(summarize(row), v -> openForm(row), editAction, deleteAction);
     }
 
     private void openJoinRequests(int classId) {
@@ -295,17 +315,17 @@ public class CrudFragment extends BaseDataFragment {
         });
     }
 
-    private Call<JsonObject> listCall() {
+    private Call<JsonObject> listCall(int page) {
         if ("classes".equals(type)) {
-            return ApiClient.service(requireContext()).classes();
+            return ApiClient.service(requireContext()).classes(page, 25);
         }
         if ("students".equals(type)) {
-            return ApiClient.service(requireContext()).students(null, null);
+            return ApiClient.service(requireContext()).students(null, null, page, 25);
         }
         if ("assignments".equals(type)) {
-            return ApiClient.service(requireContext()).assignments();
+            return ApiClient.service(requireContext()).assignments(page, 25);
         }
-        return ApiClient.service(requireContext()).announcements();
+        return ApiClient.service(requireContext()).announcements(page, 25);
     }
 
     private Call<JsonObject> createCall(JsonObject payload) {

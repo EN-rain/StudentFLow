@@ -38,7 +38,7 @@ class AttendanceWebController extends Controller
 
         $students = $class->students()->orderBy('last_name')->get();
         $existing = Attendance::where('class_id', $class->id)
-            ->whereDate('attendance_date', $date)
+            ->where('attendance_date', $date)
             ->get()
             ->keyBy('student_id');
 
@@ -98,21 +98,22 @@ class AttendanceWebController extends Controller
 
         $records = Attendance::with('student')
             ->where('class_id', $class->id)
-            ->whereDate('attendance_date', '>=', $from)
-            ->whereDate('attendance_date', '<=', $to)
+            ->where('attendance_date', '>=', $from)
+            ->where('attendance_date', '<=', $to)
             ->orderBy('attendance_date', 'desc')
             ->orderBy('student_id')
             ->get();
 
         // Per-student summary
-        $studentIds = $class->students()->pluck('students.id');
+        $studentsById = $class->students()->get()->keyBy('id');
+        $recordsByStudent = $records->groupBy('student_id');
         $summary = [];
-        foreach ($studentIds as $sid) {
-            $studentRecords = $records->where('student_id', $sid);
+        foreach ($studentsById as $sid => $student) {
+            $studentRecords = $recordsByStudent->get($sid, collect());
             $total = $studentRecords->count();
             $present = $studentRecords->whereIn('status', ['Present', 'Late'])->count();
             $summary[] = [
-                'student' => Student::find($sid),
+                'student' => $student,
                 'total' => $total,
                 'present' => $present,
                 'percentage' => $total > 0 ? round($present / $total * 100, 1) : null,

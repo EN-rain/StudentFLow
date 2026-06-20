@@ -10,6 +10,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class TeacherExamsFragment extends BaseDataFragment {
+    private int currentPage = 1;
+    private int lastPage = 1;
     public static TeacherExamsFragment newInstance() {
         return new TeacherExamsFragment();
     }
@@ -23,19 +25,37 @@ public class TeacherExamsFragment extends BaseDataFragment {
     }
 
     private void load() {
+        loadPage(1);
+    }
+
+    private void loadPage(int page) {
+        currentPage = Math.max(1, page);
         setLoading(true);
         setStatus("", false);
-        ApiClient.service(requireContext()).exams().enqueue(new Callback<JsonObject>() {
+        track(ApiClient.service(requireContext()).exams(currentPage, 25)).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 setLoading(false);
-                listContainer.removeAllViews();
+                if (!isViewActive()) {
+                    return;
+                }
+                clearCards();
                 if (!response.isSuccessful() || response.body() == null) {
                     showError("Exam list failed: HTTP " + response.code());
                     return;
                 }
                 JsonArray rows = response.body().getAsJsonArray("data");
-                setStatus(rows.size() + " exam(s).", false);
+                JsonObject meta = response.body().has("meta") && response.body().get("meta").isJsonObject()
+                        ? response.body().getAsJsonObject("meta")
+                        : new JsonObject();
+                Integer pageValue = intValue(meta, "current_page");
+                Integer lastValue = intValue(meta, "last_page");
+                Integer total = intValue(meta, "total");
+                currentPage = pageValue == null ? currentPage : pageValue;
+                lastPage = lastValue == null ? 1 : lastValue;
+                setStatus(total == null
+                        ? rows.size() + " exam(s)."
+                        : rows.size() + " shown of " + total + ". Page " + currentPage + " of " + lastPage + ".", false);
                 for (JsonElement element : rows) {
                     JsonObject exam = element.getAsJsonObject();
                     addCard(summarize(exam), v -> audit(exam.get("id").getAsInt()));
@@ -43,6 +63,12 @@ public class TeacherExamsFragment extends BaseDataFragment {
                 if (rows.size() == 0) {
                     addCard("No exams created.");
                 }
+                addPaginationCard(
+                        currentPage,
+                        lastPage,
+                        () -> loadPage(currentPage - 1),
+                        () -> loadPage(currentPage + 1)
+                );
             }
 
             @Override
@@ -76,7 +102,7 @@ public class TeacherExamsFragment extends BaseDataFragment {
             payload.remove("points");
             payload.addProperty("status", "published");
             payload.add("questions", questions);
-            ApiClient.service(requireContext()).createExam(payload).enqueue(new Callback<JsonObject>() {
+            track(ApiClient.service(requireContext()).createExam(payload)).enqueue(new Callback<JsonObject>() {
                 @Override
                 public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                     if (response.isSuccessful()) {
@@ -95,7 +121,7 @@ public class TeacherExamsFragment extends BaseDataFragment {
     }
 
     private void audit(int examId) {
-        ApiClient.service(requireContext()).examAudit(examId).enqueue(new Callback<JsonObject>() {
+        track(ApiClient.service(requireContext()).examAudit(examId)).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 if (response.isSuccessful()) {

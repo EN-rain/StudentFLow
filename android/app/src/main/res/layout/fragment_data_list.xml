@@ -1,11 +1,11 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/studentflow_surface">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical"
         android:paddingLeft="20dp"
         android:paddingTop="24dp"
@@ -96,13 +96,13 @@
                 android:orientation="horizontal" />
         </HorizontalScrollView>
 
-        <LinearLayout
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/listContainer"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_marginTop="18dp"
-            android:animateLayoutChanges="true"
-            android:layoutAnimation="@anim/sf_layout_fall_down"
-            android:orientation="vertical" />
+            android:layout_weight="1"
+            android:clipToPadding="false"
+            android:paddingBottom="8dp" />
     </LinearLayout>
-</ScrollView>
+</LinearLayout>

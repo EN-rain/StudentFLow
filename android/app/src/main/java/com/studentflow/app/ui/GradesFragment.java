@@ -27,7 +27,7 @@ public class GradesFragment extends BaseDataFragment {
     private void loadClasses() {
         setLoading(true);
         setStatus("", false);
-        listContainer.removeAllViews();
+        clearCards();
         ApiClient.service(requireContext()).classes().enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {

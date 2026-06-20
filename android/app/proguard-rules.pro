@@ -1,0 +1,3 @@
+-keepattributes Signature
+-keepattributes RuntimeVisibleAnnotations,RuntimeVisibleParameterAnnotations
+-keep class com.studentflow.app.models.** { *; }

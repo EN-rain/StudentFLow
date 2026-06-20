@@ -23,13 +23,13 @@ class AttendanceController extends Controller
             $query->where('class_id', $classId);
         }
         if ($date = $request->query('date')) {
-            $query->whereDate('attendance_date', $date);
+            $query->where('attendance_date', $date);
         }
         if ($from = $request->query('from')) {
-            $query->whereDate('attendance_date', '>=', $from);
+            $query->where('attendance_date', '>=', $from);
         }
         if ($to = $request->query('to')) {
-            $query->whereDate('attendance_date', '<=', $to);
+            $query->where('attendance_date', '<=', $to);
         }
 
         if ($request->user()->isTeacher()) {
@@ -89,7 +89,7 @@ class AttendanceController extends Controller
         );
 
         $records = Attendance::where('class_id', $payload['class_id'])
-            ->whereDate('attendance_date', $payload['attendance_date'])
+            ->where('attendance_date', $payload['attendance_date'])
             ->get();
 
         return response()->json(['data' => $records], 201);

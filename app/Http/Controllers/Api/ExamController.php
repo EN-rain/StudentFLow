@@ -18,7 +18,10 @@ class ExamController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $query = Exam::with('schoolClass', 'questions', 'attempts.student');
+        $query = Exam::query()
+            ->select(['id', 'class_id', 'teacher_id', 'grade_item_id', 'title', 'status', 'available_from', 'due_at', 'duration_minutes', 'maximum_score', 'created_at'])
+            ->with('schoolClass:id,class_name,subject')
+            ->withCount(['questions', 'attempts']);
         if ($request->user()->isTeacher()) {
             $teacher = $request->user()->teacher;
             if (! $teacher) {
@@ -27,7 +30,7 @@ class ExamController extends Controller
             $query->where('teacher_id', $teacher->id);
         }
 
-        return response()->json(['data' => $query->orderByDesc('created_at')->get()]);
+        return response()->json(\App\Support\ApiPagination::paginate($query->orderByDesc('created_at'), $request));
     }
 
     public function store(Request $request): JsonResponse
@@ -66,13 +69,19 @@ class ExamController extends Controller
                 'status' => $payload['status'] ?? 'draft',
             ]);
 
-            foreach ($payload['questions'] as $i => $question) {
-                ExamQuestion::create($question + [
-                    'exam_id' => $exam->id,
-                    'type' => $question['type'] ?? 'multiple_choice',
-                    'sort_order' => $i + 1,
-                ]);
-            }
+            $now = now();
+            $questionRows = collect($payload['questions'])->map(fn (array $question, int $index) => [
+                'exam_id' => $exam->id,
+                'prompt' => $question['prompt'],
+                'type' => $question['type'] ?? 'multiple_choice',
+                'choices' => isset($question['choices']) ? json_encode($question['choices']) : null,
+                'correct_answer' => $question['correct_answer'] ?? null,
+                'points' => $question['points'],
+                'sort_order' => $index + 1,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ])->all();
+            DB::table('exam_questions')->insert($questionRows);
 
             if ($exam->status === 'published') {
                 $exam->assignEnrolledStudents();

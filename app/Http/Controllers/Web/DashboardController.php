@@ -32,7 +32,7 @@ class DashboardController extends Controller
         $totalClasses = SchoolClass::where('status', 'active')->count();
         $totalTeachers = Teacher::count();
         $today = Carbon::today()->toDateString();
-        $absentToday = Attendance::whereDate('attendance_date', $today)
+        $absentToday = Attendance::where('attendance_date', $today)
             ->whereIn('status', ['Absent', 'Late'])
             ->distinct('student_id')
             ->count('student_id');
@@ -61,7 +61,7 @@ class DashboardController extends Controller
 
         $today = Carbon::today()->toDateString();
         $absentToday = Attendance::whereIn('class_id', $classIds)
-            ->whereDate('attendance_date', $today)
+            ->where('attendance_date', $today)
             ->whereIn('status', ['Absent', 'Late'])
             ->distinct('student_id')
             ->count('student_id');

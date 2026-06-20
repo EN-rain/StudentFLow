@@ -100,8 +100,9 @@ class StudentPortalController extends Controller
         $student = $this->student($request);
         $grades = StudentGrade::with('gradeItem.category.schoolClass')
             ->where('student_id', $student->id)
-            ->get()
-            ->map(fn ($grade) => [
+            ->paginate(ApiPagination::perPage($request));
+
+        $grades->through(fn ($grade) => [
                 'class_name' => $grade->gradeItem?->category?->schoolClass?->class_name,
                 'category' => $grade->gradeItem?->category?->category_name,
                 'title' => $grade->gradeItem?->title,
@@ -109,7 +110,7 @@ class StudentPortalController extends Controller
                 'maximum_score' => $grade->gradeItem?->maximum_score,
             ]);
 
-        return response()->json(['data' => $grades]);
+        return response()->json(ApiPagination::response($grades));
     }
 
     public function attendance(Request $request): JsonResponse

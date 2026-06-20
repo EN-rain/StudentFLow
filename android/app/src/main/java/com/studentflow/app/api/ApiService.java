@@ -52,8 +52,14 @@ public interface ApiService {
     @POST("auth/forgot-password")
     Call<JsonObject> forgotPassword(@Field("email") String email);
 
+    @GET("dashboard/stats")
+    Call<JsonObject> dashboardStats();
+
     @GET("classes")
     Call<JsonObject> classes();
+
+    @GET("classes")
+    Call<JsonObject> classes(@Query("page") Integer page, @Query("per_page") Integer perPage);
 
     @GET("admin/teachers")
     Call<JsonObject> adminTeachers();
@@ -76,6 +82,9 @@ public interface ApiService {
     @GET("students")
     Call<JsonObject> students(@Query("q") String query, @Query("class_id") Integer classId);
 
+    @GET("students")
+    Call<JsonObject> students(@Query("q") String query, @Query("class_id") Integer classId, @Query("page") Integer page, @Query("per_page") Integer perPage);
+
     @POST("students")
     Call<JsonObject> createStudent(@Body JsonObject request);
 
@@ -87,6 +96,9 @@ public interface ApiService {
 
     @GET("attendance")
     Call<JsonObject> attendance(@Query("class_id") Integer classId, @Query("date") String date);
+
+    @GET("attendance")
+    Call<JsonObject> attendance(@Query("class_id") Integer classId, @Query("date") String date, @Query("page") Integer page, @Query("per_page") Integer perPage);
 
     @POST("attendance")
     Call<JsonObject> saveAttendance(@Body JsonObject request);
@@ -103,6 +115,9 @@ public interface ApiService {
     @GET("assignments")
     Call<JsonObject> assignments();
 
+    @GET("assignments")
+    Call<JsonObject> assignments(@Query("page") Integer page, @Query("per_page") Integer perPage);
+
     @POST("assignments")
     Call<JsonObject> createAssignment(@Body JsonObject request);
 
@@ -114,6 +129,9 @@ public interface ApiService {
 
     @GET("announcements")
     Call<JsonObject> announcements();
+
+    @GET("announcements")
+    Call<JsonObject> announcements(@Query("page") Integer page, @Query("per_page") Integer perPage);
 
     @POST("announcements")
     Call<JsonObject> createAnnouncement(@Body JsonObject request);
@@ -157,17 +175,32 @@ public interface ApiService {
     @GET("student/announcements")
     Call<JsonObject> studentAnnouncements();
 
+    @GET("student/announcements")
+    Call<JsonObject> studentAnnouncements(@Query("page") Integer page, @Query("per_page") Integer perPage);
+
     @GET("student/assignments")
     Call<JsonObject> studentAssignments();
+
+    @GET("student/assignments")
+    Call<JsonObject> studentAssignments(@Query("page") Integer page, @Query("per_page") Integer perPage);
 
     @GET("student/grades")
     Call<JsonObject> studentGrades();
 
+    @GET("student/grades")
+    Call<JsonObject> studentGrades(@Query("page") Integer page, @Query("per_page") Integer perPage);
+
     @GET("student/attendance")
     Call<JsonObject> studentAttendance();
 
+    @GET("student/attendance")
+    Call<JsonObject> studentAttendance(@Query("page") Integer page, @Query("per_page") Integer perPage);
+
     @GET("student/exams")
     Call<JsonObject> studentExams();
+
+    @GET("student/exams")
+    Call<JsonObject> studentExams(@Query("page") Integer page, @Query("per_page") Integer perPage);
 
     @GET("student/join-requests")
     Call<JsonObject> studentJoinRequests();
@@ -198,6 +231,9 @@ public interface ApiService {
 
     @GET("exams")
     Call<JsonObject> exams();
+
+    @GET("exams")
+    Call<JsonObject> exams(@Query("page") Integer page, @Query("per_page") Integer perPage);
 
     @POST("exams")
     Call<JsonObject> createExam(@Body JsonObject request);
