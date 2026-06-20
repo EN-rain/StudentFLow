@@ -11,16 +11,13 @@ use App\Http\Controllers\Web\ClassWebController;
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\ExamWebController;
 use App\Http\Controllers\Web\GradeWebController;
+use App\Http\Controllers\Web\HealthController;
 use App\Http\Controllers\Web\MagicExamWebController;
 use App\Http\Controllers\Web\ReportController;
 use App\Http\Controllers\Web\StudentWebController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/health', fn () => response()->json([
-    'status' => 'ok',
-    'service' => 'studentflow',
-    'timestamp' => now()->toIso8601String(),
-]))->name('health');
+Route::get('/health', HealthController::class)->name('health');
 
 Route::get('/', fn () => redirect('/dashboard'));
 Route::get('/exam/magic/{token}', [MagicExamWebController::class, 'show'])->middleware('throttle:60,1');
