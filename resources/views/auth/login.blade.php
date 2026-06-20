@@ -5,7 +5,7 @@
     <div class="card shadow-sm">
         <div class="card-body p-4">
             <div class="text-center mb-2">
-                <img src="/images/studentflow-logo.png" alt="" width="48" height="48" class="mb-2">
+                <img src="/images/studentflow-logo-96.png" alt="" width="48" height="48" class="auth-logo mb-2" fetchpriority="high" decoding="async">
                 <h3 class="mb-0">StudentFlow</h3>
             </div>
             <p class="text-muted text-center mb-4">Sign in to continue</p>

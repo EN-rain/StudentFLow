@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'StudentFlow')</title>
-    <link rel="icon" type="image/png" href="/images/studentflow-logo.png">
-    <link rel="apple-touch-icon" href="/images/studentflow-logo.png">
+    <link rel="icon" type="image/png" href="/images/studentflow-logo-96.png">
+    <link rel="apple-touch-icon" href="/images/studentflow-logo-192.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <style>
@@ -32,6 +32,7 @@
         body {
             margin: 0;
             min-height: 100vh;
+            overflow-y: auto;
             color: var(--sf-text);
             background:
                 linear-gradient(180deg, rgba(2, 6, 23, 0.86) 0, rgba(15, 23, 42, 0.72) 280px, rgba(248, 250, 252, 0.94) 280px, rgba(248, 250, 252, 0.98) 100%),
@@ -82,6 +83,16 @@
             border-radius: 14px;
             background: #fff;
             box-shadow: 0 8px 18px rgba(15, 23, 42, 0.18);
+        }
+
+        .guest-shell {
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: clamp(1rem, 4vw, 2rem);
+            overflow-y: auto;
         }
 
         .topbar-user {
@@ -401,12 +412,23 @@
         }
 
         .login-card {
+            width: min(100%, 440px);
             max-width: 440px;
-            margin: 4rem auto;
+            margin: auto;
             border: 1px solid var(--sf-border);
             border-radius: 28px;
             background: rgba(255, 255, 255, 0.96);
             box-shadow: var(--sf-shadow);
+        }
+
+        .login-card .card {
+            border-radius: 28px;
+        }
+
+        .auth-logo {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
         }
 
         @media (max-width: 991.98px) {
@@ -520,6 +542,11 @@
                 padding: 0.9rem;
             }
 
+            .guest-shell {
+                align-items: flex-start;
+                padding: 1rem;
+            }
+
             .content-panel {
                 padding: 1rem;
                 border-radius: 24px;
@@ -542,7 +569,7 @@
         <nav class="navbar navbar-expand-lg navbar-dark topbar">
             <div class="container-fluid">
                 <a class="navbar-brand" href="/dashboard">
-                    <img src="/images/studentflow-logo.png" alt="" class="brand-logo">
+                    <img src="/images/studentflow-logo-96.png" alt="" class="brand-logo" width="44" height="44" decoding="async">
                     <span>StudentFlow</span>
                 </a>
                 <div class="topbar-user">
@@ -595,7 +622,7 @@
             </div>
         </div>
     @else
-        <main class="container py-4">
+        <main class="guest-shell">
             @yield('content')
         </main>
     @endauth
