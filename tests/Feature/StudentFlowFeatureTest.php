@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Mail\ClassAnnouncementMail;
 use App\Models\ActivityLog;
+use App\Models\Announcement;
 use App\Models\Assignment;
 use App\Models\AssignmentSubmission;
 use App\Models\ClassJoinRequest;
@@ -20,7 +21,9 @@ use App\Models\Teacher;
 use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
@@ -61,6 +64,9 @@ class StudentFlowFeatureTest extends TestCase
     public function test_root_redirects_to_dashboard(): void
     {
         $this->get('/')->assertRedirect('/dashboard');
+        $this->getJson('/health')
+            ->assertOk()
+            ->assertJsonPath('database', 'ok');
     }
 
     public function test_login_disabled_account_and_password_reset_flow(): void
@@ -168,7 +174,7 @@ class StudentFlowFeatureTest extends TestCase
         $admin = User::where('username', 'admin')->first();
         $class = SchoolClass::where('class_name', 'BSIT 2A')->first();
         $assignment = Assignment::where('title', 'Java Student Record Program')->first();
-        $student = Student::where('student_number', '2026-0007')->first();
+        $student = $class->students()->wherePivot('status', 'enrolled')->firstOrFail();
 
         Sanctum::actingAs($admin);
         $categoryResponse = $this->postJson("/api/classes/{$class->id}/grade-categories", [
@@ -182,7 +188,7 @@ class StudentFlowFeatureTest extends TestCase
             'submissions' => [[
                 'student_id' => $student->id,
                 'status' => 'Submitted',
-                'score' => 42,
+                'score' => $assignment->maximum_score,
                 'submitted_at' => '2026-06-23 10:00:00',
             ]],
         ])->assertOk();
@@ -201,7 +207,7 @@ class StudentFlowFeatureTest extends TestCase
 
         $this->getJson("/api/reports/student-profile?student_id={$student->id}")
             ->assertOk()
-            ->assertJsonPath('data.student_number', '2026-0007');
+            ->assertJsonPath('data.student_number', $student->student_number);
     }
 
     public function test_class_announcement_emails_enrolled_students(): void
@@ -428,6 +434,170 @@ class StudentFlowFeatureTest extends TestCase
             ->assertJsonStructure(['data' => ['remaining_seconds', 'expires_at']]);
 
         $this->assertSame('in_progress', $attempt->fresh()->status);
+    }
+
+    public function test_disabled_account_cannot_use_existing_api_token(): void
+    {
+        $user = User::where('role', 'student')->firstOrFail();
+        $token = $user->createToken('existing-device')->plainTextToken;
+        $user->update(['status' => 'disabled']);
+
+        $this->withToken($token)
+            ->getJson('/api/auth/me')
+            ->assertForbidden();
+
+        $this->assertSame(0, $user->tokens()->count());
+    }
+
+    public function test_disabled_student_cannot_reactivate_through_social_login(): void
+    {
+        $student = Student::with('user')->whereHas('user')->firstOrFail();
+        $student->update(['status' => 'disabled']);
+        $student->user->update(['status' => 'disabled']);
+
+        $this->postJson('/api/auth/google', [
+            'id_token' => 'test-google:'.$student->email,
+        ])->assertUnprocessable();
+
+        $this->assertSame('disabled', $student->fresh()->status);
+        $this->assertSame('disabled', $student->user->fresh()->status);
+    }
+
+    public function test_google_login_requires_configured_client_id(): void
+    {
+        Http::fake();
+        config(['services.google.client_id' => null]);
+
+        $this->postJson('/api/auth/google', [
+            'id_token' => 'not-a-test-token',
+        ])->assertUnprocessable()->assertJsonValidationErrors('id_token');
+
+        Http::assertNothingSent();
+    }
+
+    public function test_teacher_cannot_reparent_owned_records_to_another_teacher(): void
+    {
+        $teacher = Teacher::with('user')->whereHas('classes')->firstOrFail();
+        $ownClass = SchoolClass::where('teacher_id', $teacher->id)->firstOrFail();
+        $otherClass = SchoolClass::where('teacher_id', '!=', $teacher->id)->firstOrFail();
+        $assignment = Assignment::where('class_id', $ownClass->id)->firstOrFail();
+        $announcement = Announcement::where('class_id', $ownClass->id)->firstOrFail();
+
+        Sanctum::actingAs($teacher->user);
+
+        $this->putJson("/api/classes/{$ownClass->id}", [
+            'class_name' => $ownClass->class_name,
+            'section' => $ownClass->section,
+            'subject' => $ownClass->subject,
+            'grade_level' => $ownClass->grade_level,
+            'school_year' => $ownClass->school_year,
+            'semester' => $ownClass->semester,
+            'schedule' => $ownClass->schedule,
+            'room' => $ownClass->room,
+            'teacher_id' => $otherClass->teacher_id,
+            'status' => $ownClass->status,
+        ])->assertOk();
+        $this->assertSame($teacher->id, $ownClass->fresh()->teacher_id);
+
+        $this->putJson("/api/assignments/{$assignment->id}", [
+            'class_id' => $otherClass->id,
+            'title' => $assignment->title,
+            'description' => $assignment->description,
+            'date_assigned' => $assignment->date_assigned->format('Y-m-d'),
+            'deadline' => $assignment->deadline->format('Y-m-d'),
+            'maximum_score' => $assignment->maximum_score,
+            'status' => $assignment->status,
+            'attachment_link' => $assignment->attachment_link,
+        ])->assertForbidden();
+        $this->assertSame($ownClass->id, $assignment->fresh()->class_id);
+
+        $this->putJson("/api/announcements/{$announcement->id}", [
+            'class_id' => $otherClass->id,
+            'title' => $announcement->title,
+            'message' => $announcement->message,
+            'priority' => $announcement->priority,
+            'publish_date' => $announcement->publish_date->format('Y-m-d'),
+            'expiration_date' => $announcement->expiration_date?->format('Y-m-d'),
+        ])->assertForbidden();
+        $this->assertSame($ownClass->id, $announcement->fresh()->class_id);
+    }
+
+    public function test_assignment_and_attendance_reject_unenrolled_students_and_excess_scores(): void
+    {
+        $admin = User::where('role', 'admin')->firstOrFail();
+        $assignment = Assignment::with('schoolClass')->firstOrFail();
+        $class = $assignment->schoolClass;
+        $enrolledIds = $class->students()->wherePivot('status', 'enrolled')->pluck('students.id');
+        $enrolledStudent = Student::whereIn('id', $enrolledIds)->firstOrFail();
+        $unenrolledStudent = Student::whereNotIn('id', $enrolledIds)->firstOrFail();
+
+        Sanctum::actingAs($admin);
+
+        $this->postJson("/api/assignments/{$assignment->id}/submissions", [
+            'submissions' => [[
+                'student_id' => $enrolledStudent->id,
+                'status' => 'Submitted',
+                'score' => $assignment->maximum_score + 1,
+            ]],
+        ])->assertUnprocessable();
+
+        $this->postJson("/api/assignments/{$assignment->id}/submissions", [
+            'submissions' => [[
+                'student_id' => $unenrolledStudent->id,
+                'status' => 'Submitted',
+                'score' => $assignment->maximum_score,
+            ]],
+        ])->assertUnprocessable();
+
+        $this->postJson('/api/attendance', [
+            'class_id' => $class->id,
+            'attendance_date' => now()->format('Y-m-d'),
+            'records' => [[
+                'student_id' => $unenrolledStudent->id,
+                'status' => 'Present',
+            ]],
+        ])->assertUnprocessable();
+    }
+
+    public function test_mobile_github_pkce_start_and_verifier_validation(): void
+    {
+        Http::fake();
+        config([
+            'services.github.client_id' => 'github-client-id',
+            'services.github.client_secret' => 'github-client-secret',
+        ]);
+
+        $state = str_repeat('s', 43);
+        $challenge = str_repeat('c', 43);
+        $response = $this->postJson('/api/auth/github/mobile/start', [
+            'state' => $state,
+            'code_challenge' => $challenge,
+        ])->assertOk();
+
+        $authorizationUrl = $response->json('authorization_url');
+        $this->assertStringContainsString('client_id=github-client-id', $authorizationUrl);
+        $this->assertStringContainsString('code_challenge='.$challenge, $authorizationUrl);
+        $this->assertTrue(Cache::has('mobile-github-state:'.hash('sha256', $state)));
+
+        $this->postJson('/api/auth/github/mobile/complete', [
+            'code' => 'unused-code',
+            'state' => $state,
+            'code_verifier' => str_repeat('v', 43),
+        ])->assertUnprocessable()->assertJsonValidationErrors('code_verifier');
+
+        Http::assertNothingSent();
+    }
+
+    public function test_student_portal_hides_dropped_classes(): void
+    {
+        $student = Student::with('user')->whereHas('classes')->firstOrFail();
+        $class = $student->classes()->wherePivot('status', 'enrolled')->firstOrFail();
+        $student->classes()->updateExistingPivot($class->id, ['status' => 'dropped']);
+        Sanctum::actingAs($student->user);
+
+        $response = $this->getJson('/api/student/classes')->assertOk();
+        $classIds = collect($response->json('data'))->pluck('id');
+        $this->assertFalse($classIds->contains($class->id));
     }
 
     public function test_teacher_can_create_and_publish_exam_from_web(): void

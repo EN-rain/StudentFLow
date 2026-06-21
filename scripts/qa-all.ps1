@@ -11,6 +11,9 @@ function Invoke-Step {
     Write-Host ""
     Write-Host "== $Name =="
     & $Block
+    if ($LASTEXITCODE -ne 0) {
+        throw "$Name failed with exit code $LASTEXITCODE"
+    }
 }
 
 function Test-Server {
@@ -24,59 +27,80 @@ function Test-Server {
 }
 
 $serverProcess = $null
+$qaDatabase = Join-Path ([System.IO.Path]::GetTempPath()) ("studentflow-qa-{0}.sqlite" -f [guid]::NewGuid())
+New-Item -ItemType File -Path $qaDatabase -Force | Out-Null
 
-Invoke-Step "Laravel migrate:fresh --seed" {
-    & $Php artisan migrate:fresh --seed
-}
-
-Invoke-Step "Laravel feature tests" {
-    & $Php artisan test
-}
-
-if (-not (Test-Server $BaseUrl)) {
-    Invoke-Step "Start Laravel dev server" {
-        $uri = [Uri]$BaseUrl
-        $serverProcess = Start-Process -FilePath $Php -ArgumentList @("artisan", "serve", "--host=$($uri.Host)", "--port=$($uri.Port)") -WorkingDirectory (Get-Location) -WindowStyle Hidden -PassThru
-        Start-Sleep -Seconds 3
-        if (-not (Test-Server $BaseUrl)) {
-            throw "Laravel dev server did not start at $BaseUrl"
-        }
-    }
-}
+# Every child process launched by this script uses an isolated disposable database.
+$env:APP_ENV = "testing"
+$env:APP_DEBUG = "true"
+$env:DB_CONNECTION = "sqlite"
+$env:DB_DATABASE = $qaDatabase
+$env:CACHE_STORE = "array"
+$env:SESSION_DRIVER = "array"
+$env:QUEUE_CONNECTION = "sync"
+$env:MAIL_MAILER = "array"
+$env:STUDENTFLOW_SEED_STARTER_DATA = "true"
 
 try {
+    Invoke-Step "Clear cached configuration" {
+        & $Php artisan config:clear
+    }
+
+    Invoke-Step "Build disposable QA database" {
+        & $Php artisan migrate:fresh --seed --force
+    }
+
+    Invoke-Step "Laravel feature tests" {
+        & $Php artisan test
+    }
+
+    if (-not (Test-Server $BaseUrl)) {
+        Invoke-Step "Start Laravel QA server" {
+            $uri = [Uri]$BaseUrl
+            $serverProcess = Start-Process -FilePath $Php -ArgumentList @("artisan", "serve", "--host=$($uri.Host)", "--port=$($uri.Port)") -WorkingDirectory (Get-Location) -WindowStyle Hidden -PassThru
+            Start-Sleep -Seconds 3
+            if (-not (Test-Server $BaseUrl)) {
+                throw "Laravel QA server did not start at $BaseUrl"
+            }
+        }
+    } else {
+        throw "A server is already running at $BaseUrl. Stop it first so QA cannot target a non-disposable database."
+    }
+
     Invoke-Step "API QA checks" {
         & "$PSScriptRoot\qa-api.ps1" -BaseUrl $BaseUrl -Php $Php
-        if ($LASTEXITCODE -ne 0) {
-            throw "API QA checks failed with exit code $LASTEXITCODE"
-        }
     }
 
     Invoke-Step "Web QA checks" {
         & "$PSScriptRoot\qa-web.ps1" -BaseUrl $BaseUrl
-        if ($LASTEXITCODE -ne 0) {
-            throw "Web QA checks failed with exit code $LASTEXITCODE"
-        }
     }
 
     if (-not $SkipAndroid) {
-        Invoke-Step "Android debug build" {
-            $gradle = Join-Path $env:TEMP "gradle-8.7-bin\gradle-8.7\bin\gradle.bat"
-            $jbr = "C:\Program Files\Android\Android Studio1\jbr"
-            if (-not (Test-Path $gradle)) {
-                Write-Warning "Gradle not found at $gradle; skipping Android build."
-                return
+        Invoke-Step "Android unit tests and debug build" {
+            $gradleCommand = Join-Path $PSScriptRoot "..\android\gradlew.bat"
+            if (-not (Test-Path $gradleCommand)) {
+                $downloadedGradle = Join-Path $env:TEMP "gradle-8.7-bin\gradle-8.7\bin\gradle.bat"
+                if (Test-Path $downloadedGradle) {
+                    $gradleCommand = $downloadedGradle
+                } else {
+                    $systemGradle = Get-Command gradle.bat -ErrorAction SilentlyContinue
+                    if (-not $systemGradle) {
+                        $systemGradle = Get-Command gradle -ErrorAction SilentlyContinue
+                    }
+                    if (-not $systemGradle) {
+                        throw "Gradle 8.7 or an Android Gradle wrapper is required for Android QA."
+                    }
+                    $gradleCommand = $systemGradle.Source
+                }
             }
-            if (Test-Path $jbr) {
-                $env:JAVA_HOME = $jbr
-                $env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
+
+            if ([string]::IsNullOrWhiteSpace($env:GOOGLE_WEB_CLIENT_ID)) {
+                $env:GOOGLE_WEB_CLIENT_ID = "qa-client-id.apps.googleusercontent.com"
             }
+
             Push-Location "$PSScriptRoot\..\android"
             try {
-                & $gradle ":app:assembleDebug" "--no-daemon" "--console=plain"
-                if ($LASTEXITCODE -ne 0) {
-                    throw "Android build failed with exit code $LASTEXITCODE"
-                }
+                & $gradleCommand ":app:testDebugUnitTest" ":app:assembleDebug" "--no-daemon" "--console=plain"
             } finally {
                 Pop-Location
             }
@@ -86,7 +110,8 @@ try {
     if ($serverProcess -and -not $serverProcess.HasExited) {
         Stop-Process -Id $serverProcess.Id -Force
     }
+    Remove-Item -Path $qaDatabase -Force -ErrorAction SilentlyContinue
 }
 
 Write-Host ""
-Write-Host "QA completed successfully."
+Write-Host "QA completed successfully against a disposable SQLite database."

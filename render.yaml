@@ -38,13 +38,21 @@ services:
       - key: QUEUE_CONNECTION
         value: database
       - key: RUN_MIGRATIONS_ON_START
-        value: "false"
+        value: "true"
       - key: RUN_SEED_ON_START
         value: "false"
       - key: PERF_LOG_AUTH
         value: "true"
       - key: MAIL_MAILER
-        value: log
+        value: smtp
+      - key: MAIL_URL
+        sync: false
+      - key: MAIL_FROM_ADDRESS
+        sync: false
+      - key: MAIL_FROM_NAME
+        value: StudentFlow
+      - key: ANDROID_APP_CERT_SHA256
+        sync: false
       - key: GOOGLE_CLIENT_ID
         sync: false
       - key: GITHUB_CLIENT_ID
@@ -91,4 +99,10 @@ services:
       - key: QUEUE_CONNECTION
         value: database
       - key: MAIL_MAILER
-        value: log
+        value: smtp
+      - key: MAIL_URL
+        sync: false
+      - key: MAIL_FROM_ADDRESS
+        sync: false
+      - key: MAIL_FROM_NAME
+        value: StudentFlow

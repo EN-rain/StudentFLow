@@ -14,6 +14,7 @@ public class TokenStore {
     private static final String KEY_TOKEN = "api_token";
     private static final String KEY_USER_JSON = "user_json";
     private static final String KEY_OAUTH_STATE = "oauth_state";
+    private static final String KEY_OAUTH_CODE_VERIFIER = "oauth_code_verifier";
     private static final String KEY_REMEMBER_ME = "remember_me";
     private static final String KEY_REMEMBERED_USERNAME = "remembered_username";
 
@@ -70,14 +71,26 @@ public class TokenStore {
         return preferences.getString(KEY_USER_JSON, null);
     }
 
-    public void saveOauthState(String state) {
-        preferences.edit().putString(KEY_OAUTH_STATE, state).apply();
+    public void saveOauthRequest(String state, String codeVerifier) {
+        preferences.edit()
+                .putString(KEY_OAUTH_STATE, state)
+                .putString(KEY_OAUTH_CODE_VERIFIER, codeVerifier)
+                .apply();
     }
 
-    public String consumeOauthState() {
-        String state = preferences.getString(KEY_OAUTH_STATE, null);
-        preferences.edit().remove(KEY_OAUTH_STATE).apply();
-        return state;
+    public String getOauthState() {
+        return preferences.getString(KEY_OAUTH_STATE, null);
+    }
+
+    public String getOauthCodeVerifier() {
+        return preferences.getString(KEY_OAUTH_CODE_VERIFIER, null);
+    }
+
+    public void clearOauthRequest() {
+        preferences.edit()
+                .remove(KEY_OAUTH_STATE)
+                .remove(KEY_OAUTH_CODE_VERIFIER)
+                .apply();
     }
 
     public boolean hasToken() {

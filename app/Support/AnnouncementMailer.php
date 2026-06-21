@@ -2,8 +2,8 @@
 
 namespace App\Support;
 
-use App\Mail\ClassAnnouncementMail;
 use App\Jobs\SendAnnouncementEmails;
+use App\Mail\ClassAnnouncementMail;
 use App\Models\Announcement;
 use Illuminate\Support\Facades\Mail;
 

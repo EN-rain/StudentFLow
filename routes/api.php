@@ -25,12 +25,13 @@ Route::prefix('auth')->group(function () {
     Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:10,1');
     Route::post('/google', [StudentSocialAuthController::class, 'google'])->middleware('throttle:10,1');
     Route::post('/github', [StudentSocialAuthController::class, 'github'])->middleware('throttle:10,1');
+    Route::post('/github/mobile/start', [StudentSocialAuthController::class, 'mobileGithubStart'])->middleware('throttle:10,1');
+    Route::post('/github/mobile/complete', [StudentSocialAuthController::class, 'mobileGithubComplete'])->middleware('throttle:10,1');
     Route::get('/github/callback', [StudentSocialAuthController::class, 'githubCallback'])->middleware('throttle:20,1');
-    Route::post('/mobile-exchange', [StudentSocialAuthController::class, 'mobileExchange'])->middleware('throttle:20,1');
     Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->middleware('throttle:5,1');
     Route::post('/reset-password', [AuthController::class, 'resetPassword'])->middleware('throttle:5,1');
 
-    Route::middleware('auth:sanctum')->group(function () {
+    Route::middleware(['auth:sanctum', 'active'])->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/me', [AuthController::class, 'me']);
         Route::post('/change-password', [AuthController::class, 'changePassword']);
@@ -41,7 +42,7 @@ Route::post('/exam/magic/{token}/start', [ExamController::class, 'magicStart'])-
 Route::get('/exam/magic/{token}', [ExamController::class, 'magicShow'])->middleware('throttle:60,1');
 Route::post('/exam/magic/{token}/submit', [ExamController::class, 'magicSubmit'])->middleware('throttle:20,1');
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'active'])->group(function () {
     Route::prefix('student')->middleware('role:student')->group(function () {
         Route::get('/dashboard', [StudentPortalController::class, 'dashboard']);
         Route::get('/profile', [StudentPortalController::class, 'profile']);

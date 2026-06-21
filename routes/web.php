@@ -13,11 +13,14 @@ use App\Http\Controllers\Web\ExamWebController;
 use App\Http\Controllers\Web\GradeWebController;
 use App\Http\Controllers\Web\HealthController;
 use App\Http\Controllers\Web\MagicExamWebController;
+use App\Http\Controllers\Web\MobileOAuthController;
 use App\Http\Controllers\Web\ReportController;
 use App\Http\Controllers\Web\StudentWebController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/health', HealthController::class)->name('health');
+Route::get('/.well-known/assetlinks.json', [MobileOAuthController::class, 'assetLinks']);
+Route::get('/mobile/oauth/github', [MobileOAuthController::class, 'github']);
 
 Route::get('/', fn () => redirect('/dashboard'));
 Route::get('/exam/magic/{token}', [MagicExamWebController::class, 'show'])->middleware('throttle:60,1');
@@ -36,7 +39,7 @@ Route::get('/reset-password/{token}', [AuthWebController::class, 'showResetPassw
 Route::post('/reset-password', [AuthWebController::class, 'resetPassword'])->middleware('throttle:5,1');
 
 // Protected routes
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'active'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index']);
     Route::get('/change-password', [AuthWebController::class, 'showChangePassword']);
     Route::post('/change-password', [AuthWebController::class, 'changePassword']);

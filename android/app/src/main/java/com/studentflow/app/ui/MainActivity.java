@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.getMenu().findItem(R.id.nav_classes).setTitle(student ? "My Classes" : "Classes");
         navigationView.getMenu().findItem(R.id.nav_assignments).setTitle(student ? "My Assignments" : "Assignments");
         navigationView.getMenu().findItem(R.id.nav_attendance).setTitle(student ? "My Attendance" : "Attendance");
-        navigationView.getMenu().findItem(R.id.nav_qa_tests).setVisible(BuildConfig.DEBUG && isAdmin());
+        navigationView.getMenu().findItem(R.id.nav_qa_tests).setVisible(BuildConfig.DEBUG);
     }
 
     private void configureHeader(NavigationView navigationView) {

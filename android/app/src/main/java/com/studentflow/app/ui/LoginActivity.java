@@ -33,8 +33,7 @@ import com.studentflow.app.R;
 import com.studentflow.app.api.ApiClient;
 import com.studentflow.app.data.TokenStore;
 import com.studentflow.app.models.LoginResponse;
-
-import java.util.UUID;
+import com.studentflow.app.security.Pkce;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -329,18 +328,38 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void startGithubLogin() {
-        String state = "android:" + UUID.randomUUID();
-        tokenStore.saveOauthState(state);
-        Uri uri = Uri.parse("https://github.com/login/oauth/authorize")
-                .buildUpon()
-                .appendQueryParameter("client_id", Constants.GITHUB_CLIENT_ID)
-                .appendQueryParameter("redirect_uri", Constants.GITHUB_REDIRECT_URI)
-                .appendQueryParameter("scope", "read:user user:email")
-                .appendQueryParameter("state", state)
-                .build();
+        String state = Pkce.generateVerifier();
+        String codeVerifier = Pkce.generateVerifier();
+        String codeChallenge = Pkce.challenge(codeVerifier);
+        tokenStore.saveOauthRequest(state, codeVerifier);
+
+        JsonObject payload = new JsonObject();
+        payload.addProperty("state", state);
+        payload.addProperty("code_challenge", codeChallenge);
+
         setAuthControlsEnabled(false, "Opening GitHub...");
-        new CustomTabsIntent.Builder().build().launchUrl(this, uri);
-        setAuthControlsEnabled(true);
+        ApiClient.service(this).githubMobileStart(payload).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (!response.isSuccessful() || response.body() == null || !response.body().has("authorization_url")) {
+                    tokenStore.clearOauthRequest();
+                    setAuthControlsEnabled(true);
+                    showError("GitHub sign-in failed. " + errorMessage(response));
+                    return;
+                }
+
+                Uri uri = Uri.parse(response.body().get("authorization_url").getAsString());
+                new CustomTabsIntent.Builder().build().launchUrl(LoginActivity.this, uri);
+                setAuthControlsEnabled(true);
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                tokenStore.clearOauthRequest();
+                setAuthControlsEnabled(true);
+                showError("Connection problem. Please try again.");
+            }
+        });
     }
 
     @Override
@@ -372,35 +391,48 @@ public class LoginActivity extends AppCompatActivity {
 
     private void handleDeepLink(Intent intent) {
         Uri uri = intent == null ? null : intent.getData();
-        if (uri == null || !"studentflow".equals(uri.getScheme()) || !"oauth".equals(uri.getHost())) {
+        Uri expectedBase = Uri.parse(Constants.WEB_BASE_URL);
+        if (uri == null
+                || !"https".equalsIgnoreCase(uri.getScheme())
+                || !expectedBase.getHost().equalsIgnoreCase(uri.getHost())
+                || !"/mobile/oauth/github".equals(uri.getPath())) {
             return;
         }
+
         String error = uri.getQueryParameter("error_description");
         if (error == null) {
             error = uri.getQueryParameter("error");
         }
         if (error != null && !error.trim().isEmpty()) {
+            tokenStore.clearOauthRequest();
             showError("GitHub sign-in failed. Please try again.");
             return;
         }
+
         String returnedState = uri.getQueryParameter("state");
-        String expectedState = tokenStore.consumeOauthState();
-        if (expectedState == null || returnedState == null || !expectedState.equals(returnedState)) {
+        String expectedState = tokenStore.getOauthState();
+        String codeVerifier = tokenStore.getOauthCodeVerifier();
+        if (expectedState == null || returnedState == null || !expectedState.equals(returnedState) || codeVerifier == null) {
+            tokenStore.clearOauthRequest();
             showError("GitHub sign-in could not be verified. Please try again.");
             return;
         }
 
-        String exchangeCode = uri.getQueryParameter("exchange_code");
-        if (exchangeCode == null || exchangeCode.trim().isEmpty()) {
+        String code = uri.getQueryParameter("code");
+        if (code == null || code.trim().isEmpty()) {
+            tokenStore.clearOauthRequest();
             showError("GitHub sign-in could not be completed. Please try again.");
             return;
         }
 
         JsonObject payload = new JsonObject();
-        payload.addProperty("exchange_code", exchangeCode);
+        payload.addProperty("code", code);
         payload.addProperty("state", returnedState);
+        payload.addProperty("code_verifier", codeVerifier);
+        tokenStore.clearOauthRequest();
+
         setAuthControlsEnabled(false);
-        ApiClient.service(this).mobileExchange(payload).enqueue(new Callback<LoginResponse>() {
+        ApiClient.service(this).githubMobileComplete(payload).enqueue(new Callback<LoginResponse>() {
             @Override
             public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                 LoginResponse body = response.body();

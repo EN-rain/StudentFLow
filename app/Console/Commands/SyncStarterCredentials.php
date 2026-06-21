@@ -48,6 +48,7 @@ class SyncStarterCredentials extends Command
             });
             if (! is_string($password) || trim($password) === '') {
                 $this->warn("Skipping {$envKey}; no password configured.");
+
                 continue;
             }
 
@@ -55,6 +56,7 @@ class SyncStarterCredentials extends Command
                 $user = User::where('username', $username)->first();
                 if (! $user) {
                     $this->warn("Starter account missing: {$username}");
+
                     continue;
                 }
 

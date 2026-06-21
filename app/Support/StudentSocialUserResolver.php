@@ -23,12 +23,19 @@ class StudentSocialUserResolver
         if (! $student) {
             [$firstName, $lastName] = self::splitName((string) ($profile['name'] ?? strtok($email, '@')));
             $student = Student::create([
-                'student_number' => self::nextStudentNumber(),
+                'student_number' => 'pending-'.Str::uuid(),
                 'first_name' => $firstName,
                 'last_name' => $lastName,
                 'email' => $email,
                 'profile_image' => $profile['avatar_url'] ?? $profile['picture'] ?? null,
                 'status' => 'active',
+            ]);
+            $student->forceFill([
+                'student_number' => sprintf('%s-%04d', now()->format('Y'), $student->id),
+            ])->save();
+        } elseif ($student->status !== 'active') {
+            throw ValidationException::withMessages([
+                'email' => ['This student account has been disabled.'],
             ]);
         }
 
@@ -50,12 +57,16 @@ class StudentSocialUserResolver
                 'email' => ['This email is already used by a non-student account.'],
             ]);
         }
+        if ($user->status !== 'active') {
+            throw ValidationException::withMessages([
+                'email' => ['This account has been disabled. Contact an administrator.'],
+            ]);
+        }
 
         $updates = [
             'student_id' => $student->id,
             'name' => $student->full_name,
             'email' => $email,
-            'status' => 'active',
             'social_verified_at' => now(),
         ];
 
@@ -80,16 +91,5 @@ class StudentSocialUserResolver
         $parts = preg_split('/\s+/', trim($name), 2);
 
         return [$parts[0] ?: 'Student', $parts[1] ?? 'User'];
-    }
-
-    private static function nextStudentNumber(): string
-    {
-        $year = now()->format('Y');
-        $latest = Student::where('student_number', 'like', $year.'-%')
-            ->orderByDesc('student_number')
-            ->value('student_number');
-        $next = $latest ? ((int) substr($latest, -4)) + 1 : 1;
-
-        return sprintf('%s-%04d', $year, $next);
     }
 }

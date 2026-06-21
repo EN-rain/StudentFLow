@@ -182,6 +182,9 @@ try {
     $attempt = ($exam.Json.data.attempts | Where-Object { $_.student_id -eq $student.id } | Select-Object -First 1)
     Add-Result "Teacher creates published exam with attempts" ($exam.Status -eq 201 -and $attempt.magic_token) "status=$($exam.Status)"
 
+    $examStart = Invoke-Api POST "/api/exam/magic/$($attempt.magic_token)/start" @{}
+    Add-Result "Magic exam attempt starts" ($examStart.Status -eq 200) "status=$($examStart.Status)"
+
     $examSubmit = Invoke-Api POST "/api/exam/magic/$($attempt.magic_token)/submit" @{
         answers = @(@{ question_id = $questionId; answer = "pass" })
     }
@@ -197,7 +200,7 @@ try {
         priority = "Important"
         publish_date = "2026-06-18"
     } $teacherToken
-    Add-Result "Class announcement emails enrolled students" ($announcement.Status -eq 201 -and $announcement.Json.emails_sent -eq $students.Count) "status=$($announcement.Status); emails=$($announcement.Json.emails_sent)"
+    Add-Result "Class announcement emails enrolled students" ($announcement.Status -eq 201 -and $announcement.Json.emails_queued -eq $students.Count) "status=$($announcement.Status); emails=$($announcement.Json.emails_queued)"
 
     $forgot = Invoke-Api POST "/api/auth/forgot-password" @{ email = "admin@studentflow.local" }
     Add-Result "Forgot password endpoint generic success" ($forgot.Status -eq 200) "status=$($forgot.Status)"

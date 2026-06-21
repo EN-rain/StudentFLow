@@ -36,7 +36,10 @@ class AttendanceWebController extends Controller
         $this->authorizeClassAccess($request, $class);
         $date = $request->query('date', date('Y-m-d'));
 
-        $students = $class->students()->orderBy('last_name')->get();
+        $students = $class->students()
+            ->wherePivot('status', 'enrolled')
+            ->orderBy('last_name')
+            ->get();
         $existing = Attendance::where('class_id', $class->id)
             ->where('attendance_date', $date)
             ->get()
@@ -59,10 +62,20 @@ class AttendanceWebController extends Controller
             'records.*.remarks' => 'nullable|string|max:255',
         ]);
 
+        $enrolledStudentIds = $class->students()
+            ->wherePivot('status', 'enrolled')
+            ->pluck('students.id')
+            ->map(fn ($id) => (int) $id)
+            ->all();
+
         $userId = $request->user()->id;
         $now = now();
         $rows = [];
         foreach ($payload['records'] as $studentId => $r) {
+            if (! in_array((int) $studentId, $enrolledStudentIds, true)) {
+                abort(422, 'Every attendance student must be actively enrolled in the class.');
+            }
+
             $rows[] = [
                 'class_id' => $class->id,
                 'student_id' => (int) $studentId,

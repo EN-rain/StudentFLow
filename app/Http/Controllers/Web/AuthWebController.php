@@ -147,9 +147,9 @@ class AuthWebController extends Controller
             'password' => $payload['password'],
             'password_confirmation' => $request->string('password_confirmation')->toString(),
         ], function (User $user, string $password) use ($payload) {
-            if (! $user->isTeacher()) {
+            if (! $user->isTeacher() || ! $user->hasPendingTeacherSetup()) {
                 throw ValidationException::withMessages([
-                    'email' => 'Only teacher invite links can be used on this form.',
+                    'email' => 'This teacher setup link is not valid for an established account.',
                 ]);
             }
 
@@ -157,7 +157,6 @@ class AuthWebController extends Controller
                 'username' => $payload['username'],
                 'password' => Hash::make($password),
                 'remember_token' => Str::random(60),
-                'status' => 'active',
             ])->save();
             $user->tokens()->delete();
         });

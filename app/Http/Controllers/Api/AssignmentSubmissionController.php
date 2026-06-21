@@ -26,13 +26,26 @@ class AssignmentSubmissionController extends Controller
         $this->authorizeAssignment($request, $assignment);
         $payload = $request->validate([
             'submissions' => 'required|array|min:1',
-            'submissions.*.student_id' => 'required|integer|exists:students,id',
+            'submissions.*.student_id' => 'required|integer|distinct|exists:students,id',
             'submissions.*.status' => 'required|in:Pending,Submitted,Late,Missing,Excused',
-            'submissions.*.score' => 'nullable|numeric|min:0',
+            'submissions.*.score' => 'nullable|numeric|min:0|max:'.$assignment->maximum_score,
             'submissions.*.submitted_at' => 'nullable|date',
             'submissions.*.attachment_link' => 'nullable|url|max:255',
             'submissions.*.remarks' => 'nullable|string|max:1000',
         ]);
+
+        $enrolledStudentIds = DB::table('class_students')
+            ->where('class_id', $assignment->class_id)
+            ->where('status', 'enrolled')
+            ->pluck('student_id')
+            ->map(fn ($id) => (int) $id)
+            ->all();
+
+        foreach ($payload['submissions'] as $submission) {
+            if (! in_array((int) $submission['student_id'], $enrolledStudentIds, true)) {
+                abort(422, 'Every submitted student must be actively enrolled in the assignment class.');
+            }
+        }
 
         $rows = [];
         $now = now();

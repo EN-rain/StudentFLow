@@ -59,7 +59,12 @@ class ClassController extends Controller
     {
         $this->authorizeAccess($request, $class);
 
-        $class->update($request->validated());
+        $data = $request->validated();
+        if ($request->user()->isTeacher()) {
+            $data['teacher_id'] = $request->user()->teacher->id;
+        }
+
+        $class->update($data);
 
         return response()->json(['data' => $class]);
     }

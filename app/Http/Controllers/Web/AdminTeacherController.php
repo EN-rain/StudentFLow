@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTeacherRequest;
 use App\Models\Teacher;
 use App\Models\User;
+use App\Support\AccountAccess;
 use App\Support\ActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -76,7 +77,10 @@ class AdminTeacherController extends Controller
                 'email' => $request->email,
                 'status' => $request->status,
             ];
+            $status = $userData['status'];
+            unset($userData['status']);
             $teacher->user->update($userData);
+            AccountAccess::setStatus($teacher->user, $status);
             $teacher->update($request->safe()->except(['name', 'email', 'status']));
         });
 
@@ -96,7 +100,7 @@ class AdminTeacherController extends Controller
     public function setStatus(Request $request, Teacher $teacher)
     {
         $payload = $request->validate(['status' => 'required|in:active,disabled']);
-        $teacher->user->update(['status' => $payload['status']]);
+        AccountAccess::setStatus($teacher->user, $payload['status']);
         ActivityLogger::log($request, 'teacher.status_changed', $teacher, ['status' => $payload['status']]);
 
         return back()->with('status', 'Teacher account status updated.');

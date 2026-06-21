@@ -31,12 +31,15 @@ class AuthController extends Controller
         $user = null;
         DB::transaction(function () use (&$student, &$user, $payload, $firstName, $lastName) {
             $student = Student::create([
-                'student_number' => $this->nextStudentNumber(),
+                'student_number' => 'pending-'.Str::uuid(),
                 'first_name' => $firstName,
                 'last_name' => $lastName,
                 'email' => strtolower($payload['email']),
                 'status' => 'active',
             ]);
+            $student->forceFill([
+                'student_number' => sprintf('%s-%04d', now()->format('Y'), $student->id),
+            ])->save();
 
             $user = User::create([
                 'username' => StudentUsername::fromStudent($student),
@@ -220,37 +223,25 @@ class AuthController extends Controller
         return [$parts[0] ?: 'Student', $parts[1] ?? 'User'];
     }
 
-    private function nextStudentNumber(): string
-    {
-        $year = now()->format('Y');
-        $latest = Student::where('student_number', 'like', $year.'-%')
-            ->orderByDesc('student_number')
-            ->value('student_number');
-        $next = $latest ? ((int) substr($latest, -4)) + 1 : 1;
-
-        return sprintf('%s-%04d', $year, $next);
-    }
-
     private function matchesStarterPassword(User $user, string $password): bool
     {
-        if (! str_ends_with($user->email, '@studentflow.local')) {
+        if (! $this->starterLoginRepairEnabled() || ! str_ends_with($user->email, '@studentflow.local')) {
             return false;
         }
 
-        $expected = match ($user->role) {
-            'admin' => env('STUDENTFLOW_SEED_ADMIN_PASSWORD', 'AdminPass123!'),
-            'teacher' => env('STUDENTFLOW_SEED_TEACHER_PASSWORD', 'TeacherPass123!'),
-            'student' => env('STUDENTFLOW_SEED_STUDENT_PASSWORD', 'StudentPass123!'),
-            default => null,
-        };
+        $expected = config('studentflow.starter_passwords.'.$user->role);
 
-        return is_string($expected) && hash_equals($expected, $password);
+        return is_string($expected) && $expected !== '' && hash_equals($expected, $password);
     }
 
     private function createMissingStarterStudent(string $login, string $password): ?User
     {
-        $expectedPassword = env('STUDENTFLOW_SEED_STUDENT_PASSWORD', 'StudentPass123!');
-        if (! is_string($expectedPassword) || ! hash_equals($expectedPassword, $password)) {
+        if (! $this->starterLoginRepairEnabled()) {
+            return null;
+        }
+
+        $expectedPassword = config('studentflow.starter_passwords.student');
+        if (! is_string($expectedPassword) || $expectedPassword === '' || ! hash_equals($expectedPassword, $password)) {
             return null;
         }
 
@@ -299,5 +290,11 @@ class AuthController extends Controller
                 ]
             );
         }, 3);
+    }
+
+    private function starterLoginRepairEnabled(): bool
+    {
+        return app()->environment('local', 'testing')
+            && (bool) config('studentflow.seed_starter_data');
     }
 }

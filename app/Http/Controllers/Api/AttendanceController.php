@@ -57,12 +57,25 @@ class AttendanceController extends Controller
             'class_id' => 'required|integer|exists:classes,id',
             'attendance_date' => 'required|date',
             'records' => 'required|array|min:1',
-            'records.*.student_id' => 'required|integer|exists:students,id',
+            'records.*.student_id' => 'required|integer|distinct|exists:students,id',
             'records.*.status' => 'required|in:Present,Absent,Late,Excused',
             'records.*.remarks' => 'nullable|string|max:255',
         ]);
 
         $this->authorizeClassAccess($request, $payload['class_id']);
+
+        $enrolledStudentIds = DB::table('class_students')
+            ->where('class_id', $payload['class_id'])
+            ->where('status', 'enrolled')
+            ->pluck('student_id')
+            ->map(fn ($id) => (int) $id)
+            ->all();
+
+        foreach ($payload['records'] as $record) {
+            if (! in_array((int) $record['student_id'], $enrolledStudentIds, true)) {
+                abort(422, 'Every attendance student must be actively enrolled in the class.');
+            }
+        }
 
         $userId = $request->user()->id;
         $rows = [];
@@ -165,9 +178,17 @@ class AttendanceController extends Controller
      */
     public function studentStats(Request $request, int $studentId): JsonResponse
     {
-        $total = Attendance::where('student_id', $studentId)->count();
-        $present = Attendance::where('student_id', $studentId)
-            ->whereIn('status', ['Present', 'Late'])->count();
+        $query = Attendance::where('student_id', $studentId);
+        if ($request->user()->isTeacher()) {
+            $teacherId = $request->user()->teacher?->id;
+            if (! $teacherId) {
+                abort(403);
+            }
+            $query->whereIn('class_id', SchoolClass::where('teacher_id', $teacherId)->select('id'));
+        }
+
+        $total = (clone $query)->count();
+        $present = (clone $query)->whereIn('status', ['Present', 'Late'])->count();
         $pct = $total > 0 ? round($present / $total * 100, 1) : null;
 
         return response()->json(['data' => ['student_id' => $studentId, 'total' => $total, 'present_or_late' => $present, 'percentage' => $pct]]);

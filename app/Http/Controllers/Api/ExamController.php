@@ -5,10 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Exam;
 use App\Models\ExamAttempt;
-use App\Models\ExamQuestion;
 use App\Models\GradeItem;
 use App\Models\SchoolClass;
 use App\Support\ActivityLogger;
+use App\Support\ApiPagination;
 use App\Support\ExamSubmissionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -30,7 +30,7 @@ class ExamController extends Controller
             $query->where('teacher_id', $teacher->id);
         }
 
-        return response()->json(\App\Support\ApiPagination::paginate($query->orderByDesc('created_at'), $request));
+        return response()->json(ApiPagination::paginate($query->orderByDesc('created_at'), $request));
     }
 
     public function store(Request $request): JsonResponse

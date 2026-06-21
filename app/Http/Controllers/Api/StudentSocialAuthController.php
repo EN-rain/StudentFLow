@@ -11,7 +11,6 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class StudentSocialAuthController extends Controller
@@ -33,60 +32,111 @@ class StudentSocialAuthController extends Controller
         $payload = $request->validate([
             'code' => 'required_without:access_token|string',
             'access_token' => 'required_without:code|string',
-            'redirect_uri' => 'nullable|string|max:255',
+            'redirect_uri' => 'nullable|url|max:255',
+            'code_verifier' => 'nullable|string|min:43|max:128',
         ]);
 
-        $token = $payload['access_token'] ?? $this->exchangeGithubCode($payload['code'], $payload['redirect_uri'] ?? null);
+        $token = $payload['access_token'] ?? $this->exchangeGithubCode(
+            $payload['code'],
+            $payload['redirect_uri'] ?? null,
+            $payload['code_verifier'] ?? null,
+        );
         $profile = $this->githubProfile($token);
         $user = StudentSocialUserResolver::resolve('github', $profile);
 
         return $this->tokenResponse($user, 'github');
     }
 
-    public function githubCallback(Request $request): JsonResponse|RedirectResponse
+    public function mobileGithubStart(Request $request): JsonResponse
     {
         $payload = $request->validate([
+            'state' => 'required|string|min:32|max:255',
+            'code_challenge' => ['required', 'string', 'regex:/^[A-Za-z0-9_-]{43}$/'],
+        ]);
+
+        $clientId = config('services.github.client_id');
+        $clientSecret = config('services.github.client_secret');
+        if (! $clientId || ! $clientSecret) {
+            throw ValidationException::withMessages([
+                'github' => ['GitHub OAuth is not configured on the server.'],
+            ]);
+        }
+
+        $redirectUri = url('/api/auth/github/callback');
+        Cache::put($this->mobileStateKey($payload['state']), [
+            'code_challenge' => $payload['code_challenge'],
+            'redirect_uri' => $redirectUri,
+        ], now()->addMinutes(10));
+
+        $authorizationUrl = 'https://github.com/login/oauth/authorize?'.http_build_query([
+            'client_id' => $clientId,
+            'redirect_uri' => $redirectUri,
+            'scope' => 'read:user user:email',
+            'state' => $payload['state'],
+            'code_challenge' => $payload['code_challenge'],
+            'code_challenge_method' => 'S256',
+        ]);
+
+        return response()->json(['authorization_url' => $authorizationUrl]);
+    }
+
+    public function githubCallback(Request $request): JsonResponse|RedirectResponse
+    {
+        $state = $request->string('state')->toString();
+        $mobileFlow = $state !== '' ? Cache::get($this->mobileStateKey($state)) : null;
+
+        if (is_array($mobileFlow)) {
+            $query = ['state' => $state];
+            if ($request->filled('error')) {
+                $query['error'] = $request->string('error')->toString();
+                $query['error_description'] = $request->string('error_description')->toString();
+            } else {
+                $query['code'] = $request->validate(['code' => 'required|string'])['code'];
+            }
+
+            return redirect()->away(url('/mobile/oauth/github').'?'.http_build_query($query));
+        }
+
+        $payload = $request->validate([
             'code' => 'required|string',
-            'state' => 'nullable|string',
         ]);
 
         $token = $this->exchangeGithubCode($payload['code']);
         $profile = $this->githubProfile($token);
         $user = StudentSocialUserResolver::resolve('github', $profile);
 
-        $state = $payload['state'] ?? null;
-        if (is_string($state) && str_starts_with($state, 'android:')) {
-            $exchangeCode = Str::random(64);
-            Cache::put('mobile-oauth:'.$exchangeCode, [
-                'user_id' => $user->id,
-                'state' => $state,
-            ], now()->addMinutes(2));
-
-            return redirect()->away('studentflow://oauth/github?'.http_build_query([
-                'exchange_code' => $exchangeCode,
-                'state' => $state,
-            ]));
-        }
-
         return $this->tokenResponse($user, 'github');
     }
 
-    public function mobileExchange(Request $request): JsonResponse
+    public function mobileGithubComplete(Request $request): JsonResponse
     {
         $payload = $request->validate([
-            'exchange_code' => 'required|string|size:64',
-            'state' => 'required|string|max:255',
+            'code' => 'required|string',
+            'state' => 'required|string|min:32|max:255',
+            'code_verifier' => 'required|string|min:43|max:128',
         ]);
 
-        $exchange = Cache::pull('mobile-oauth:'.$payload['exchange_code']);
-        if (! is_array($exchange) || ! hash_equals((string) ($exchange['state'] ?? ''), $payload['state'])) {
-            throw ValidationException::withMessages(['exchange_code' => ['OAuth exchange code is invalid or expired.']]);
+        $flow = Cache::pull($this->mobileStateKey($payload['state']));
+        if (! is_array($flow)) {
+            throw ValidationException::withMessages([
+                'state' => ['The GitHub sign-in request is invalid or expired.'],
+            ]);
         }
 
-        $user = User::find($exchange['user_id'] ?? null);
-        if (! $user || ! $user->isStudent() || $user->status !== 'active') {
-            throw ValidationException::withMessages(['exchange_code' => ['OAuth account is unavailable.']]);
+        $challenge = rtrim(strtr(base64_encode(hash('sha256', $payload['code_verifier'], true)), '+/', '-_'), '=');
+        if (! hash_equals((string) ($flow['code_challenge'] ?? ''), $challenge)) {
+            throw ValidationException::withMessages([
+                'code_verifier' => ['The GitHub sign-in verifier is invalid.'],
+            ]);
         }
+
+        $token = $this->exchangeGithubCode(
+            $payload['code'],
+            (string) ($flow['redirect_uri'] ?? url('/api/auth/github/callback')),
+            $payload['code_verifier'],
+        );
+        $profile = $this->githubProfile($token);
+        $user = StudentSocialUserResolver::resolve('github', $profile);
 
         return $this->tokenResponse($user, 'github');
     }
@@ -99,6 +149,13 @@ class StudentSocialAuthController extends Controller
             return ['sub' => 'test-google-'.md5($email), 'email' => $email, 'email_verified' => true, 'name' => strtok($email, '@')];
         }
 
+        $clientId = config('services.google.client_id');
+        if (! is_string($clientId) || $clientId === '') {
+            throw ValidationException::withMessages([
+                'id_token' => ['Google OAuth is not configured on the server.'],
+            ]);
+        }
+
         $response = Http::timeout(10)->get('https://oauth2.googleapis.com/tokeninfo', [
             'id_token' => $idToken,
         ]);
@@ -108,8 +165,7 @@ class StudentSocialAuthController extends Controller
         }
 
         $data = $response->json();
-        $clientId = config('services.google.client_id');
-        if ($clientId && ($data['aud'] ?? null) !== $clientId) {
+        if (($data['aud'] ?? null) !== $clientId) {
             throw ValidationException::withMessages(['id_token' => ['Google token audience does not match this app.']]);
         }
         if (($data['email_verified'] ?? 'false') !== true && ($data['email_verified'] ?? 'false') !== 'true') {
@@ -125,7 +181,7 @@ class StudentSocialAuthController extends Controller
         ];
     }
 
-    private function exchangeGithubCode(string $code, ?string $redirectUri = null): string
+    private function exchangeGithubCode(string $code, ?string $redirectUri = null, ?string $codeVerifier = null): string
     {
         $clientId = config('services.github.client_id');
         $clientSecret = config('services.github.client_secret');
@@ -141,6 +197,9 @@ class StudentSocialAuthController extends Controller
 
         if ($redirectUri) {
             $form['redirect_uri'] = $redirectUri;
+        }
+        if ($codeVerifier) {
+            $form['code_verifier'] = $codeVerifier;
         }
 
         $response = Http::asForm()->acceptJson()->post('https://github.com/login/oauth/access_token', $form);
@@ -184,17 +243,18 @@ class StudentSocialAuthController extends Controller
         ];
     }
 
-    private function tokenResponse($user, string $provider): JsonResponse
+    private function tokenResponse(User $user, string $provider): JsonResponse
     {
-        return response()->json($this->tokenPayload($user, $provider));
-    }
+        if ($user->status !== 'active' || $user->student?->status !== 'active') {
+            throw ValidationException::withMessages([
+                'email' => ['This account has been disabled. Contact an administrator.'],
+            ]);
+        }
 
-    private function tokenPayload($user, string $provider): array
-    {
         $user->tokens()->delete();
         $token = $user->createToken('android-'.$provider)->plainTextToken;
 
-        return [
+        return response()->json([
             'message' => 'Student social login successful.',
             'token' => $token,
             'user' => [
@@ -211,6 +271,11 @@ class StudentSocialAuthController extends Controller
                 'github_username' => $user->github_username,
                 'avatar_url' => $user->avatar_url,
             ],
-        ];
+        ]);
+    }
+
+    private function mobileStateKey(string $state): string
+    {
+        return 'mobile-github-state:'.hash('sha256', $state);
     }
 }

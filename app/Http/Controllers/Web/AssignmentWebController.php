@@ -71,6 +71,7 @@ class AssignmentWebController extends Controller
     public function update(StoreAssignmentRequest $request, Assignment $assignment)
     {
         $this->authorizeAccess($request, $assignment);
+        $this->authorizeClassId($request, $request->integer('class_id'));
         $assignment->update($request->validated());
         ActivityLogger::log($request, 'assignment.updated', $assignment);
 
@@ -92,15 +93,26 @@ class AssignmentWebController extends Controller
         $payload = $request->validate([
             'submissions' => 'required|array',
             'submissions.*.status' => 'required|in:Pending,Submitted,Late,Missing,Excused',
-            'submissions.*.score' => 'nullable|numeric|min:0',
+            'submissions.*.score' => 'nullable|numeric|min:0|max:'.$assignment->maximum_score,
             'submissions.*.submitted_at' => 'nullable|date',
             'submissions.*.attachment_link' => 'nullable|url|max:255',
             'submissions.*.remarks' => 'nullable|string|max:1000',
         ]);
 
+        $enrolledStudentIds = DB::table('class_students')
+            ->where('class_id', $assignment->class_id)
+            ->where('status', 'enrolled')
+            ->pluck('student_id')
+            ->map(fn ($id) => (int) $id)
+            ->all();
+
         $rows = [];
         $now = now();
         foreach ($payload['submissions'] as $studentId => $submission) {
+            if (! in_array((int) $studentId, $enrolledStudentIds, true)) {
+                abort(422, 'Every submitted student must be actively enrolled in the assignment class.');
+            }
+
             $rows[] = [
                 'assignment_id' => $assignment->id,
                 'student_id' => (int) $studentId,

@@ -34,7 +34,12 @@ SESSION_DRIVER=database
 CACHE_STORE=database
 QUEUE_CONNECTION=database
 
-MAIL_MAILER=log
+MAIL_MAILER=smtp
+MAIL_URL=smtp://username:password@smtp-provider.example:587
+MAIL_FROM_ADDRESS=no-reply@your-domain.example
+MAIL_FROM_NAME=StudentFlow
+
+ANDROID_APP_CERT_SHA256=AA:BB:CC:replace_with_release_signing_fingerprint
 
 STUDENTFLOW_SEED_STARTER_DATA=false
 STUDENTFLOW_SEED_ADMIN_PASSWORD=replace_with_secure_password
@@ -68,6 +73,14 @@ GitHub callback:
 https://your-service.onrender.com/api/auth/github/callback
 ```
 
+The Android app returns through the verified App Link:
+
+```text
+https://your-service.onrender.com/mobile/oauth/github
+```
+
+Set `ANDROID_APP_CERT_SHA256` to the SHA-256 fingerprint of the certificate used to sign the installed Android build. The `/.well-known/assetlinks.json` endpoint uses this value to let Android verify that only the StudentFlow app may claim the callback.
+
 Google requires a Web OAuth client ID for server-side token verification. Register a separate Android OAuth client for package `com.studentflow.app` and the signing SHA-1.
 
 Keep OAuth client secrets in Render environment values only.
@@ -85,6 +98,7 @@ https://your-service.onrender.com/api/
 After deployment, verify:
 
 ```text
+GET /health
 GET /
 POST /api/auth/login
 GET /api/auth/me

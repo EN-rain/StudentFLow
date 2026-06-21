@@ -29,7 +29,7 @@ class ClassWebController extends Controller
 
     public function create(Request $request)
     {
-        $teachers = Teacher::with('user')->orderBy('last_name')->get();
+        $teachers = $this->scopedTeachers($request);
 
         return view('classes.create', compact('teachers'));
     }
@@ -70,7 +70,7 @@ class ClassWebController extends Controller
     public function edit(Request $request, SchoolClass $class)
     {
         $this->authorizeAccess($request, $class);
-        $teachers = Teacher::with('user')->orderBy('last_name')->get();
+        $teachers = $this->scopedTeachers($request);
 
         return view('classes.edit', compact('class', 'teachers'));
     }
@@ -78,7 +78,13 @@ class ClassWebController extends Controller
     public function update(StoreClassRequest $request, SchoolClass $class)
     {
         $this->authorizeAccess($request, $class);
-        $class->update($request->validated());
+
+        $data = $request->validated();
+        if ($request->user()->isTeacher()) {
+            $data['teacher_id'] = $request->user()->teacher->id;
+        }
+
+        $class->update($data);
         ActivityLogger::log($request, 'class.updated', $class);
 
         return redirect('/classes')->with('status', 'Class updated.');
@@ -168,6 +174,16 @@ class ClassWebController extends Controller
         ActivityLogger::log($request, 'enrollment.removed', $class, ['student_id' => $student->id]);
 
         return back()->with('status', 'Student removed from class.');
+    }
+
+    private function scopedTeachers(Request $request)
+    {
+        $query = Teacher::with('user');
+        if ($request->user()->isTeacher()) {
+            $query->whereKey($request->user()->teacher?->id ?? 0);
+        }
+
+        return $query->orderBy('last_name')->get();
     }
 
     private function authorizeAccess(Request $request, SchoolClass $class): void

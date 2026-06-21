@@ -18,9 +18,7 @@ class SendAnnouncementEmails implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
-    public function __construct(private readonly int $announcementId)
-    {
-    }
+    public function __construct(private readonly int $announcementId) {}
 
     public function handle(): void
     {

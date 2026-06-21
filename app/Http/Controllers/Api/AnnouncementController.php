@@ -7,8 +7,8 @@ use App\Http\Requests\StoreAnnouncementRequest;
 use App\Models\Announcement;
 use App\Models\SchoolClass;
 use App\Models\Teacher;
-use App\Support\ApiPagination;
 use App\Support\AnnouncementMailer;
+use App\Support\ApiPagination;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -67,7 +67,19 @@ class AnnouncementController extends Controller
     public function update(StoreAnnouncementRequest $request, Announcement $announcement): JsonResponse
     {
         $this->authorizeAccess($request, $announcement);
-        $announcement->update($request->validated());
+
+        if ($request->user()->isTeacher() && $request->filled('class_id')) {
+            $class = SchoolClass::find($request->integer('class_id'));
+            if (! $class || $class->teacher_id !== $request->user()->teacher?->id) {
+                abort(403, 'You may only post to your own classes.');
+            }
+        }
+
+        $data = $request->validated();
+        if ($request->user()->isTeacher()) {
+            $data['teacher_id'] = $request->user()->teacher->id;
+        }
+        $announcement->update($data);
 
         return response()->json(['data' => $announcement]);
     }

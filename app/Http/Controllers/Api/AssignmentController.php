@@ -50,6 +50,7 @@ class AssignmentController extends Controller
     public function update(StoreAssignmentRequest $request, Assignment $assignment): JsonResponse
     {
         $this->authorizeAccess($request, $assignment);
+        $this->authorizeClassId($request, $request->integer('class_id'));
         $assignment->update($request->validated());
 
         return response()->json(['data' => $assignment]);

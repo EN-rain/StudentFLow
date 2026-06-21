@@ -19,7 +19,7 @@ class StudentPortalController extends Controller
     public function dashboard(Request $request): JsonResponse
     {
         $student = $this->student($request);
-        $classIds = $student->classes()->pluck('classes.id');
+        $classIds = $student->classes()->wherePivot('status', 'enrolled')->pluck('classes.id');
 
         return response()->json(['data' => [
             'student' => $student->load('user'),
@@ -32,7 +32,11 @@ class StudentPortalController extends Controller
 
     public function profile(Request $request): JsonResponse
     {
-        $student = $this->student($request)->load('user', 'classes.teacher.user');
+        $student = $this->student($request);
+        $student->load([
+            'user',
+            'classes' => fn ($query) => $query->wherePivot('status', 'enrolled')->with('teacher.user'),
+        ]);
 
         return response()->json(['data' => $this->profilePayload($student)]);
     }
@@ -64,17 +68,27 @@ class StudentPortalController extends Controller
             'avatar_url' => $payload['profile_image'] ?? $user->avatar_url,
         ])->save();
 
-        return response()->json(['data' => $this->profilePayload($student->fresh()->load('user', 'classes.teacher.user'))]);
+        $student = $student->fresh();
+        $student->load([
+            'user',
+            'classes' => fn ($query) => $query->wherePivot('status', 'enrolled')->with('teacher.user'),
+        ]);
+
+        return response()->json(['data' => $this->profilePayload($student)]);
     }
 
     public function classes(Request $request): JsonResponse
     {
-        return response()->json(['data' => $this->student($request)->classes()->with('teacher.user')->get()]);
+        return response()->json(['data' => $this->student($request)
+            ->classes()
+            ->wherePivot('status', 'enrolled')
+            ->with('teacher.user')
+            ->get()]);
     }
 
     public function announcements(Request $request): JsonResponse
     {
-        $classIds = $this->student($request)->classes()->pluck('classes.id');
+        $classIds = $this->student($request)->classes()->wherePivot('status', 'enrolled')->pluck('classes.id');
 
         return response()->json(ApiPagination::paginate(
             Announcement::with('teacher.user', 'schoolClass')->whereIn('class_id', $classIds)->orderByDesc('publish_date'),
@@ -85,7 +99,7 @@ class StudentPortalController extends Controller
     public function assignments(Request $request): JsonResponse
     {
         $student = $this->student($request);
-        $classIds = $student->classes()->pluck('classes.id');
+        $classIds = $student->classes()->wherePivot('status', 'enrolled')->pluck('classes.id');
 
         $assignments = Assignment::with([
             'schoolClass',
@@ -103,12 +117,12 @@ class StudentPortalController extends Controller
             ->paginate(ApiPagination::perPage($request));
 
         $grades->through(fn ($grade) => [
-                'class_name' => $grade->gradeItem?->category?->schoolClass?->class_name,
-                'category' => $grade->gradeItem?->category?->category_name,
-                'title' => $grade->gradeItem?->title,
-                'score' => $grade->score,
-                'maximum_score' => $grade->gradeItem?->maximum_score,
-            ]);
+            'class_name' => $grade->gradeItem?->category?->schoolClass?->class_name,
+            'category' => $grade->gradeItem?->category?->category_name,
+            'title' => $grade->gradeItem?->title,
+            'score' => $grade->score,
+            'maximum_score' => $grade->gradeItem?->maximum_score,
+        ]);
 
         return response()->json(ApiPagination::response($grades));
     }

@@ -79,7 +79,19 @@ class AnnouncementWebController extends Controller
     public function update(StoreAnnouncementRequest $request, Announcement $announcement)
     {
         $this->authorizeAccess($request, $announcement);
-        $announcement->update($request->validated());
+
+        if ($request->user()->isTeacher() && $request->filled('class_id')) {
+            $class = SchoolClass::find($request->integer('class_id'));
+            if (! $class || $class->teacher_id !== $request->user()->teacher?->id) {
+                abort(403, 'You may only post to your own classes.');
+            }
+        }
+
+        $data = $request->validated();
+        if ($request->user()->isTeacher()) {
+            $data['teacher_id'] = $request->user()->teacher->id;
+        }
+        $announcement->update($data);
 
         return redirect('/announcements')->with('status', 'Announcement updated.');
     }

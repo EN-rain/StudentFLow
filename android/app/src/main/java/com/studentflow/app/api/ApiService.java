@@ -36,8 +36,11 @@ public interface ApiService {
     @POST("auth/github")
     Call<LoginResponse> githubLogin(@Body JsonObject request);
 
-    @POST("auth/mobile-exchange")
-    Call<LoginResponse> mobileExchange(@Body JsonObject request);
+    @POST("auth/github/mobile/start")
+    Call<JsonObject> githubMobileStart(@Body JsonObject request);
+
+    @POST("auth/github/mobile/complete")
+    Call<LoginResponse> githubMobileComplete(@Body JsonObject request);
 
     @POST("auth/logout")
     Call<JsonObject> logout();
