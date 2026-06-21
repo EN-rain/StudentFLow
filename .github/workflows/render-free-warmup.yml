@@ -24,5 +24,20 @@ jobs:
 
           for url in "${urls[@]}"; do
             echo "Pinging ${url}"
-            curl --fail --silent --show-error --location --max-time 90 "$url" >/dev/null
+
+            if curl \
+              --fail \
+              --silent \
+              --show-error \
+              --location \
+              --retry 4 \
+              --retry-delay 10 \
+              --retry-all-errors \
+              --connect-timeout 30 \
+              --max-time 120 \
+              "$url" >/dev/null; then
+              echo "Healthy: ${url}"
+            else
+              echo "::warning::Render service did not respond after retries: ${url}"
+            fi
           done
