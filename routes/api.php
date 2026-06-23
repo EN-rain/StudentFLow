@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:5,1');
     Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:10,1');
+    Route::post('/verification/resend', [AuthController::class, 'resendVerification'])->middleware('throttle:3,1');
     Route::post('/google', [StudentSocialAuthController::class, 'google'])->middleware('throttle:10,1');
     Route::post('/github', [StudentSocialAuthController::class, 'github'])->middleware('throttle:10,1');
     Route::post('/github/mobile/start', [StudentSocialAuthController::class, 'mobileGithubStart'])->middleware('throttle:10,1');
@@ -73,7 +74,6 @@ Route::middleware(['auth:sanctum', 'active'])->group(function () {
 
     Route::middleware('role:admin,teacher')->group(function () {
         Route::get('/dashboard/stats', DashboardStatsController::class);
-
         Route::get('/classes', [ClassController::class, 'index']);
         Route::post('/classes', [ClassController::class, 'store']);
         Route::get('/classes/{class}', [ClassController::class, 'show']);
@@ -82,41 +82,33 @@ Route::middleware(['auth:sanctum', 'active'])->group(function () {
         Route::delete('/classes/{class}', [ClassController::class, 'destroy']);
         Route::get('/classes/{class}/join-requests', [ClassJoinRequestController::class, 'classIndex']);
         Route::patch('/join-requests/{joinRequest}', [ClassJoinRequestController::class, 'review']);
-
         Route::get('/classes/{class}/enrollments', [EnrollmentController::class, 'index']);
         Route::post('/classes/{class}/enrollments', [EnrollmentController::class, 'store']);
         Route::put('/classes/{class}/enrollments/{student}', [EnrollmentController::class, 'update']);
         Route::delete('/classes/{class}/enrollments/{student}', [EnrollmentController::class, 'destroy']);
-
         Route::get('/students', [StudentController::class, 'index']);
         Route::post('/students', [StudentController::class, 'store']);
         Route::get('/students/{student}', [StudentController::class, 'show']);
         Route::put('/students/{student}', [StudentController::class, 'update']);
         Route::patch('/students/{student}', [StudentController::class, 'update']);
         Route::delete('/students/{student}', [StudentController::class, 'destroy']);
-
         Route::get('/attendance', [AttendanceController::class, 'index']);
         Route::post('/attendance', [AttendanceController::class, 'store']);
         Route::post('/attendance/mark-all-present', [AttendanceController::class, 'markAllPresent']);
         Route::get('/attendance/student/{studentId}/stats', [AttendanceController::class, 'studentStats']);
         Route::put('/attendance/{attendance}', [AttendanceController::class, 'update']);
         Route::delete('/attendance/{attendance}', [AttendanceController::class, 'destroy']);
-
         Route::get('/classes/{class}/grade-categories', [GradeController::class, 'indexCategories']);
         Route::post('/classes/{class}/grade-categories', [GradeController::class, 'storeCategory']);
         Route::put('/classes/{class}/grade-categories/{category}', [GradeController::class, 'updateCategory']);
         Route::delete('/classes/{class}/grade-categories/{category}', [GradeController::class, 'destroyCategory']);
-
         Route::get('/classes/{class}/grade-items', [GradeController::class, 'indexItems']);
         Route::post('/classes/{class}/grade-items', [GradeController::class, 'storeItem']);
         Route::put('/classes/{class}/grade-items/{item}', [GradeController::class, 'updateItem']);
         Route::delete('/classes/{class}/grade-items/{item}', [GradeController::class, 'destroyItem']);
-
         Route::get('/classes/{class}/students/{studentId}/student-grades', [GradeController::class, 'indexStudentGrades']);
         Route::post('/classes/{class}/students/{studentId}/student-grades', [GradeController::class, 'saveStudentGrades']);
-
         Route::get('/classes/{class}/students/{studentId}/final-grade', [GradeController::class, 'finalGrade']);
-
         Route::get('/assignments', [AssignmentController::class, 'index']);
         Route::post('/assignments', [AssignmentController::class, 'store']);
         Route::get('/assignments/{assignment}', [AssignmentController::class, 'show']);
@@ -124,19 +116,16 @@ Route::middleware(['auth:sanctum', 'active'])->group(function () {
         Route::delete('/assignments/{assignment}', [AssignmentController::class, 'destroy']);
         Route::get('/assignments/{assignment}/submissions', [AssignmentSubmissionController::class, 'index']);
         Route::post('/assignments/{assignment}/submissions', [AssignmentSubmissionController::class, 'store']);
-
         Route::get('/exams', [ExamController::class, 'index']);
         Route::post('/exams', [ExamController::class, 'store']);
         Route::get('/exams/{exam}', [ExamController::class, 'show']);
         Route::post('/exams/{exam}/publish', [ExamController::class, 'publish']);
         Route::get('/exams/{exam}/audit', [ExamController::class, 'audit']);
-
         Route::get('/announcements', [AnnouncementController::class, 'index']);
         Route::post('/announcements', [AnnouncementController::class, 'store']);
         Route::get('/announcements/{announcement}', [AnnouncementController::class, 'show']);
         Route::put('/announcements/{announcement}', [AnnouncementController::class, 'update']);
         Route::delete('/announcements/{announcement}', [AnnouncementController::class, 'destroy']);
-
         Route::get('/reports/{type}', [ReportController::class, 'show']);
     });
 });
