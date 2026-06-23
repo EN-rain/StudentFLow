@@ -52,11 +52,11 @@ class AuthController extends Controller
             ]);
         }, 3);
 
-        $token = $user->createToken('android-register')->plainTextToken;
+        $user->sendEmailVerificationNotification();
 
         return response()->json([
-            'message' => 'Student registered.',
-            'token' => $token,
+            'message' => 'Student registered. Verify your email before signing in.',
+            'verification_required' => true,
             'user' => [
                 'id' => $user->id,
                 'username' => $user->username,
@@ -103,9 +103,13 @@ class AuthController extends Controller
             ]);
         }
 
-        // Revoke any prior tokens to keep one active token per device login
-        $user->tokens()->delete();
+        if ($user->isStudent() && ! $user->hasVerifiedEmail()) {
+            throw ValidationException::withMessages([
+                'username' => ['Verify your email before signing in.'],
+            ]);
+        }
 
+        $user->tokens()->delete();
         $token = $user->createToken('api')->plainTextToken;
 
         return response()->json([
@@ -118,6 +122,20 @@ class AuthController extends Controller
                 'email' => $user->email,
                 'role' => $user->role,
             ],
+        ]);
+    }
+
+    public function resendVerification(Request $request): JsonResponse
+    {
+        $payload = $request->validate(['email' => 'required|email']);
+        $user = User::where('email', strtolower($payload['email']))->first();
+
+        if ($user && $user->isStudent() && ! $user->hasVerifiedEmail()) {
+            $user->sendEmailVerificationNotification();
+        }
+
+        return response()->json([
+            'message' => 'If an unverified account exists for that email, a verification link has been issued.',
         ]);
     }
 
@@ -139,6 +157,7 @@ class AuthController extends Controller
             'email' => $user->email,
             'role' => $user->role,
             'status' => $user->status,
+            'email_verified' => $user->hasVerifiedEmail(),
             'classroom_verified' => $user->isClassroomVerified(),
             'google_linked' => filled($user->google_id),
             'github_linked' => filled($user->github_id),
@@ -175,8 +194,6 @@ class AuthController extends Controller
 
         $user->password = Hash::make($payload['new_password']);
         $user->save();
-
-        // Invalidate all other tokens so other devices must re-authenticate
         $user->tokens()->where('id', '!=', $user->currentAccessToken()->id)->delete();
 
         return response()->json(['message' => 'Password changed.']);
@@ -283,6 +300,7 @@ class AuthController extends Controller
                 [
                     'name' => $student->full_name,
                     'email' => $email,
+                    'email_verified_at' => now(),
                     'password' => Hash::make($password),
                     'role' => 'student',
                     'status' => 'active',

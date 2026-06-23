@@ -45,25 +45,32 @@ class EnrollmentController extends Controller
 
         ActivityLogger::log($request, 'enrollment.saved', $class, ['student_id' => $payload['student_id']]);
 
-        return response()->json(['data' => Student::find($payload['student_id'])->load('classes')], 201);
+        return response()->json(['data' => Student::findOrFail($payload['student_id'])->load('classes')], 201);
     }
 
     public function update(Request $request, SchoolClass $class, Student $student): JsonResponse
     {
         $this->authorizeClass($request, $class);
+        $this->authorizeEnrollment($class, $student);
+
         $payload = $request->validate([
             'date_enrolled' => 'required|date',
             'status' => 'required|in:enrolled,dropped,completed',
         ]);
+
         $class->students()->updateExistingPivot($student->id, $payload);
         ActivityLogger::log($request, 'enrollment.updated', $class, ['student_id' => $student->id, 'status' => $payload['status']]);
 
-        return response()->json(['data' => $student->load('classes')]);
+        return response()->json([
+            'data' => $class->students()->whereKey($student->id)->firstOrFail(),
+        ]);
     }
 
     public function destroy(Request $request, SchoolClass $class, Student $student): JsonResponse
     {
         $this->authorizeClass($request, $class);
+        $this->authorizeEnrollment($class, $student);
+
         $class->students()->detach($student->id);
         ActivityLogger::log($request, 'enrollment.removed', $class, ['student_id' => $student->id]);
 
@@ -80,5 +87,14 @@ class EnrollmentController extends Controller
         if (! $teacher || $class->teacher_id !== $teacher->id) {
             abort(403);
         }
+    }
+
+    private function authorizeEnrollment(SchoolClass $class, Student $student): void
+    {
+        abort_unless(
+            $class->students()->where('students.id', $student->id)->exists(),
+            404,
+            'Enrollment not found.'
+        );
     }
 }
