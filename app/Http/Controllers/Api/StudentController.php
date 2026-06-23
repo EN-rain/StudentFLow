@@ -15,7 +15,6 @@ class StudentController extends Controller
     {
         $query = Student::query();
 
-        // Teacher sees only students enrolled in their classes
         if ($request->user()->isTeacher()) {
             $teacher = $request->user()->teacher;
             if (! $teacher) {
@@ -24,7 +23,6 @@ class StudentController extends Controller
             $query->whereHas('classes', fn ($classQuery) => $classQuery->where('teacher_id', $teacher->id));
         }
 
-        // Search
         if ($q = $request->query('q')) {
             $query->where(function ($w) use ($q) {
                 $like = "%{$q}%";
@@ -36,7 +34,6 @@ class StudentController extends Controller
             });
         }
 
-        // Filter by class
         if ($classId = $request->query('class_id')) {
             $query->whereHas('classes', fn ($classQuery) => $classQuery->where('classes.id', $classId));
         }
@@ -50,7 +47,17 @@ class StudentController extends Controller
     public function show(Request $request, Student $student): JsonResponse
     {
         $this->authorizeAccess($request, $student);
-        $student->load('classes.teacher.user');
+
+        if ($request->user()->isAdmin()) {
+            $student->load('classes.teacher.user');
+        } else {
+            $teacherId = $request->user()->teacher->id;
+            $student->load([
+                'classes' => fn ($query) => $query
+                    ->where('teacher_id', $teacherId)
+                    ->with('teacher.user'),
+            ]);
+        }
 
         return response()->json(['data' => $student]);
     }
