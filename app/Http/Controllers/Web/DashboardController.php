@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Web;
 
+use App\Http\Controllers\Api\StudentPortalController;
 use App\Http\Controllers\Controller;
 use App\Models\Announcement;
 use App\Models\Assignment;
@@ -19,11 +20,23 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        if ($user->isAdmin()) {
-            return $this->adminDashboard($user);
-        }
 
-        return $this->teacherDashboard($user);
+        return match (true) {
+            $user->isAdmin() => $this->adminDashboard($user),
+            $user->isTeacher() => $this->teacherDashboard($user),
+            $user->isStudent() => $this->studentDashboard($request),
+            default => $this->teacherDashboard($user),
+        };
+    }
+
+    private function studentDashboard(Request $request)
+    {
+        // TODO: wire data from StudentPortalController::dashboard() once student.blade.php is built in step 2
+        $studentPortal = new StudentPortalController;
+        $json = $studentPortal->dashboard($request);
+        $data = $json->getData(true)['data'];
+
+        return view('dashboard.student', $data);
     }
 
     private function adminDashboard($user)

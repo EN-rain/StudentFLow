@@ -138,5 +138,7 @@ Route::middleware(['auth:sanctum', 'active'])->group(function () {
         Route::delete('/announcements/{announcement}', [AnnouncementController::class, 'destroy']);
 
         Route::get('/reports/{type}', [ReportController::class, 'show']);
+        Route::get('/reports/{type}/pdf', [ReportController::class, 'pdf']);
+        Route::get('/reports/{type}/csv', [ReportController::class, 'csv']);
     });
 });

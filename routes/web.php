@@ -15,6 +15,13 @@ use App\Http\Controllers\Web\HealthController;
 use App\Http\Controllers\Web\MagicExamWebController;
 use App\Http\Controllers\Web\MobileOAuthController;
 use App\Http\Controllers\Web\ReportController;
+use App\Http\Controllers\Web\StudentAnnouncementController;
+use App\Http\Controllers\Web\StudentAssignmentController;
+use App\Http\Controllers\Web\StudentAttendanceController;
+use App\Http\Controllers\Web\StudentClassController;
+use App\Http\Controllers\Web\StudentExamController;
+use App\Http\Controllers\Web\StudentGradeController;
+use App\Http\Controllers\Web\StudentReportController;
 use App\Http\Controllers\Web\StudentWebController;
 use Illuminate\Support\Facades\Route;
 
@@ -121,5 +128,38 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::get('/reports/{type}', [ReportController::class, 'show'])->where('type', 'student-profile|attendance|grades|class-performance|missing-assignments|failing-grades|frequent-absences');
         Route::get('/reports/{type}/pdf', [ReportController::class, 'pdf'])->where('type', 'student-profile|attendance|grades|class-performance|missing-assignments|failing-grades|frequent-absences');
         Route::get('/reports/{type}/csv', [ReportController::class, 'csv'])->where('type', 'student-profile|attendance|grades|class-performance|missing-assignments|failing-grades|frequent-absences');
+    });
+
+    Route::middleware('role:student')->prefix('student')->name('student.')->group(function () {
+        // Phase 1 placeholder — Phase 2 will add real student routes here.
+        Route::get('/', fn () => response()->view('student.placeholder', ['message' => 'Student portal coming soon — Phase 2 will wire this.']));
+
+        // Classes (Phase 2 step 1)
+        Route::get('/classes', [StudentClassController::class, 'index'])->name('classes.index');
+        Route::get('/classes/{class}', [StudentClassController::class, 'show'])->name('classes.show');
+
+        // Attendance (Phase 2 step 2)
+        Route::get('/attendance', [StudentAttendanceController::class, 'index'])->name('attendance.index');
+
+        // Grades (Phase 2 step 3)
+        Route::get('/grades', [StudentGradeController::class, 'index'])->name('grades.index');
+        Route::get('/grades/{class}', [StudentGradeController::class, 'show'])->name('grades.show');
+
+        // Assignments (Phase 2 step 4)
+        Route::get('/assignments', [StudentAssignmentController::class, 'index'])->name('assignments.index');
+        Route::get('/assignments/{assignment}', [StudentAssignmentController::class, 'show'])->name('assignments.show');
+        Route::post('/assignments/{assignment}/submit', [StudentAssignmentController::class, 'submit'])->name('assignments.submit');
+
+        // Exams (Phase 2 step 5)
+        Route::get('/exams', [StudentExamController::class, 'index'])->name('exams.index');
+        Route::get('/exams/{exam}/start', [StudentExamController::class, 'start'])->name('exams.start');
+
+        // Announcements (Phase 2 step 6)
+        Route::get('/announcements', [StudentAnnouncementController::class, 'index'])->name('announcements.index');
+        Route::get('/announcements/{announcement}', [StudentAnnouncementController::class, 'show'])->name('announcements.show');
+
+        // Reports (Phase 3 step 2)
+        Route::get('/reports/profile', [StudentReportController::class, 'studentProfile'])->name('reports.profile');
+        Route::get('/reports/profile.pdf', [StudentReportController::class, 'studentProfilePdf'])->name('reports.profile.pdf');
     });
 });

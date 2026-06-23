@@ -618,13 +618,39 @@
                             <li class="nav-item"><a class="nav-link {{ request()->is('exams*') ? 'active' : '' }}" href="/exams"><i class="bi bi-ui-checks-grid"></i> Exams</a></li>
                             <li class="nav-item"><a class="nav-link {{ request()->is('announcements*') ? 'active' : '' }}" href="/announcements"><i class="bi bi-megaphone"></i> Announcements</a></li>
                             <li class="nav-item"><a class="nav-link {{ request()->is('reports*') ? 'active' : '' }}" href="/reports"><i class="bi bi-file-earmark-bar-graph"></i> Reports</a></li>
-                            @if (auth()->user()->isAdmin())
+                                @if (auth()->user()->isAdmin())
                                 <li class="nav-item">
                                     <div class="sidebar-title">Administration</div>
                                 </li>
                                 <li class="nav-item"><a class="nav-link {{ request()->is('admin/teachers*') ? 'active' : '' }}" href="/admin/teachers"><i class="bi bi-person-workspace"></i> Teachers</a></li>
                                 <li class="nav-item"><a class="nav-link {{ request()->is('admin/settings*') ? 'active' : '' }}" href="/admin/settings"><i class="bi bi-gear"></i> Settings</a></li>
                                 <li class="nav-item"><a class="nav-link {{ request()->is('admin/activity-logs*') ? 'active' : '' }}" href="/admin/activity-logs"><i class="bi bi-clock-history"></i> Activity Logs</a></li>
+                            @endif
+                            @if (auth()->user()->role === 'student')
+                                <li class="nav-item">
+                                    <div class="sidebar-title">My Portal</div>
+                                </li>
+                                @if (Route::has('student.classes.index'))
+                                    <li class="nav-item"><a class="nav-link {{ request()->routeIs('student.classes.*') ? 'active' : '' }}" href="{{ route('student.classes.index') }}"><i class="bi bi-collection"></i> My Classes</a></li>
+                                @endif
+                                @if (Route::has('student.attendance.index'))
+                                    <li class="nav-item"><a class="nav-link {{ request()->routeIs('student.attendance.*') ? 'active' : '' }}" href="{{ route('student.attendance.index') }}"><i class="bi bi-calendar-check"></i> My Attendance</a></li>
+                                @endif
+                                @if (Route::has('student.grades.index'))
+                                    <li class="nav-item"><a class="nav-link {{ request()->routeIs('student.grades.*') ? 'active' : '' }}" href="{{ route('student.grades.index') }}"><i class="bi bi-bar-chart"></i> My Grades</a></li>
+                                @endif
+                                @if (Route::has('student.assignments.index'))
+                                    <li class="nav-item"><a class="nav-link {{ request()->routeIs('student.assignments.*') ? 'active' : '' }}" href="{{ route('student.assignments.index') }}"><i class="bi bi-journal-text"></i> My Assignments</a></li>
+                                @endif
+                                @if (Route::has('student.exams.index'))
+                                    <li class="nav-item"><a class="nav-link {{ request()->routeIs('student.exams.*') ? 'active' : '' }}" href="{{ route('student.exams.index') }}"><i class="bi bi-pencil-square"></i> My Exams</a></li>
+                                @endif
+                                @if (Route::has('student.announcements.index'))
+                                    <li class="nav-item"><a class="nav-link {{ request()->routeIs('student.announcements.*') ? 'active' : '' }}" href="{{ route('student.announcements.index') }}"><i class="bi bi-megaphone"></i> My Announcements</a></li>
+                                @endif
+                                @if (Route::has('student.reports.profile'))
+                                    <li class="nav-item"><a class="nav-link {{ request()->routeIs('student.reports.*') ? 'active' : '' }}" href="{{ route('student.reports.profile') }}"><i class="bi bi-file-earmark-text"></i> My Reports</a></li>
+                                @endif
                             @endif
                             <li class="nav-item"><a class="nav-link {{ request()->is('change-password') ? 'active' : '' }}" href="/change-password"><i class="bi bi-key"></i> Change Password</a></li>
                         </ul>

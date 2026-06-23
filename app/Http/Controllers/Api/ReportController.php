@@ -8,6 +8,8 @@ use App\Models\SchoolClass;
 use App\Models\Student;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ReportController extends Controller
 {
@@ -54,6 +56,25 @@ class ReportController extends Controller
             ],
             'rows' => $this->rows($type, $class),
         ]]);
+    }
+
+    /**
+     * PDF export — delegates to the web ReportController so both surfaces produce
+     * identical bytes. Same {type} whitelist; same authorize checks; same Content-Type.
+     * Route: GET /api/reports/{type}/pdf
+     */
+    public function pdf(Request $request, string $type): Response
+    {
+        return app(\App\Http\Controllers\Web\ReportController::class)->pdf($request, $type);
+    }
+
+    /**
+     * CSV export — delegates to the web ReportController for byte-identical output.
+     * Route: GET /api/reports/{type}/csv
+     */
+    public function csv(Request $request, string $type): StreamedResponse
+    {
+        return app(\App\Http\Controllers\Web\ReportController::class)->csv($request, $type);
     }
 
     private function rows(string $type, SchoolClass $class): array
