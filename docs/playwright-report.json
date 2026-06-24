@@ -1,0 +1,3396 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config=tests-e2e/playwright.config.js",
+      "--project=chromium",
+      "--reporter=json"
+    ],
+    "configFile": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\playwright.config.js",
+    "rootDir": "C:/Users/LENOVO/Desktop/Projectsss/StudentFlow/tests-e2e",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 4
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Users/LENOVO/Desktop/Projectsss/StudentFlow/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "C:/Users/LENOVO/Desktop/Projectsss/StudentFlow/tests-e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.61.0",
+    "workers": 4,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "a11y.spec.js",
+      "file": "a11y.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Accessibility spot checks",
+          "file": "a11y.spec.js",
+          "line": 10,
+          "column": 6,
+          "specs": [
+            {
+              "title": "login page has semantic regions and form labels",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2591,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:49:33.212Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2629bfe6b43df460208f-f8c71d0816a385166f80",
+              "file": "a11y.spec.js",
+              "line": 23,
+              "column": 3
+            },
+            {
+              "title": "keyboard can navigate login form and submit button is focusable",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "a11y",
+                      "description": "focus outline: rgb(255, 255, 255) none 0px"
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1445,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:49:37.665Z",
+                      "annotations": [
+                        {
+                          "type": "a11y",
+                          "description": "focus outline: rgb(255, 255, 255) none 0px"
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2629bfe6b43df460208f-678d1db51c851bc6d14e",
+              "file": "a11y.spec.js",
+              "line": 38,
+              "column": 3
+            },
+            {
+              "title": "admin dashboard has main region and headings",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3804,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:49:39.166Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2629bfe6b43df460208f-054d39f7322a7cdbbfa0",
+              "file": "a11y.spec.js",
+              "line": 58,
+              "column": 3
+            },
+            {
+              "title": "focus indicators are visible after tab navigation",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3662,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:49:43.031Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "2629bfe6b43df460208f-24dce3eb62f454f23a5d",
+              "file": "a11y.spec.js",
+              "line": 67,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "admin.spec.js",
+      "file": "admin.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Admin role – functional happy path",
+          "file": "admin.spec.js",
+          "line": 24,
+          "column": 6,
+          "specs": [
+            {
+              "title": "dashboard loads with stats and no errors",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "perf",
+                      "description": "{\"domContentLoaded\":197.79999999701977,\"loadComplete\":301.19999999552965}"
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 3609,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:49:33.209Z",
+                      "annotations": [
+                        {
+                          "type": "perf",
+                          "description": "{\"domContentLoaded\":197.79999999701977,\"loadComplete\":301.19999999552965}"
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "73482573f1568b679d78-71997ca29cdd24bfe637",
+              "file": "admin.spec.js",
+              "line": 38,
+              "column": 3
+            },
+            {
+              "title": "change password form renders with CSRF",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 3551,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:49:38.513Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "73482573f1568b679d78-4082618bf081dd253cd8",
+              "file": "admin.spec.js",
+              "line": 48,
+              "column": 3
+            }
+          ],
+          "suites": [
+            {
+              "title": "Admin-only management",
+              "file": "admin.spec.js",
+              "line": 55,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "teachers list and create form",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 1,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 5998,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-06-23T14:49:42.111Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "73482573f1568b679d78-56242bc90c49b2bef517",
+                  "file": "admin.spec.js",
+                  "line": 56,
+                  "column": 5
+                },
+                {
+                  "title": "teacher edit form loads first teacher",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 1,
+                          "parallelIndex": 1,
+                          "status": "failed",
+                          "duration": 7087,
+                          "error": {
+                            "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('form')\nExpected: visible\nError: strict mode violation: locator('form') resolved to 12 elements:\n    1) <form method=\"POST\" action=\"/logout\" class=\"d-inline\">…</form> aka locator('form').filter({ hasText: 'Logout' })\n    2) <form class=\"row g-2 mb-3\">…</form> aka locator('form').nth(1)\n    3) <form method=\"POST\" class=\"d-inline\" action=\"/admin/teachers/2/invite\">…</form> aka locator('form').nth(2)\n    4) <form method=\"POST\" class=\"d-inline\" action=\"/admin/teachers/2/status\">…</form> aka locator('form').nth(3)\n    5) <form method=\"POST\" class=\"d-inline\" action=\"/admin/teachers/3/invite\">…</form> aka locator('form').nth(4)\n    6) <form method=\"POST\" class=\"d-inline\" action=\"/admin/teachers/3/status\">…</form> aka locator('form').nth(5)\n    7) <form method=\"POST\" class=\"d-inline\" action=\"/admin/teachers/4/invite\">…</form> aka locator('tr:nth-child(3) > .text-end > form').first()\n    8) <form method=\"POST\" class=\"d-inline\" action=\"/admin/teachers/4/status\">…</form> aka locator('form').filter({ hasText: 'Disable' }).nth(2)\n    9) <form method=\"POST\" class=\"d-inline\" action=\"/admin/teachers/1/invite\">…</form> aka locator('tr:nth-child(4) > .text-end > form').first()\n    10) <form method=\"POST\" class=\"d-inline\" action=\"/admin/teachers/1/status\">…</form> aka locator('form').filter({ hasText: 'Disable' }).nth(3)\n    ...\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('form')\u001b[22m\n",
+                            "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('form')\nExpected: visible\nError: strict mode violation: locator('form') resolved to 12 elements:\n    1) <form method=\"POST\" action=\"/logout\" class=\"d-inline\">…</form> aka locator('form').filter({ hasText: 'Logout' })\n    2) <form class=\"row g-2 mb-3\">…</form> aka locator('form').nth(1)\n    3) <form method=\"POST\" class=\"d-inline\" action=\"/admin/teachers/2/invite\">…</form> aka locator('form').nth(2)\n    4) <form method=\"POST\" class=\"d-inline\" action=\"/admin/teachers/2/status\">…</form> aka locator('form').nth(3)\n    5) <form method=\"POST\" class=\"d-inline\" action=\"/admin/teachers/3/invite\">…</form> aka locator('form').nth(4)\n    6) <form method=\"POST\" class=\"d-inline\" action=\"/admin/teachers/3/status\">…</form> aka locator('form').nth(5)\n    7) <form method=\"POST\" class=\"d-inline\" action=\"/admin/teachers/4/invite\">…</form> aka locator('tr:nth-child(3) > .text-end > form').first()\n    8) <form method=\"POST\" class=\"d-inline\" action=\"/admin/teachers/4/status\">…</form> aka locator('form').filter({ hasText: 'Disable' }).nth(2)\n    9) <form method=\"POST\" class=\"d-inline\" action=\"/admin/teachers/1/invite\">…</form> aka locator('tr:nth-child(4) > .text-end > form').first()\n    10) <form method=\"POST\" class=\"d-inline\" action=\"/admin/teachers/1/status\">…</form> aka locator('form').filter({ hasText: 'Disable' }).nth(3)\n    ...\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('form')\u001b[22m\n\n    at C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\admin.spec.js:70:44",
+                            "location": {
+                              "file": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\admin.spec.js",
+                              "column": 44,
+                              "line": 70
+                            },
+                            "snippet": "\u001b[0m \u001b[90m 68 |\u001b[39m       \u001b[36mif\u001b[39m (\u001b[36mawait\u001b[39m firstEdit\u001b[33m.\u001b[39mcount() \u001b[33m>\u001b[39m \u001b[35m0\u001b[39m) {\n \u001b[90m 69 |\u001b[39m         \u001b[36mawait\u001b[39m firstEdit\u001b[33m.\u001b[39mclick()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 70 |\u001b[39m         \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'form'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                            \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 71 |\u001b[39m         \u001b[36mawait\u001b[39m expectCsrfOnForms(page)\u001b[33m;\u001b[39m\n \u001b[90m 72 |\u001b[39m       }\n \u001b[90m 73 |\u001b[39m     })\u001b[33m;\u001b[39m\u001b[0m"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\admin.spec.js",
+                                "column": 44,
+                                "line": 70
+                              },
+                              "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('form')\nExpected: visible\nError: strict mode violation: locator('form') resolved to 12 elements:\n    1) <form method=\"POST\" action=\"/logout\" class=\"d-inline\">…</form> aka locator('form').filter({ hasText: 'Logout' })\n    2) <form class=\"row g-2 mb-3\">…</form> aka locator('form').nth(1)\n    3) <form method=\"POST\" class=\"d-inline\" action=\"/admin/teachers/2/invite\">…</form> aka locator('form').nth(2)\n    4) <form method=\"POST\" class=\"d-inline\" action=\"/admin/teachers/2/status\">…</form> aka locator('form').nth(3)\n    5) <form method=\"POST\" class=\"d-inline\" action=\"/admin/teachers/3/invite\">…</form> aka locator('form').nth(4)\n    6) <form method=\"POST\" class=\"d-inline\" action=\"/admin/teachers/3/status\">…</form> aka locator('form').nth(5)\n    7) <form method=\"POST\" class=\"d-inline\" action=\"/admin/teachers/4/invite\">…</form> aka locator('tr:nth-child(3) > .text-end > form').first()\n    8) <form method=\"POST\" class=\"d-inline\" action=\"/admin/teachers/4/status\">…</form> aka locator('form').filter({ hasText: 'Disable' }).nth(2)\n    9) <form method=\"POST\" class=\"d-inline\" action=\"/admin/teachers/1/invite\">…</form> aka locator('tr:nth-child(4) > .text-end > form').first()\n    10) <form method=\"POST\" class=\"d-inline\" action=\"/admin/teachers/1/status\">…</form> aka locator('form').filter({ hasText: 'Disable' }).nth(3)\n    ...\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('form')\u001b[22m\n\n\n  68 |       if (await firstEdit.count() > 0) {\n  69 |         await firstEdit.click();\n> 70 |         await expect(page.locator('form')).toBeVisible();\n     |                                            ^\n  71 |         await expectCsrfOnForms(page);\n  72 |       }\n  73 |     });\n    at C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\admin.spec.js:70:44"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-06-23T14:49:48.144Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\test-results\\admin-Admin-role-–-functio-b5370-it-form-loads-first-teacher-chromium\\test-failed-1.png"
+                            },
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\test-results\\admin-Admin-role-–-functio-b5370-it-form-loads-first-teacher-chromium\\error-context.md"
+                            },
+                            {
+                              "name": "trace",
+                              "contentType": "application/zip",
+                              "path": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\test-results\\admin-Admin-role-–-functio-b5370-it-form-loads-first-teacher-chromium\\trace.zip"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\admin.spec.js",
+                            "column": 44,
+                            "line": 70
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "73482573f1568b679d78-fb9a7c3659aef1550aef",
+                  "file": "admin.spec.js",
+                  "line": 65,
+                  "column": 5
+                },
+                {
+                  "title": "activity logs render and CSV export streams",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 4,
+                          "parallelIndex": 1,
+                          "status": "failed",
+                          "duration": 5099,
+                          "error": {
+                            "message": "Error: page.goto: Download is starting\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:8000/admin/activity-logs/csv\", waiting until \"load\"\u001b[22m\n",
+                            "stack": "Error: page.goto: Download is starting\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:8000/admin/activity-logs/csv\", waiting until \"load\"\u001b[22m\n\n    at C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\admin.spec.js:82:14",
+                            "location": {
+                              "file": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\admin.spec.js",
+                              "column": 14,
+                              "line": 82
+                            },
+                            "snippet": "\u001b[0m \u001b[90m 80 |\u001b[39m       \u001b[36mconst\u001b[39m [download] \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m \u001b[33mPromise\u001b[39m\u001b[33m.\u001b[39mall([\n \u001b[90m 81 |\u001b[39m         page\u001b[33m.\u001b[39mwaitForEvent(\u001b[32m'download'\u001b[39m)\u001b[33m.\u001b[39m\u001b[36mcatch\u001b[39m(() \u001b[33m=>\u001b[39m \u001b[36mnull\u001b[39m)\u001b[33m,\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 82 |\u001b[39m         page\u001b[33m.\u001b[39mgoto(\u001b[32m'/admin/activity-logs/csv'\u001b[39m)\u001b[33m,\u001b[39m\n \u001b[90m    |\u001b[39m              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 83 |\u001b[39m       ])\u001b[33m;\u001b[39m\n \u001b[90m 84 |\u001b[39m       expectNo5xx(networkResponses)\u001b[33m;\u001b[39m\n \u001b[90m 85 |\u001b[39m     })\u001b[33m;\u001b[39m\u001b[0m"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\admin.spec.js",
+                                "column": 14,
+                                "line": 82
+                              },
+                              "message": "Error: page.goto: Download is starting\nCall log:\n\u001b[2m  - navigating to \"http://127.0.0.1:8000/admin/activity-logs/csv\", waiting until \"load\"\u001b[22m\n\n\n  80 |       const [download] = await Promise.all([\n  81 |         page.waitForEvent('download').catch(() => null),\n> 82 |         page.goto('/admin/activity-logs/csv'),\n     |              ^\n  83 |       ]);\n  84 |       expectNo5xx(networkResponses);\n  85 |     });\n    at C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\admin.spec.js:82:14"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-06-23T14:50:01.690Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\test-results\\admin-Admin-role-–-functio-88896-nder-and-CSV-export-streams-chromium\\test-failed-1.png"
+                            },
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\test-results\\admin-Admin-role-–-functio-88896-nder-and-CSV-export-streams-chromium\\error-context.md"
+                            },
+                            {
+                              "name": "trace",
+                              "contentType": "application/zip",
+                              "path": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\test-results\\admin-Admin-role-–-functio-88896-nder-and-CSV-export-streams-chromium\\trace.zip"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\admin.spec.js",
+                            "column": 14,
+                            "line": 82
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "73482573f1568b679d78-0aede31d85b1c1080f98",
+                  "file": "admin.spec.js",
+                  "line": 75,
+                  "column": 5
+                },
+                {
+                  "title": "settings page loads and update form has CSRF",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 6,
+                          "parallelIndex": 1,
+                          "status": "failed",
+                          "duration": 3816,
+                          "error": {
+                            "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('form')\nExpected: visible\nError: strict mode violation: locator('form') resolved to 2 elements:\n    1) <form method=\"POST\" action=\"/logout\" class=\"d-inline\">…</form> aka locator('form').filter({ hasText: 'Logout' })\n    2) <form method=\"POST\" action=\"/admin/settings\">…</form> aka getByText('School Name School Year')\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('form')\u001b[22m\n",
+                            "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('form')\nExpected: visible\nError: strict mode violation: locator('form') resolved to 2 elements:\n    1) <form method=\"POST\" action=\"/logout\" class=\"d-inline\">…</form> aka locator('form').filter({ hasText: 'Logout' })\n    2) <form method=\"POST\" action=\"/admin/settings\">…</form> aka getByText('School Name School Year')\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('form')\u001b[22m\n\n    at C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\admin.spec.js:91:42",
+                            "location": {
+                              "file": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\admin.spec.js",
+                              "column": 42,
+                              "line": 91
+                            },
+                            "snippet": "\u001b[0m \u001b[90m 89 |\u001b[39m       expectNo5xx(networkResponses)\u001b[33m;\u001b[39m\n \u001b[90m 90 |\u001b[39m       \u001b[36mawait\u001b[39m expectCsrfOnForms(page)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 91 |\u001b[39m       \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'form'\u001b[39m))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                          \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 92 |\u001b[39m     })\u001b[33m;\u001b[39m\n \u001b[90m 93 |\u001b[39m   })\u001b[33m;\u001b[39m\n \u001b[90m 94 |\u001b[39m\u001b[0m"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\admin.spec.js",
+                                "column": 42,
+                                "line": 91
+                              },
+                              "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('form')\nExpected: visible\nError: strict mode violation: locator('form') resolved to 2 elements:\n    1) <form method=\"POST\" action=\"/logout\" class=\"d-inline\">…</form> aka locator('form').filter({ hasText: 'Logout' })\n    2) <form method=\"POST\" action=\"/admin/settings\">…</form> aka getByText('School Name School Year')\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('form')\u001b[22m\n\n\n  89 |       expectNo5xx(networkResponses);\n  90 |       await expectCsrfOnForms(page);\n> 91 |       await expect(page.locator('form')).toBeVisible();\n     |                                          ^\n  92 |     });\n  93 |   });\n  94 |\n    at C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\admin.spec.js:91:42"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-06-23T14:50:19.723Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\test-results\\admin-Admin-role-–-functio-2498d-ds-and-update-form-has-CSRF-chromium\\test-failed-1.png"
+                            },
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\test-results\\admin-Admin-role-–-functio-2498d-ds-and-update-form-has-CSRF-chromium\\error-context.md"
+                            },
+                            {
+                              "name": "trace",
+                              "contentType": "application/zip",
+                              "path": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\test-results\\admin-Admin-role-–-functio-2498d-ds-and-update-form-has-CSRF-chromium\\trace.zip"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\admin.spec.js",
+                            "column": 42,
+                            "line": 91
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "73482573f1568b679d78-db3d7d74d7ff00ad6ef5",
+                  "file": "admin.spec.js",
+                  "line": 87,
+                  "column": 5
+                }
+              ]
+            },
+            {
+              "title": "Classes management",
+              "file": "admin.spec.js",
+              "line": 95,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "classes list and create form",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 9,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 8396,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-06-23T14:50:32.296Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "73482573f1568b679d78-02bb4e456f60087c9d75",
+                  "file": "admin.spec.js",
+                  "line": 96,
+                  "column": 5
+                },
+                {
+                  "title": "first class detail and edit pages",
+                  "ok": false,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 9,
+                          "parallelIndex": 1,
+                          "status": "failed",
+                          "duration": 13917,
+                          "error": {
+                            "message": "Error: CSRF token missing in POST form\n\n\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeAttached\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('form[method=\"POST\"], form[method=\"post\"]').nth(2).locator('input[name=\"_token\"]').first()\nExpected: attached\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - CSRF token missing in POST form with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('form[method=\"POST\"], form[method=\"post\"]').nth(2).locator('input[name=\"_token\"]').first()\u001b[22m\n",
+                            "stack": "Error: CSRF token missing in POST form\n\n\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeAttached\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('form[method=\"POST\"], form[method=\"post\"]').nth(2).locator('input[name=\"_token\"]').first()\nExpected: attached\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - CSRF token missing in POST form with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('form[method=\"POST\"], form[method=\"post\"]').nth(2).locator('input[name=\"_token\"]').first()\u001b[22m\n\n    at expectCsrfOnForms (C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\_helpers.js:70:60)\n    at C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\admin.spec.js:116:11",
+                            "location": {
+                              "file": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\_helpers.js",
+                              "column": 60,
+                              "line": 70
+                            },
+                            "snippet": "\u001b[90m   at \u001b[39m_helpers.js:70\n\n\u001b[0m \u001b[90m 68 |\u001b[39m   \u001b[36mfor\u001b[39m (\u001b[36mconst\u001b[39m form \u001b[36mof\u001b[39m forms) {\n \u001b[90m 69 |\u001b[39m     \u001b[36mconst\u001b[39m token \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m form\u001b[33m.\u001b[39mlocator(\u001b[32m'input[name=\"_token\"]'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 70 |\u001b[39m     \u001b[36mawait\u001b[39m expect(token\u001b[33m,\u001b[39m \u001b[32m'CSRF token missing in POST form'\u001b[39m)\u001b[33m.\u001b[39mtoBeAttached()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                            \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 71 |\u001b[39m   }\n \u001b[90m 72 |\u001b[39m }\n \u001b[90m 73 |\u001b[39m\u001b[0m"
+                          },
+                          "errors": [
+                            {
+                              "location": {
+                                "file": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\_helpers.js",
+                                "column": 60,
+                                "line": 70
+                              },
+                              "message": "Error: CSRF token missing in POST form\n\n\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeAttached\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('form[method=\"POST\"], form[method=\"post\"]').nth(2).locator('input[name=\"_token\"]').first()\nExpected: attached\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - CSRF token missing in POST form with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('form[method=\"POST\"], form[method=\"post\"]').nth(2).locator('input[name=\"_token\"]').first()\u001b[22m\n\n\n   at _helpers.js:70\n\n  68 |   for (const form of forms) {\n  69 |     const token = await form.locator('input[name=\"_token\"]').first();\n> 70 |     await expect(token, 'CSRF token missing in POST form').toBeAttached();\n     |                                                            ^\n  71 |   }\n  72 | }\n  73 |\n    at expectCsrfOnForms (C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\_helpers.js:70:60)\n    at C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\admin.spec.js:116:11"
+                            }
+                          ],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-06-23T14:50:41.713Z",
+                          "annotations": [],
+                          "attachments": [
+                            {
+                              "name": "screenshot",
+                              "contentType": "image/png",
+                              "path": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\test-results\\admin-Admin-role-–-functio-23b6c-class-detail-and-edit-pages-chromium\\test-failed-1.png"
+                            },
+                            {
+                              "name": "error-context",
+                              "contentType": "text/markdown",
+                              "path": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\test-results\\admin-Admin-role-–-functio-23b6c-class-detail-and-edit-pages-chromium\\error-context.md"
+                            },
+                            {
+                              "name": "trace",
+                              "contentType": "application/zip",
+                              "path": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\test-results\\admin-Admin-role-–-functio-23b6c-class-detail-and-edit-pages-chromium\\trace.zip"
+                            }
+                          ],
+                          "errorLocation": {
+                            "file": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\_helpers.js",
+                            "column": 60,
+                            "line": 70
+                          }
+                        }
+                      ],
+                      "status": "unexpected"
+                    }
+                  ],
+                  "id": "73482573f1568b679d78-35f4e22e14d37441e2b0",
+                  "file": "admin.spec.js",
+                  "line": 105,
+                  "column": 5
+                }
+              ]
+            },
+            {
+              "title": "Students management",
+              "file": "admin.spec.js",
+              "line": 122,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "students list and create form",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 12,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 4581,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-06-23T14:51:12.485Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "73482573f1568b679d78-ccdda90c5e3eaedfca2b",
+                  "file": "admin.spec.js",
+                  "line": 123,
+                  "column": 5
+                },
+                {
+                  "title": "first student detail and edit pages",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 12,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 5797,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-06-23T14:51:17.478Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "73482573f1568b679d78-0aca872158bd45062472",
+                  "file": "admin.spec.js",
+                  "line": 132,
+                  "column": 5
+                }
+              ]
+            },
+            {
+              "title": "Attendance",
+              "file": "admin.spec.js",
+              "line": 149,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "attendance index and first class attendance sheet",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [
+                        {
+                          "type": "console-error",
+                          "description": "[error] Failed to load resource: the server responded with a status of 404 (Not Found)"
+                        }
+                      ],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 12,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 2579,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-06-23T14:51:23.377Z",
+                          "annotations": [
+                            {
+                              "type": "console-error",
+                              "description": "[error] Failed to load resource: the server responded with a status of 404 (Not Found)"
+                            }
+                          ],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "73482573f1568b679d78-69937109f3be28a66adc",
+                  "file": "admin.spec.js",
+                  "line": 150,
+                  "column": 5
+                }
+              ]
+            },
+            {
+              "title": "Grades",
+              "file": "admin.spec.js",
+              "line": 166,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "grades index and first class gradebook",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 12,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 4355,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-06-23T14:51:25.979Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "73482573f1568b679d78-c86f9c5570656ff3f35e",
+                  "file": "admin.spec.js",
+                  "line": 167,
+                  "column": 5
+                }
+              ]
+            },
+            {
+              "title": "Assignments",
+              "file": "admin.spec.js",
+              "line": 181,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "assignments list and create form",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 12,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 2859,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-06-23T14:51:30.406Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "73482573f1568b679d78-775e360f531840250dc4",
+                  "file": "admin.spec.js",
+                  "line": 182,
+                  "column": 5
+                },
+                {
+                  "title": "first assignment detail and edit",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 12,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 5574,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-06-23T14:51:33.334Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "73482573f1568b679d78-ce2d8b10574a3154afe8",
+                  "file": "admin.spec.js",
+                  "line": 191,
+                  "column": 5
+                }
+              ]
+            },
+            {
+              "title": "Exams",
+              "file": "admin.spec.js",
+              "line": 208,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "exams list and create form",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 12,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 2856,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-06-23T14:51:38.946Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "73482573f1568b679d78-722d54aa4fbfd60ceae5",
+                  "file": "admin.spec.js",
+                  "line": 209,
+                  "column": 5
+                },
+                {
+                  "title": "first exam detail",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 12,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 4840,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-06-23T14:51:41.829Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "73482573f1568b679d78-685d6dd74f8d5c20f5d5",
+                  "file": "admin.spec.js",
+                  "line": 218,
+                  "column": 5
+                }
+              ]
+            },
+            {
+              "title": "Announcements",
+              "file": "admin.spec.js",
+              "line": 229,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "announcements list, empty-state, and create form",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 12,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 2709,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-06-23T14:51:46.703Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "73482573f1568b679d78-5e1746a4c591f2889d91",
+                  "file": "admin.spec.js",
+                  "line": 230,
+                  "column": 5
+                },
+                {
+                  "title": "first announcement detail and edit",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 12,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 5318,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-06-23T14:51:49.466Z",
+                          "annotations": [],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "73482573f1568b679d78-402fd8d7c1afc3c5ea45",
+                  "file": "admin.spec.js",
+                  "line": 244,
+                  "column": 5
+                }
+              ]
+            },
+            {
+              "title": "Reports",
+              "file": "admin.spec.js",
+              "line": 261,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "reports index and each report type",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [
+                        {
+                          "type": "console-error",
+                          "description": "[error] Failed to load resource: the server responded with a status of 400 (Bad Request)"
+                        },
+                        {
+                          "type": "console-error",
+                          "description": "[error] Failed to load resource: the server responded with a status of 400 (Bad Request)"
+                        },
+                        {
+                          "type": "console-error",
+                          "description": "[error] Failed to load resource: the server responded with a status of 400 (Bad Request)"
+                        },
+                        {
+                          "type": "console-error",
+                          "description": "[error] Failed to load resource: the server responded with a status of 400 (Bad Request)"
+                        },
+                        {
+                          "type": "console-error",
+                          "description": "[error] Failed to load resource: the server responded with a status of 400 (Bad Request)"
+                        },
+                        {
+                          "type": "console-error",
+                          "description": "[error] Failed to load resource: the server responded with a status of 400 (Bad Request)"
+                        },
+                        {
+                          "type": "console-error",
+                          "description": "[error] Failed to load resource: the server responded with a status of 400 (Bad Request)"
+                        }
+                      ],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [
+                        {
+                          "workerIndex": 12,
+                          "parallelIndex": 1,
+                          "status": "passed",
+                          "duration": 9978,
+                          "errors": [],
+                          "stdout": [],
+                          "stderr": [],
+                          "retry": 0,
+                          "startTime": "2026-06-23T14:51:54.832Z",
+                          "annotations": [
+                            {
+                              "type": "console-error",
+                              "description": "[error] Failed to load resource: the server responded with a status of 400 (Bad Request)"
+                            },
+                            {
+                              "type": "console-error",
+                              "description": "[error] Failed to load resource: the server responded with a status of 400 (Bad Request)"
+                            },
+                            {
+                              "type": "console-error",
+                              "description": "[error] Failed to load resource: the server responded with a status of 400 (Bad Request)"
+                            },
+                            {
+                              "type": "console-error",
+                              "description": "[error] Failed to load resource: the server responded with a status of 400 (Bad Request)"
+                            },
+                            {
+                              "type": "console-error",
+                              "description": "[error] Failed to load resource: the server responded with a status of 400 (Bad Request)"
+                            },
+                            {
+                              "type": "console-error",
+                              "description": "[error] Failed to load resource: the server responded with a status of 400 (Bad Request)"
+                            },
+                            {
+                              "type": "console-error",
+                              "description": "[error] Failed to load resource: the server responded with a status of 400 (Bad Request)"
+                            }
+                          ],
+                          "attachments": []
+                        }
+                      ],
+                      "status": "expected"
+                    }
+                  ],
+                  "id": "73482573f1568b679d78-458be8543e2d03c11a6f",
+                  "file": "admin.spec.js",
+                  "line": 262,
+                  "column": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Admin role – non-functional angles",
+          "file": "admin.spec.js",
+          "line": 276,
+          "column": 6,
+          "specs": [
+            {
+              "title": "responsive – dashboard on iPhone 12 viewport",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 12,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 3888,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:52:04.844Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "73482573f1568b679d78-78e1018d62edb2b2553d",
+              "file": "admin.spec.js",
+              "line": 290,
+              "column": 3
+            },
+            {
+              "title": "a11y – keyboard navigation through main navigation",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 12,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 3087,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:52:08.775Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "73482573f1568b679d78-6f711ec00b7917155881",
+              "file": "admin.spec.js",
+              "line": 301,
+              "column": 3
+            },
+            {
+              "title": "console and network are clean on admin teachers page",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 12,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 4931,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:52:11.984Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "73482573f1568b679d78-b3a1d9075071ef366f9c",
+              "file": "admin.spec.js",
+              "line": 312,
+              "column": 3
+            },
+            {
+              "title": "role-guard – admin can access teacher-only management routes",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 12,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 2289,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:52:17.009Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "73482573f1568b679d78-ab0e885c0b9d858f445c",
+              "file": "admin.spec.js",
+              "line": 318,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "auth.spec.js",
+      "file": "auth.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Authentication flows",
+          "file": "auth.spec.js",
+          "line": 13,
+          "column": 6,
+          "specs": [
+            {
+              "title": "GET /login returns 200 and shows form with CSRF",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 1730,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:49:33.264Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d5ed79a6b333c2ba7209-d53f9d610f4d82c8892b",
+              "file": "auth.spec.js",
+              "line": 26,
+              "column": 3
+            },
+            {
+              "title": "POST /login with invalid credentials shows error",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 2660,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:49:36.477Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d5ed79a6b333c2ba7209-740cf1139fd1508fd42c",
+              "file": "auth.spec.js",
+              "line": 35,
+              "column": 3
+            },
+            {
+              "title": "POST /login with valid admin credentials redirects to dashboard",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 3443,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:49:39.212Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d5ed79a6b333c2ba7209-3082f631d514450fea3d",
+              "file": "auth.spec.js",
+              "line": 50,
+              "column": 3
+            },
+            {
+              "title": "POST /login with valid teacher credentials redirects to dashboard",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 5643,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:49:42.728Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d5ed79a6b333c2ba7209-910da1ad249c76df5abc",
+              "file": "auth.spec.js",
+              "line": 57,
+              "column": 3
+            },
+            {
+              "title": "POST /login with valid student credentials shows mobile app rejection",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 4475,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:49:48.409Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d5ed79a6b333c2ba7209-da28664d226c8f2edb29",
+              "file": "auth.spec.js",
+              "line": 63,
+              "column": 3
+            },
+            {
+              "title": "POST /logout clears session and returns to login",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 7824,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:49:52.943Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d5ed79a6b333c2ba7209-d98e081f25630e37a386",
+              "file": "auth.spec.js",
+              "line": 72,
+              "column": 3
+            },
+            {
+              "title": "GET /forgot-password renders form with CSRF",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 2928,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:50:00.798Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d5ed79a6b333c2ba7209-da3cfecc2434076fe779",
+              "file": "auth.spec.js",
+              "line": 88,
+              "column": 3
+            },
+            {
+              "title": "GET /reset-password/{token} renders form with CSRF",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 1221,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:50:03.753Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "d5ed79a6b333c2ba7209-ecabc19f6230b373b96a",
+              "file": "auth.spec.js",
+              "line": 95,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "console-network.spec.js",
+      "file": "console-network.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Console and network capture",
+          "file": "console-network.spec.js",
+          "line": 11,
+          "column": 6,
+          "specs": [
+            {
+              "title": "admin dashboard has no console errors or 5xx network responses",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 3451,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:49:33.211Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "77bd908a189f8e5c711d-9072205398cdd9fe839e",
+              "file": "console-network.spec.js",
+              "line": 24,
+              "column": 3
+            },
+            {
+              "title": "login page has no console errors",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 1121,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:49:38.412Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "77bd908a189f8e5c711d-5fa776c45bfdbd977ec8",
+              "file": "console-network.spec.js",
+              "line": 31,
+              "column": 3
+            },
+            {
+              "title": "admin accessing student-only route is rejected without 5xx",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "role-guard",
+                      "description": "admin -> /student/classes returned 403"
+                    },
+                    {
+                      "type": "console-error",
+                      "description": "[error] Failed to load resource: the server responded with a status of 403 (Forbidden)"
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 3735,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:49:39.583Z",
+                      "annotations": [
+                        {
+                          "type": "role-guard",
+                          "description": "admin -> /student/classes returned 403"
+                        },
+                        {
+                          "type": "console-error",
+                          "description": "[error] Failed to load resource: the server responded with a status of 403 (Forbidden)"
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "77bd908a189f8e5c711d-6009fa9216c29fa36de1",
+              "file": "console-network.spec.js",
+              "line": 37,
+              "column": 3
+            },
+            {
+              "title": "guest accessing protected route is redirected without 5xx",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 4877,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:49:43.367Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "77bd908a189f8e5c711d-7733d9ba5997f1f39cda",
+              "file": "console-network.spec.js",
+              "line": 47,
+              "column": 3
+            },
+            {
+              "title": "4xx responses are documented in annotations",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "4xx-response",
+                      "description": "GET http://127.0.0.1:8000/this-route-does-not-exist-12345 -> 404"
+                    },
+                    {
+                      "type": "console-error",
+                      "description": "[error] Failed to load resource: the server responded with a status of 404 (Not Found)"
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 549,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:49:48.292Z",
+                      "annotations": [
+                        {
+                          "type": "4xx-response",
+                          "description": "GET http://127.0.0.1:8000/this-route-does-not-exist-12345 -> 404"
+                        },
+                        {
+                          "type": "console-error",
+                          "description": "[error] Failed to load resource: the server responded with a status of 404 (Not Found)"
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "77bd908a189f8e5c711d-cfbc4899e8d86268ee60",
+              "file": "console-network.spec.js",
+              "line": 54,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "error-pages.spec.js",
+      "file": "error-pages.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Error page handling",
+          "file": "error-pages.spec.js",
+          "line": 10,
+          "column": 6,
+          "specs": [
+            {
+              "title": "GET non-existent route returns 404",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "console-error",
+                      "description": "[error] Failed to load resource: the server responded with a status of 404 (Not Found)"
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 712,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:49:46.829Z",
+                      "annotations": [
+                        {
+                          "type": "console-error",
+                          "description": "[error] Failed to load resource: the server responded with a status of 404 (Not Found)"
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "444e487d265a83b195df-cce48b97562d29c2fcb5",
+              "file": "error-pages.spec.js",
+              "line": 23,
+              "column": 3
+            },
+            {
+              "title": "POST to GET-only route returns 405 or redirects",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 379,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:49:47.626Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "444e487d265a83b195df-1ef8a923f4a060f22cbe",
+              "file": "error-pages.spec.js",
+              "line": 29,
+              "column": 3
+            },
+            {
+              "title": "login with wrong credentials redirects back to login (no 500)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4576,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:49:48.108Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "444e487d265a83b195df-a56c7743e3fd015c8bf9",
+              "file": "error-pages.spec.js",
+              "line": 38,
+              "column": 3
+            },
+            {
+              "title": "validation errors on forgot-password do not produce 500",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3667,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:49:52.748Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "444e487d265a83b195df-16e91fd8ab0eafd99cc3",
+              "file": "error-pages.spec.js",
+              "line": 52,
+              "column": 3
+            },
+            {
+              "title": "invalid teacher id in admin edit route returns 404 not 500",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 450,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:49:56.456Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "444e487d265a83b195df-d3ac0d72206a7ada51f8",
+              "file": "error-pages.spec.js",
+              "line": 60,
+              "column": 3
+            },
+            {
+              "title": "invalid class id in gradebook returns 404 not 500",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 628,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:49:56.937Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "444e487d265a83b195df-5afa5bc1d08a89640a1c",
+              "file": "error-pages.spec.js",
+              "line": 66,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "negative-path.spec.js",
+      "file": "negative-path.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Negative path validation",
+          "file": "negative-path.spec.js",
+          "line": 11,
+          "column": 6,
+          "specs": [
+            {
+              "title": "login – empty fields show validation error",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "failed",
+                      "duration": 12561,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert').first()\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert').first()\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert').first()\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert').first()\u001b[22m\n\n    at expectValidationError (C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\negative-path.spec.js:26:55)\n    at C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\negative-path.spec.js:35:11",
+                        "location": {
+                          "file": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\negative-path.spec.js",
+                          "column": 55,
+                          "line": 26
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 24 |\u001b[39m   \u001b[36masync\u001b[39m \u001b[36mfunction\u001b[39m expectValidationError(page) {\n \u001b[90m 25 |\u001b[39m     \u001b[36mconst\u001b[39m errorSelector \u001b[33m=\u001b[39m \u001b[32m'.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert'\u001b[39m\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 26 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(errorSelector)\u001b[33m.\u001b[39mfirst())\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                       \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 27 |\u001b[39m   }\n \u001b[90m 28 |\u001b[39m\n \u001b[90m 29 |\u001b[39m   test(\u001b[32m'login – empty fields show validation error'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\negative-path.spec.js",
+                            "column": 55,
+                            "line": 26
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert').first()\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert').first()\u001b[22m\n\n\n  24 |   async function expectValidationError(page) {\n  25 |     const errorSelector = '.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert';\n> 26 |     await expect(page.locator(errorSelector).first()).toBeVisible();\n     |                                                       ^\n  27 |   }\n  28 |\n  29 |   test('login – empty fields show validation error', async ({ page }) => {\n    at expectValidationError (C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\negative-path.spec.js:26:55)\n    at C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\negative-path.spec.js:35:11"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:49:49.059Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\test-results\\negative-path-Negative-pat-6b9aa-ields-show-validation-error-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\test-results\\negative-path-Negative-pat-6b9aa-ields-show-validation-error-chromium\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\test-results\\negative-path-Negative-pat-6b9aa-ields-show-validation-error-chromium\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\negative-path.spec.js",
+                        "column": 55,
+                        "line": 26
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "66885431c9d33d99b70e-1ca6b6f3f0497198a983",
+              "file": "negative-path.spec.js",
+              "line": 29,
+              "column": 3
+            },
+            {
+              "title": "login – invalid email format rejected",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 2581,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:50:06.617Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "66885431c9d33d99b70e-b0c6374e2de82af51e6d",
+              "file": "negative-path.spec.js",
+              "line": 38,
+              "column": 3
+            },
+            {
+              "title": "forgot-password – empty email shows validation error",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 3,
+                      "status": "failed",
+                      "duration": 12845,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert').first()\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert').first()\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert').first()\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert').first()\u001b[22m\n\n    at expectValidationError (C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\negative-path.spec.js:26:55)\n    at C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\negative-path.spec.js:52:11",
+                        "location": {
+                          "file": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\negative-path.spec.js",
+                          "column": 55,
+                          "line": 26
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 24 |\u001b[39m   \u001b[36masync\u001b[39m \u001b[36mfunction\u001b[39m expectValidationError(page) {\n \u001b[90m 25 |\u001b[39m     \u001b[36mconst\u001b[39m errorSelector \u001b[33m=\u001b[39m \u001b[32m'.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert'\u001b[39m\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 26 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(errorSelector)\u001b[33m.\u001b[39mfirst())\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                       \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 27 |\u001b[39m   }\n \u001b[90m 28 |\u001b[39m\n \u001b[90m 29 |\u001b[39m   test(\u001b[32m'login – empty fields show validation error'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\negative-path.spec.js",
+                            "column": 55,
+                            "line": 26
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert').first()\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert').first()\u001b[22m\n\n\n  24 |   async function expectValidationError(page) {\n  25 |     const errorSelector = '.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert';\n> 26 |     await expect(page.locator(errorSelector).first()).toBeVisible();\n     |                                                       ^\n  27 |   }\n  28 |\n  29 |   test('login – empty fields show validation error', async ({ page }) => {\n    at expectValidationError (C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\negative-path.spec.js:26:55)\n    at C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\negative-path.spec.js:52:11"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:50:09.906Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\test-results\\negative-path-Negative-pat-b16ac-mail-shows-validation-error-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\test-results\\negative-path-Negative-pat-b16ac-mail-shows-validation-error-chromium\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\test-results\\negative-path-Negative-pat-b16ac-mail-shows-validation-error-chromium\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\negative-path.spec.js",
+                        "column": 55,
+                        "line": 26
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "66885431c9d33d99b70e-5a6c9cb55980d1aba2f2",
+              "file": "negative-path.spec.js",
+              "line": 47,
+              "column": 3
+            },
+            {
+              "title": "forgot-password – malformed email shows validation error",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 8,
+                      "parallelIndex": 3,
+                      "status": "failed",
+                      "duration": 11168,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert').first()\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert').first()\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert').first()\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert').first()\u001b[22m\n\n    at expectValidationError (C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\negative-path.spec.js:26:55)\n    at C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\negative-path.spec.js:60:11",
+                        "location": {
+                          "file": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\negative-path.spec.js",
+                          "column": 55,
+                          "line": 26
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 24 |\u001b[39m   \u001b[36masync\u001b[39m \u001b[36mfunction\u001b[39m expectValidationError(page) {\n \u001b[90m 25 |\u001b[39m     \u001b[36mconst\u001b[39m errorSelector \u001b[33m=\u001b[39m \u001b[32m'.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert'\u001b[39m\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 26 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(errorSelector)\u001b[33m.\u001b[39mfirst())\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                       \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 27 |\u001b[39m   }\n \u001b[90m 28 |\u001b[39m\n \u001b[90m 29 |\u001b[39m   test(\u001b[32m'login – empty fields show validation error'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\negative-path.spec.js",
+                            "column": 55,
+                            "line": 26
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert').first()\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert').first()\u001b[22m\n\n\n  24 |   async function expectValidationError(page) {\n  25 |     const errorSelector = '.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert';\n> 26 |     await expect(page.locator(errorSelector).first()).toBeVisible();\n     |                                                       ^\n  27 |   }\n  28 |\n  29 |   test('login – empty fields show validation error', async ({ page }) => {\n    at expectValidationError (C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\negative-path.spec.js:26:55)\n    at C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\negative-path.spec.js:60:11"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:50:29.149Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\test-results\\negative-path-Negative-pat-55239-mail-shows-validation-error-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\test-results\\negative-path-Negative-pat-55239-mail-shows-validation-error-chromium\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\test-results\\negative-path-Negative-pat-55239-mail-shows-validation-error-chromium\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\negative-path.spec.js",
+                        "column": 55,
+                        "line": 26
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "66885431c9d33d99b70e-08cd693d9c05fa55699b",
+              "file": "negative-path.spec.js",
+              "line": 55,
+              "column": 3
+            },
+            {
+              "title": "reset-password – empty/malformed fields show validation error",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 10,
+                      "parallelIndex": 3,
+                      "status": "timedOut",
+                      "duration": 31504,
+                      "error": {
+                        "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                      },
+                      "errors": [
+                        {
+                          "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                        },
+                        {
+                          "location": {
+                            "file": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\negative-path.spec.js",
+                            "column": 16,
+                            "line": 68
+                          },
+                          "message": "Error: page.click: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('button[type=\"submit\"]')\u001b[22m\n\n\n  66 |     await page.fill('input[name=\"password\"]', '123');\n  67 |     await page.fill('input[name=\"password_confirmation\"]', '456');\n> 68 |     await page.click('button[type=\"submit\"]');\n     |                ^\n  69 |     await page.waitForLoadState('networkidle');\n  70 |     await expectValidationError(page);\n  71 |   });\n    at C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\negative-path.spec.js:68:16"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:50:53.640Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\test-results\\negative-path-Negative-pat-da4a2-ields-show-validation-error-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\test-results\\negative-path-Negative-pat-da4a2-ields-show-validation-error-chromium\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\test-results\\negative-path-Negative-pat-da4a2-ields-show-validation-error-chromium\\trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "66885431c9d33d99b70e-e28a5c024a3d5bacede0",
+              "file": "negative-path.spec.js",
+              "line": 63,
+              "column": 3
+            },
+            {
+              "title": "change-password – empty fields show validation error",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 13,
+                      "parallelIndex": 0,
+                      "status": "timedOut",
+                      "duration": 30685,
+                      "error": {
+                        "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                      },
+                      "errors": [
+                        {
+                          "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                        },
+                        {
+                          "location": {
+                            "file": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\negative-path.spec.js",
+                            "column": 16,
+                            "line": 77
+                          },
+                          "message": "Error: page.fill: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('input[name=\"password\"]')\u001b[22m\n\n\n  75 |     await page.goto('/change-password');\n  76 |     await page.fill('input[name=\"current_password\"]', '');\n> 77 |     await page.fill('input[name=\"password\"]', '');\n     |                ^\n  78 |     await page.fill('input[name=\"password_confirmation\"]', '');\n  79 |     await page.click('button[type=\"submit\"]');\n  80 |     await page.waitForLoadState('networkidle');\n    at C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\negative-path.spec.js:77:16"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:51:34.063Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\test-results\\negative-path-Negative-pat-19746-ields-show-validation-error-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\test-results\\negative-path-Negative-pat-19746-ields-show-validation-error-chromium\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\test-results\\negative-path-Negative-pat-19746-ields-show-validation-error-chromium\\trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "66885431c9d33d99b70e-f13bcfe44f250084c460",
+              "file": "negative-path.spec.js",
+              "line": 73,
+              "column": 3
+            },
+            {
+              "title": "change-password – mismatched new password shows error",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 14,
+                      "parallelIndex": 0,
+                      "status": "timedOut",
+                      "duration": 30391,
+                      "error": {
+                        "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                      },
+                      "errors": [
+                        {
+                          "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                        },
+                        {
+                          "location": {
+                            "file": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\negative-path.spec.js",
+                            "column": 16,
+                            "line": 88
+                          },
+                          "message": "Error: page.fill: Test timeout of 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('input[name=\"password\"]')\u001b[22m\n\n\n  86 |     await page.goto('/change-password');\n  87 |     await page.fill('input[name=\"current_password\"]', CREDENTIALS.admin.password);\n> 88 |     await page.fill('input[name=\"password\"]', 'NewPass123!');\n     |                ^\n  89 |     await page.fill('input[name=\"password_confirmation\"]', 'DifferentPass123!');\n  90 |     await page.click('button[type=\"submit\"]');\n  91 |     await page.waitForLoadState('networkidle');\n    at C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\negative-path.spec.js:88:16"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:52:09.918Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\test-results\\negative-path-Negative-pat-1d5d6-ed-new-password-shows-error-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\test-results\\negative-path-Negative-pat-1d5d6-ed-new-password-shows-error-chromium\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\test-results\\negative-path-Negative-pat-1d5d6-ed-new-password-shows-error-chromium\\trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "66885431c9d33d99b70e-e083119666188c329b7f",
+              "file": "negative-path.spec.js",
+              "line": 84,
+              "column": 3
+            },
+            {
+              "title": "teacher-setup – empty fields show validation error",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 15,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 6457,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert').first()\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert').first()\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert').first()\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert').first()\u001b[22m\n\n    at expectValidationError (C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\negative-path.spec.js:26:55)\n    at C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\negative-path.spec.js:108:11",
+                        "location": {
+                          "file": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\negative-path.spec.js",
+                          "column": 55,
+                          "line": 26
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 24 |\u001b[39m   \u001b[36masync\u001b[39m \u001b[36mfunction\u001b[39m expectValidationError(page) {\n \u001b[90m 25 |\u001b[39m     \u001b[36mconst\u001b[39m errorSelector \u001b[33m=\u001b[39m \u001b[32m'.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert'\u001b[39m\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 26 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(errorSelector)\u001b[33m.\u001b[39mfirst())\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                       \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 27 |\u001b[39m   }\n \u001b[90m 28 |\u001b[39m\n \u001b[90m 29 |\u001b[39m   test(\u001b[32m'login – empty fields show validation error'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\negative-path.spec.js",
+                            "column": 55,
+                            "line": 26
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert').first()\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for locator('.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert').first()\u001b[22m\n\n\n  24 |   async function expectValidationError(page) {\n  25 |     const errorSelector = '.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert';\n> 26 |     await expect(page.locator(errorSelector).first()).toBeVisible();\n     |                                                       ^\n  27 |   }\n  28 |\n  29 |   test('login – empty fields show validation error', async ({ page }) => {\n    at expectValidationError (C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\negative-path.spec.js:26:55)\n    at C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\negative-path.spec.js:108:11"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:52:41.640Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\test-results\\negative-path-Negative-pat-ee328-ields-show-validation-error-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\test-results\\negative-path-Negative-pat-ee328-ields-show-validation-error-chromium\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\test-results\\negative-path-Negative-pat-ee328-ields-show-validation-error-chromium\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\negative-path.spec.js",
+                        "column": 55,
+                        "line": 26
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "66885431c9d33d99b70e-03bac33817632ec71000",
+              "file": "negative-path.spec.js",
+              "line": 95,
+              "column": 3
+            },
+            {
+              "title": "no 5xx on validation failures",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 16,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1114,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:52:50.088Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "66885431c9d33d99b70e-722ddd94601d3f5eb511",
+              "file": "negative-path.spec.js",
+              "line": 111,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "perf.spec.js",
+      "file": "perf.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Performance measurements",
+          "file": "perf.spec.js",
+          "line": 11,
+          "column": 6,
+          "specs": [
+            {
+              "title": "/login loads under threshold",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "perf",
+                      "description": "{\"domContentLoaded\":411,\"loadComplete\":411.6000000014901}"
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1555,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:49:57.690Z",
+                      "annotations": [
+                        {
+                          "type": "perf",
+                          "description": "{\"domContentLoaded\":411,\"loadComplete\":411.6000000014901}"
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "cc1e91386849cdb76657-bf249e70743b4d364125",
+              "file": "perf.spec.js",
+              "line": 33,
+              "column": 3
+            },
+            {
+              "title": "/dashboard loads under threshold as admin",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "perf",
+                      "description": "{\"domContentLoaded\":73.5,\"loadComplete\":88.5}"
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2941,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:49:59.270Z",
+                      "annotations": [
+                        {
+                          "type": "perf",
+                          "description": "{\"domContentLoaded\":73.5,\"loadComplete\":88.5}"
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "cc1e91386849cdb76657-ea0cdde1c49d317034d2",
+              "file": "perf.spec.js",
+              "line": 39,
+              "column": 3
+            },
+            {
+              "title": "/admin/teachers loads under threshold as admin",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "perf",
+                      "description": "{\"domContentLoaded\":102.69999999552965,\"loadComplete\":130.10000000149012}"
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 7118,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:50:02.242Z",
+                      "annotations": [
+                        {
+                          "type": "perf",
+                          "description": "{\"domContentLoaded\":102.69999999552965,\"loadComplete\":130.10000000149012}"
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "cc1e91386849cdb76657-073ceae33f5c0fe750c7",
+              "file": "perf.spec.js",
+              "line": 46,
+              "column": 3
+            },
+            {
+              "title": "/student/dashboard attempted load is captured",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "perf",
+                      "description": "{\"domContentLoaded\":513.6000000014901,\"loadComplete\":514.2000000029802}"
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3464,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:50:09.388Z",
+                      "annotations": [
+                        {
+                          "type": "perf",
+                          "description": "{\"domContentLoaded\":513.6000000014901,\"loadComplete\":514.2000000029802}"
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "cc1e91386849cdb76657-4e6bf181af42f055a1fb",
+              "file": "perf.spec.js",
+              "line": 53,
+              "column": 3
+            },
+            {
+              "title": "reports index loads under threshold as admin",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "perf",
+                      "description": "{\"domContentLoaded\":3089.5,\"loadComplete\":3090.3000000044703}"
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 10472,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m3000\u001b[39m\nReceived:   \u001b[31m3089.5\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m3000\u001b[39m\nReceived:   \u001b[31m3089.5\u001b[39m\n    at assertLoadTime (C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\perf.spec.js:28:39)\n    at C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\perf.spec.js:65:5",
+                        "location": {
+                          "file": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\perf.spec.js",
+                          "column": 39,
+                          "line": 28
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 26 |\u001b[39m     test\u001b[33m.\u001b[39minfo()\u001b[33m.\u001b[39mannotations\u001b[33m.\u001b[39mpush({ type\u001b[33m:\u001b[39m \u001b[32m'perf'\u001b[39m\u001b[33m,\u001b[39m description\u001b[33m:\u001b[39m \u001b[33mJSON\u001b[39m\u001b[33m.\u001b[39mstringify(timing) })\u001b[33m;\u001b[39m\n \u001b[90m 27 |\u001b[39m     \u001b[36mif\u001b[39m (timing) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 28 |\u001b[39m       expect(timing\u001b[33m.\u001b[39mdomContentLoaded)\u001b[33m.\u001b[39mtoBeLessThan(threshold)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                       \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 29 |\u001b[39m       expect(timing\u001b[33m.\u001b[39mloadComplete)\u001b[33m.\u001b[39mtoBeLessThan(threshold)\u001b[33m;\u001b[39m\n \u001b[90m 30 |\u001b[39m     }\n \u001b[90m 31 |\u001b[39m   }\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\perf.spec.js",
+                            "column": 39,
+                            "line": 28
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m3000\u001b[39m\nReceived:   \u001b[31m3089.5\u001b[39m\n\n  26 |     test.info().annotations.push({ type: 'perf', description: JSON.stringify(timing) });\n  27 |     if (timing) {\n> 28 |       expect(timing.domContentLoaded).toBeLessThan(threshold);\n     |                                       ^\n  29 |       expect(timing.loadComplete).toBeLessThan(threshold);\n  30 |     }\n  31 |   }\n    at assertLoadTime (C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\perf.spec.js:28:39)\n    at C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\perf.spec.js:65:5"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:50:12.883Z",
+                      "annotations": [
+                        {
+                          "type": "perf",
+                          "description": "{\"domContentLoaded\":3089.5,\"loadComplete\":3090.3000000044703}"
+                        }
+                      ],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\test-results\\perf-Performance-measureme-3a26a-ds-under-threshold-as-admin-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\test-results\\perf-Performance-measureme-3a26a-ds-under-threshold-as-admin-chromium\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\test-results\\perf-Performance-measureme-3a26a-ds-under-threshold-as-admin-chromium\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\tests-e2e\\perf.spec.js",
+                        "column": 39,
+                        "line": 28
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "cc1e91386849cdb76657-9ad5fbe947e73a2b763d",
+              "file": "perf.spec.js",
+              "line": 61,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "responsive.spec.js",
+      "file": "responsive.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Responsive layout checks",
+          "file": "responsive.spec.js",
+          "line": 10,
+          "column": 6,
+          "specs": [
+            {
+              "title": "login page renders usable form at 390x844 and 1280x720",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 1949,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:50:05.237Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "68833bfb7a01a66a4f98-e67ca5a779a625b277f3",
+              "file": "responsive.spec.js",
+              "line": 29,
+              "column": 3
+            },
+            {
+              "title": "admin dashboard renders without horizontal scroll on mobile",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 3281,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:50:07.260Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "68833bfb7a01a66a4f98-49119404c678f4ae4d41",
+              "file": "responsive.spec.js",
+              "line": 42,
+              "column": 3
+            },
+            {
+              "title": "classes page sidebar visible on desktop and hidden on mobile",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "timedOut",
+                      "duration": 38678,
+                      "error": {
+                        "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m",
+                        "stack": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                      },
+                      "errors": [
+                        {
+                          "message": "\u001b[31mTest timeout of 30000ms exceeded.\u001b[39m"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:50:10.569Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\test-results\\responsive-Responsive-layo-cfd45-esktop-and-hidden-on-mobile-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\test-results\\responsive-Responsive-layo-cfd45-esktop-and-hidden-on-mobile-chromium\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Users\\LENOVO\\Desktop\\Projectsss\\StudentFlow\\test-results\\responsive-Responsive-layo-cfd45-esktop-and-hidden-on-mobile-chromium\\trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "68833bfb7a01a66a4f98-c12feecd0efc5b05260d",
+              "file": "responsive.spec.js",
+              "line": 54,
+              "column": 3
+            },
+            {
+              "title": "students page is usable at both viewports",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 11,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 9040,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:50:53.881Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "68833bfb7a01a66a4f98-33c0bc9accc52a994a94",
+              "file": "responsive.spec.js",
+              "line": 67,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "student.spec.js",
+      "file": "student.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Student role – portal routes",
+          "file": "student.spec.js",
+          "line": 22,
+          "column": 6,
+          "specs": [
+            {
+              "title": "web login rejects student with mobile app message",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 7,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 7673,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:50:29.011Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ede24ac93415680a12ba-645db7f8918ba3d31669",
+              "file": "student.spec.js",
+              "line": 41,
+              "column": 3
+            },
+            {
+              "title": "student routes redirect to login when not authenticated",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 7,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 12923,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:50:37.249Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ede24ac93415680a12ba-a053d1ca4262a398d837",
+              "file": "student.spec.js",
+              "line": 46,
+              "column": 3
+            },
+            {
+              "title": "dashboard redirects student to login",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 7,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 7993,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:50:50.362Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ede24ac93415680a12ba-57a82a26aac2ced1a54f",
+              "file": "student.spec.js",
+              "line": 68,
+              "column": 3
+            },
+            {
+              "title": "responsive – student login on iPhone 12 viewport",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 7,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5467,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:50:58.452Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ede24ac93415680a12ba-d04e8f1ee6b12993191e",
+              "file": "student.spec.js",
+              "line": 74,
+              "column": 3
+            },
+            {
+              "title": "a11y – login form has labels and focusable submit",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 7,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3285,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:51:03.974Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ede24ac93415680a12ba-3f72b406213309569345",
+              "file": "student.spec.js",
+              "line": 84,
+              "column": 3
+            },
+            {
+              "title": "perf – login page load time under threshold",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "perf",
+                      "description": "{\"domContentLoaded\":77.70000000298023,\"loadComplete\":100.80000000447035}"
+                    }
+                  ],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 7,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5741,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:51:07.291Z",
+                      "annotations": [
+                        {
+                          "type": "perf",
+                          "description": "{\"domContentLoaded\":77.70000000298023,\"loadComplete\":100.80000000447035}"
+                        }
+                      ],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ede24ac93415680a12ba-337222e737365e8a9c46",
+              "file": "student.spec.js",
+              "line": 94,
+              "column": 3
+            },
+            {
+              "title": "network capture on student login attempt shows no 5xx",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 7,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4994,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-23T14:51:13.061Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "ede24ac93415680a12ba-ba0a147229c60e2ee540",
+              "file": "student.spec.js",
+              "line": 103,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-06-23T14:49:31.949Z",
+    "duration": 200447.136,
+    "expected": 58,
+    "skipped": 0,
+    "unexpected": 13,
+    "flaky": 0
+  }
+}

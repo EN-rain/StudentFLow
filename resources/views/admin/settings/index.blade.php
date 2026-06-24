@@ -15,7 +15,7 @@
     <div class="row g-3">
         <div class="col-lg-6">
             <div class="card stat-card"><div class="card-body">
-                <form method="POST" action="/admin/settings">
+                <form method="POST" action="/admin/settings" id="settings-form">
                     @csrf @method('PUT')
                     @foreach ($defaults as $key => $fallback)
                         <div class="mb-3">

@@ -16,7 +16,7 @@
                 </div>
             @endif
 
-            <form method="POST" action="/teacher/setup">
+            <form method="POST" action="/teacher/setup" novalidate>
                 @csrf
                 <input type="hidden" name="token" value="{{ $token }}">
                 <input type="hidden" name="email" value="{{ $email }}">
@@ -27,15 +27,15 @@
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Username</label>
-                    <input type="text" name="username" class="form-control" value="{{ old('username') }}" required autofocus>
+                    <input type="text" name="username" class="form-control" value="{{ old('username') }}" autocomplete="username" autofocus>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Password</label>
-                    <input type="password" name="password" class="form-control" required>
+                    <input type="password" name="password" class="form-control" autocomplete="new-password">
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Confirm Password</label>
-                    <input type="password" name="password_confirmation" class="form-control" required>
+                    <input type="password" name="password_confirmation" class="form-control" autocomplete="new-password">
                 </div>
                 <button type="submit" class="btn btn-primary w-100">Complete setup</button>
             </form>

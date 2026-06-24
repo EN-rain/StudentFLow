@@ -1,0 +1,584 @@
+
+Running 71 tests using 1 worker
+
+  ✓   1 [chromium] › a11y.spec.js:23:3 › Accessibility spot checks › login page has semantic regions and form labels (3.9s)
+  ✓   2 [chromium] › a11y.spec.js:38:3 › Accessibility spot checks › keyboard can navigate login form and submit button is focusable (4.0s)
+  ✓   3 [chromium] › a11y.spec.js:58:3 › Accessibility spot checks › admin dashboard has main region and headings (22.9s)
+  ✓   4 [chromium] › a11y.spec.js:67:3 › Accessibility spot checks › focus indicators are visible after tab navigation (2.9s)
+  ✓   5 [chromium] › admin.spec.js:38:3 › Admin role – functional happy path › dashboard loads with stats and no errors (22.8s)
+  ✓   6 [chromium] › admin.spec.js:48:3 › Admin role – functional happy path › change password form renders with CSRF (17.2s)
+  ✓   7 [chromium] › admin.spec.js:56:5 › Admin role – functional happy path › Admin-only management › teachers list and create form (19.3s)
+  ✘   8 [chromium] › admin.spec.js:65:5 › Admin role – functional happy path › Admin-only management › teacher edit form loads first teacher (20.4s)
+  ✘   9 [chromium] › admin.spec.js:75:5 › Admin role – functional happy path › Admin-only management › activity logs render and CSV export streams (18.2s)
+  ✘  10 [chromium] › admin.spec.js:87:5 › Admin role – functional happy path › Admin-only management › settings page loads and update form has CSRF (16.8s)
+  ✓  11 [chromium] › admin.spec.js:96:5 › Admin role – functional happy path › Classes management › classes list and create form (18.6s)
+  ✘  12 [chromium] › admin.spec.js:105:5 › Admin role – functional happy path › Classes management › first class detail and edit pages (29.7s)
+  ✓  13 [chromium] › admin.spec.js:123:5 › Admin role – functional happy path › Students management › students list and create form (20.1s)
+  ✓  14 [chromium] › admin.spec.js:132:5 › Admin role – functional happy path › Students management › first student detail and edit pages (23.1s)
+  ✘  15 [chromium] › admin.spec.js:150:5 › Admin role – functional happy path › Attendance › attendance index and first class attendance sheet (25.0s)
+  ✓  16 [chromium] › admin.spec.js:167:5 › Admin role – functional happy path › Grades › grades index and first class gradebook (20.4s)
+  ✓  17 [chromium] › admin.spec.js:182:5 › Admin role – functional happy path › Assignments › assignments list and create form (19.5s)
+  ✓  18 [chromium] › admin.spec.js:191:5 › Admin role – functional happy path › Assignments › first assignment detail and edit (23.3s)
+  ✓  19 [chromium] › admin.spec.js:209:5 › Admin role – functional happy path › Exams › exams list and create form (22.2s)
+  ✓  20 [chromium] › admin.spec.js:218:5 › Admin role – functional happy path › Exams › first exam detail (16.9s)
+  ✓  21 [chromium] › admin.spec.js:230:5 › Admin role – functional happy path › Announcements › announcements list, empty-state, and create form (21.2s)
+  ✓  22 [chromium] › admin.spec.js:244:5 › Admin role – functional happy path › Announcements › first announcement detail and edit (20.2s)
+  ✓  23 [chromium] › admin.spec.js:262:5 › Admin role – functional happy path › Reports › reports index and each report type (35.9s)
+  ✓  24 [chromium] › admin.spec.js:290:3 › Admin role – non-functional angles › responsive – dashboard on iPhone 12 viewport (18.4s)
+  ✓  25 [chromium] › admin.spec.js:301:3 › Admin role – non-functional angles › a11y – keyboard navigation through main navigation (17.1s)
+  ✓  26 [chromium] › admin.spec.js:312:3 › Admin role – non-functional angles › console and network are clean on admin teachers page (17.2s)
+  ✓  27 [chromium] › admin.spec.js:318:3 › Admin role – non-functional angles › role-guard – admin can access teacher-only management routes (15.6s)
+  ✓  28 [chromium] › auth.spec.js:26:3 › Authentication flows › GET /login returns 200 and shows form with CSRF (3.8s)
+  ✓  29 [chromium] › auth.spec.js:35:3 › Authentication flows › POST /login with invalid credentials shows error (8.6s)
+  ✓  30 [chromium] › auth.spec.js:50:3 › Authentication flows › POST /login with valid admin credentials redirects to dashboard (12.8s)
+  ✓  31 [chromium] › auth.spec.js:57:3 › Authentication flows › POST /login with valid teacher credentials redirects to dashboard (14.8s)
+  ✓  32 [chromium] › auth.spec.js:63:3 › Authentication flows › POST /login with valid student credentials shows mobile app rejection (12.0s)
+  ✓  33 [chromium] › auth.spec.js:72:3 › Authentication flows › POST /logout clears session and returns to login (31.2s)
+  ✓  34 [chromium] › auth.spec.js:88:3 › Authentication flows › GET /forgot-password renders form with CSRF (3.3s)
+  ✓  35 [chromium] › auth.spec.js:95:3 › Authentication flows › GET /reset-password/{token} renders form with CSRF (2.5s)
+  ✓  36 [chromium] › console-network.spec.js:24:3 › Console and network capture › admin dashboard has no console errors or 5xx network responses (15.9s)
+  ✓  37 [chromium] › console-network.spec.js:31:3 › Console and network capture › login page has no console errors (3.4s)
+  ✓  38 [chromium] › console-network.spec.js:37:3 › Console and network capture › admin accessing student-only route is rejected without 5xx (14.9s)
+  ✓  39 [chromium] › console-network.spec.js:47:3 › Console and network capture › guest accessing protected route is redirected without 5xx (5.4s)
+  ✓  40 [chromium] › console-network.spec.js:54:3 › Console and network capture › 4xx responses are documented in annotations (337ms)
+  ✓  41 [chromium] › error-pages.spec.js:23:3 › Error page handling › GET non-existent route returns 404 (228ms)
+  ✓  42 [chromium] › error-pages.spec.js:29:3 › Error page handling › POST to GET-only route returns 405 or redirects (1.2s)
+  ✓  43 [chromium] › error-pages.spec.js:38:3 › Error page handling › login with wrong credentials redirects back to login (no 500) (8.7s)
+  ✓  44 [chromium] › error-pages.spec.js:52:3 › Error page handling › validation errors on forgot-password do not produce 500 (3.8s)
+  ✓  45 [chromium] › error-pages.spec.js:60:3 › Error page handling › invalid teacher id in admin edit route returns 404 not 500 (3.6s)
+  ✓  46 [chromium] › error-pages.spec.js:66:3 › Error page handling › invalid class id in gradebook returns 404 not 500 (4.7s)
+  ✘  47 [chromium] › negative-path.spec.js:29:3 › Negative path validation › login – empty fields show validation error (8.4s)
+  ✓  48 [chromium] › negative-path.spec.js:38:3 › Negative path validation › login – invalid email format rejected (9.0s)
+  ✘  49 [chromium] › negative-path.spec.js:47:3 › Negative path validation › forgot-password – empty email shows validation error (9.1s)
+  ✘  50 [chromium] › negative-path.spec.js:55:3 › Negative path validation › forgot-password – malformed email shows validation error (8.2s)
+  ✘  51 [chromium] › negative-path.spec.js:63:3 › Negative path validation › reset-password – empty/malformed fields show validation error (1.0m)
+  ✘  52 [chromium] › negative-path.spec.js:73:3 › Negative path validation › change-password – empty fields show validation error (1.0m)
+  ✘  53 [chromium] › negative-path.spec.js:84:3 › Negative path validation › change-password – mismatched new password shows error (1.0m)
+  ✘  54 [chromium] › negative-path.spec.js:95:3 › Negative path validation › teacher-setup – empty fields show validation error (14.9s)
+  ✓  55 [chromium] › negative-path.spec.js:111:3 › Negative path validation › no 5xx on validation failures (3.0s)
+  ✓  56 [chromium] › perf.spec.js:33:3 › Performance measurements › /login loads under threshold (2.6s)
+  ✘  57 [chromium] › perf.spec.js:39:3 › Performance measurements › /dashboard loads under threshold as admin (17.7s)
+  ✓  58 [chromium] › perf.spec.js:46:3 › Performance measurements › /admin/teachers loads under threshold as admin (16.3s)
+  ✓  59 [chromium] › perf.spec.js:53:3 › Performance measurements › /student/dashboard attempted load is captured (5.3s)
+  ✘  60 [chromium] › perf.spec.js:61:3 › Performance measurements › reports index loads under threshold as admin (34.5s)
+  ✓  61 [chromium] › responsive.spec.js:29:3 › Responsive layout checks › login page renders usable form at 390x844 and 1280x720 (8.3s)
+  ✓  62 [chromium] › responsive.spec.js:42:3 › Responsive layout checks › admin dashboard renders without horizontal scroll on mobile (24.1s)
+  ✓  63 [chromium] › responsive.spec.js:54:3 › Responsive layout checks › classes page sidebar visible on desktop and hidden on mobile (22.7s)
+  ✓  64 [chromium] › responsive.spec.js:67:3 › Responsive layout checks › students page is usable at both viewports (20.0s)
+  ✓  65 [chromium] › student.spec.js:41:3 › Student role – portal routes › web login rejects student with mobile app message (10.7s)
+  ✓  66 [chromium] › student.spec.js:46:3 › Student role – portal routes › student routes redirect to login when not authenticated (38.3s)
+  ✓  67 [chromium] › student.spec.js:68:3 › Student role – portal routes › dashboard redirects student to login (15.8s)
+  ✓  68 [chromium] › student.spec.js:74:3 › Student role – portal routes › responsive – student login on iPhone 12 viewport (21.2s)
+  ✓  69 [chromium] › student.spec.js:84:3 › Student role – portal routes › a11y – login form has labels and focusable submit (14.0s)
+  ✓  70 [chromium] › student.spec.js:94:3 › Student role – portal routes › perf – login page load time under threshold (12.5s)
+  ✓  71 [chromium] › student.spec.js:103:3 › Student role – portal routes › network capture on student login attempt shows no 5xx (19.1s)
+
+
+  1) [chromium] › admin.spec.js:65:5 › Admin role – functional happy path › Admin-only management › teacher edit form loads first teacher 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('form')
+    Expected: visible
+    Error: strict mode violation: locator('form') resolved to 8 elements:
+        1) <form method="POST" action="/logout" class="d-inline">…</form> aka locator('form').filter({ hasText: 'Logout' })
+        2) <form class="row g-2 mb-3">…</form> aka locator('form').nth(1)
+        3) <form method="POST" class="d-inline" action="/admin/teachers/2/invite">…</form> aka locator('form').nth(2)
+        4) <form method="POST" class="d-inline" action="/admin/teachers/2/status">…</form> aka locator('form').nth(3)
+        5) <form method="POST" class="d-inline" action="/admin/teachers/3/invite">…</form> aka locator('form').nth(4)
+        6) <form method="POST" class="d-inline" action="/admin/teachers/3/status">…</form> aka locator('form').nth(5)
+        7) <form method="POST" class="d-inline" action="/admin/teachers/1/invite">…</form> aka locator('tr:nth-child(3) > .text-end > form').first()
+        8) <form method="POST" class="d-inline" action="/admin/teachers/1/status">…</form> aka locator('form').filter({ hasText: 'Disable' }).nth(2)
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for locator('form')
+
+
+      68 |       if (await firstEdit.count() > 0) {
+      69 |         await firstEdit.click();
+    > 70 |         await expect(page.locator('form')).toBeVisible();
+         |                                            ^
+      71 |         await expectCsrfOnForms(page);
+      72 |       }
+      73 |     });
+        at C:\Users\LENOVO\Desktop\Projectsss\StudentFlow\tests-e2e\admin.spec.js:70:44
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\test-results\admin-Admin-role-–-functio-b5370-it-form-loads-first-teacher-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\test-results\admin-Admin-role-–-functio-b5370-it-form-loads-first-teacher-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\test-results\admin-Admin-role-–-functio-b5370-it-form-loads-first-teacher-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\test-results\admin-Admin-role-–-functio-b5370-it-form-loads-first-teacher-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › admin.spec.js:75:5 › Admin role – functional happy path › Admin-only management › activity logs render and CSV export streams 
+
+    Error: page.goto: Download is starting
+    Call log:
+      - navigating to "http://172.29.144.1:8000/admin/activity-logs/csv", waiting until "load"
+
+
+      80 |       const [download] = await Promise.all([
+      81 |         page.waitForEvent('download').catch(() => null),
+    > 82 |         page.goto('/admin/activity-logs/csv'),
+         |              ^
+      83 |       ]);
+      84 |       expectNo5xx(networkResponses);
+      85 |     });
+        at C:\Users\LENOVO\Desktop\Projectsss\StudentFlow\tests-e2e\admin.spec.js:82:14
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\test-results\admin-Admin-role-–-functio-88896-nder-and-CSV-export-streams-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\test-results\admin-Admin-role-–-functio-88896-nder-and-CSV-export-streams-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\test-results\admin-Admin-role-–-functio-88896-nder-and-CSV-export-streams-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\test-results\admin-Admin-role-–-functio-88896-nder-and-CSV-export-streams-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [chromium] › admin.spec.js:87:5 › Admin role – functional happy path › Admin-only management › settings page loads and update form has CSRF 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('form')
+    Expected: visible
+    Error: strict mode violation: locator('form') resolved to 2 elements:
+        1) <form method="POST" action="/logout" class="d-inline">…</form> aka locator('form').filter({ hasText: 'Logout' })
+        2) <form method="POST" action="/admin/settings">…</form> aka getByText('School Name School Year')
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for locator('form')
+
+
+      89 |       expectNo5xx(networkResponses);
+      90 |       await expectCsrfOnForms(page);
+    > 91 |       await expect(page.locator('form')).toBeVisible();
+         |                                          ^
+      92 |     });
+      93 |   });
+      94 |
+        at C:\Users\LENOVO\Desktop\Projectsss\StudentFlow\tests-e2e\admin.spec.js:91:42
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\test-results\admin-Admin-role-–-functio-2498d-ds-and-update-form-has-CSRF-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\test-results\admin-Admin-role-–-functio-2498d-ds-and-update-form-has-CSRF-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\test-results\admin-Admin-role-–-functio-2498d-ds-and-update-form-has-CSRF-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\test-results\admin-Admin-role-–-functio-2498d-ds-and-update-form-has-CSRF-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [chromium] › admin.spec.js:105:5 › Admin role – functional happy path › Classes management › first class detail and edit pages 
+
+    Error: CSRF token missing in POST form
+
+    expect(locator).toBeAttached() failed
+
+    Locator: locator('form[method="POST"], form[method="post"]').nth(4).locator('input[name="_token"]').first()
+    Expected: attached
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - CSRF token missing in POST form with timeout 5000ms
+      - waiting for locator('form[method="POST"], form[method="post"]').nth(4).locator('input[name="_token"]').first()
+        - waiting for" http://172.29.144.1:8000/classes/2/edit" navigation to finish...
+        - navigated to "http://172.29.144.1:8000/classes/2/edit"
+
+
+       at _helpers.js:70
+
+      68 |   for (const form of forms) {
+      69 |     const token = await form.locator('input[name="_token"]').first();
+    > 70 |     await expect(token, 'CSRF token missing in POST form').toBeAttached();
+         |                                                            ^
+      71 |   }
+      72 | }
+      73 |
+        at expectCsrfOnForms (C:\Users\LENOVO\Desktop\Projectsss\StudentFlow\tests-e2e\_helpers.js:70:60)
+        at C:\Users\LENOVO\Desktop\Projectsss\StudentFlow\tests-e2e\admin.spec.js:116:11
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\test-results\admin-Admin-role-–-functio-23b6c-class-detail-and-edit-pages-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\test-results\admin-Admin-role-–-functio-23b6c-class-detail-and-edit-pages-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\test-results\admin-Admin-role-–-functio-23b6c-class-detail-and-edit-pages-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\test-results\admin-Admin-role-–-functio-23b6c-class-detail-and-edit-pages-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [chromium] › admin.spec.js:150:5 › Admin role – functional happy path › Attendance › attendance index and first class attendance sheet 
+
+    Error: page.goto: net::ERR_ABORTED at http://172.29.144.1:8000/attendance/history
+    Call log:
+      - navigating to "http://172.29.144.1:8000/attendance/history", waiting until "load"
+
+
+      158 |         await expectCsrfOnForms(page);
+      159 |
+    > 160 |         await page.goto(await page.url() + '/history');
+          |                    ^
+      161 |         expectNo5xx(networkResponses);
+      162 |       }
+      163 |     });
+        at C:\Users\LENOVO\Desktop\Projectsss\StudentFlow\tests-e2e\admin.spec.js:160:20
+
+    Error Context: ..\test-results\admin-Admin-role-–-functio-013d0-irst-class-attendance-sheet-chromium\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\test-results\admin-Admin-role-–-functio-013d0-irst-class-attendance-sheet-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\test-results\admin-Admin-role-–-functio-013d0-irst-class-attendance-sheet-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) [chromium] › negative-path.spec.js:29:3 › Negative path validation › login – empty fields show validation error 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert').first()
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for locator('.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert').first()
+
+
+      24 |   async function expectValidationError(page) {
+      25 |     const errorSelector = '.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert';
+    > 26 |     await expect(page.locator(errorSelector).first()).toBeVisible();
+         |                                                       ^
+      27 |   }
+      28 |
+      29 |   test('login – empty fields show validation error', async ({ page }) => {
+        at expectValidationError (C:\Users\LENOVO\Desktop\Projectsss\StudentFlow\tests-e2e\negative-path.spec.js:26:55)
+        at C:\Users\LENOVO\Desktop\Projectsss\StudentFlow\tests-e2e\negative-path.spec.js:35:11
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\test-results\negative-path-Negative-pat-6b9aa-ields-show-validation-error-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\test-results\negative-path-Negative-pat-6b9aa-ields-show-validation-error-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\test-results\negative-path-Negative-pat-6b9aa-ields-show-validation-error-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\test-results\negative-path-Negative-pat-6b9aa-ields-show-validation-error-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7) [chromium] › negative-path.spec.js:47:3 › Negative path validation › forgot-password – empty email shows validation error 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert').first()
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for locator('.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert').first()
+
+
+      24 |   async function expectValidationError(page) {
+      25 |     const errorSelector = '.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert';
+    > 26 |     await expect(page.locator(errorSelector).first()).toBeVisible();
+         |                                                       ^
+      27 |   }
+      28 |
+      29 |   test('login – empty fields show validation error', async ({ page }) => {
+        at expectValidationError (C:\Users\LENOVO\Desktop\Projectsss\StudentFlow\tests-e2e\negative-path.spec.js:26:55)
+        at C:\Users\LENOVO\Desktop\Projectsss\StudentFlow\tests-e2e\negative-path.spec.js:52:11
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\test-results\negative-path-Negative-pat-b16ac-mail-shows-validation-error-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\test-results\negative-path-Negative-pat-b16ac-mail-shows-validation-error-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\test-results\negative-path-Negative-pat-b16ac-mail-shows-validation-error-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\test-results\negative-path-Negative-pat-b16ac-mail-shows-validation-error-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  8) [chromium] › negative-path.spec.js:55:3 › Negative path validation › forgot-password – malformed email shows validation error 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert').first()
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for locator('.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert').first()
+
+
+      24 |   async function expectValidationError(page) {
+      25 |     const errorSelector = '.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert';
+    > 26 |     await expect(page.locator(errorSelector).first()).toBeVisible();
+         |                                                       ^
+      27 |   }
+      28 |
+      29 |   test('login – empty fields show validation error', async ({ page }) => {
+        at expectValidationError (C:\Users\LENOVO\Desktop\Projectsss\StudentFlow\tests-e2e\negative-path.spec.js:26:55)
+        at C:\Users\LENOVO\Desktop\Projectsss\StudentFlow\tests-e2e\negative-path.spec.js:60:11
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\test-results\negative-path-Negative-pat-55239-mail-shows-validation-error-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\test-results\negative-path-Negative-pat-55239-mail-shows-validation-error-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\test-results\negative-path-Negative-pat-55239-mail-shows-validation-error-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\test-results\negative-path-Negative-pat-55239-mail-shows-validation-error-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  9) [chromium] › negative-path.spec.js:63:3 › Negative path validation › reset-password – empty/malformed fields show validation error 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: page.click: Test timeout of 60000ms exceeded.
+    Call log:
+      - waiting for locator('button[type="submit"]')
+
+
+      66 |     await page.fill('input[name="password"]', '123');
+      67 |     await page.fill('input[name="password_confirmation"]', '456');
+    > 68 |     await page.click('button[type="submit"]');
+         |                ^
+      69 |     await page.waitForLoadState('load');
+      70 |     await expectValidationError(page);
+      71 |   });
+        at C:\Users\LENOVO\Desktop\Projectsss\StudentFlow\tests-e2e\negative-path.spec.js:68:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\test-results\negative-path-Negative-pat-da4a2-ields-show-validation-error-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\test-results\negative-path-Negative-pat-da4a2-ields-show-validation-error-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\test-results\negative-path-Negative-pat-da4a2-ields-show-validation-error-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\test-results\negative-path-Negative-pat-da4a2-ields-show-validation-error-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  10) [chromium] › negative-path.spec.js:73:3 › Negative path validation › change-password – empty fields show validation error 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: page.fill: Test timeout of 60000ms exceeded.
+    Call log:
+      - waiting for locator('input[name="password"]')
+
+
+      75 |     await page.goto('/change-password');
+      76 |     await page.fill('input[name="current_password"]', '');
+    > 77 |     await page.fill('input[name="password"]', '');
+         |                ^
+      78 |     await page.fill('input[name="password_confirmation"]', '');
+      79 |     await page.click('button[type="submit"]');
+      80 |     await page.waitForLoadState('load');
+        at C:\Users\LENOVO\Desktop\Projectsss\StudentFlow\tests-e2e\negative-path.spec.js:77:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\test-results\negative-path-Negative-pat-19746-ields-show-validation-error-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\test-results\negative-path-Negative-pat-19746-ields-show-validation-error-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\test-results\negative-path-Negative-pat-19746-ields-show-validation-error-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\test-results\negative-path-Negative-pat-19746-ields-show-validation-error-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  11) [chromium] › negative-path.spec.js:84:3 › Negative path validation › change-password – mismatched new password shows error 
+
+    Test timeout of 60000ms exceeded.
+
+    Error: page.fill: Test timeout of 60000ms exceeded.
+    Call log:
+      - waiting for locator('input[name="password"]')
+
+
+      86 |     await page.goto('/change-password');
+      87 |     await page.fill('input[name="current_password"]', CREDENTIALS.admin.password);
+    > 88 |     await page.fill('input[name="password"]', 'NewPass123!');
+         |                ^
+      89 |     await page.fill('input[name="password_confirmation"]', 'DifferentPass123!');
+      90 |     await page.click('button[type="submit"]');
+      91 |     await page.waitForLoadState('load');
+        at C:\Users\LENOVO\Desktop\Projectsss\StudentFlow\tests-e2e\negative-path.spec.js:88:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\test-results\negative-path-Negative-pat-1d5d6-ed-new-password-shows-error-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\test-results\negative-path-Negative-pat-1d5d6-ed-new-password-shows-error-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\test-results\negative-path-Negative-pat-1d5d6-ed-new-password-shows-error-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\test-results\negative-path-Negative-pat-1d5d6-ed-new-password-shows-error-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  12) [chromium] › negative-path.spec.js:95:3 › Negative path validation › teacher-setup – empty fields show validation error 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert').first()
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" with timeout 5000ms
+      - waiting for locator('.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert').first()
+
+
+      24 |   async function expectValidationError(page) {
+      25 |     const errorSelector = '.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert';
+    > 26 |     await expect(page.locator(errorSelector).first()).toBeVisible();
+         |                                                       ^
+      27 |   }
+      28 |
+      29 |   test('login – empty fields show validation error', async ({ page }) => {
+        at expectValidationError (C:\Users\LENOVO\Desktop\Projectsss\StudentFlow\tests-e2e\negative-path.spec.js:26:55)
+        at C:\Users\LENOVO\Desktop\Projectsss\StudentFlow\tests-e2e\negative-path.spec.js:108:11
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\test-results\negative-path-Negative-pat-ee328-ields-show-validation-error-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\test-results\negative-path-Negative-pat-ee328-ields-show-validation-error-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\test-results\negative-path-Negative-pat-ee328-ields-show-validation-error-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\test-results\negative-path-Negative-pat-ee328-ields-show-validation-error-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  13) [chromium] › perf.spec.js:39:3 › Performance measurements › /dashboard loads under threshold as admin 
+
+    Error: expect(received).toBeLessThan(expected)
+
+    Expected: < 3000
+    Received:   3792.7000000029802
+
+      26 |     test.info().annotations.push({ type: 'perf', description: JSON.stringify(timing) });
+      27 |     if (timing) {
+    > 28 |       expect(timing.domContentLoaded).toBeLessThan(threshold);
+         |                                       ^
+      29 |       expect(timing.loadComplete).toBeLessThan(threshold);
+      30 |     }
+      31 |   }
+        at assertLoadTime (C:\Users\LENOVO\Desktop\Projectsss\StudentFlow\tests-e2e\perf.spec.js:28:39)
+        at C:\Users\LENOVO\Desktop\Projectsss\StudentFlow\tests-e2e\perf.spec.js:43:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\test-results\perf-Performance-measureme-962bc-ds-under-threshold-as-admin-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\test-results\perf-Performance-measureme-962bc-ds-under-threshold-as-admin-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\test-results\perf-Performance-measureme-962bc-ds-under-threshold-as-admin-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\test-results\perf-Performance-measureme-962bc-ds-under-threshold-as-admin-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  14) [chromium] › perf.spec.js:61:3 › Performance measurements › reports index loads under threshold as admin 
+
+    Error: expect(received).toBeLessThan(expected)
+
+    Expected: < 3000
+    Received:   10157.89999999851
+
+      26 |     test.info().annotations.push({ type: 'perf', description: JSON.stringify(timing) });
+      27 |     if (timing) {
+    > 28 |       expect(timing.domContentLoaded).toBeLessThan(threshold);
+         |                                       ^
+      29 |       expect(timing.loadComplete).toBeLessThan(threshold);
+      30 |     }
+      31 |   }
+        at assertLoadTime (C:\Users\LENOVO\Desktop\Projectsss\StudentFlow\tests-e2e\perf.spec.js:28:39)
+        at C:\Users\LENOVO\Desktop\Projectsss\StudentFlow\tests-e2e\perf.spec.js:65:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ..\test-results\perf-Performance-measureme-3a26a-ds-under-threshold-as-admin-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ..\test-results\perf-Performance-measureme-3a26a-ds-under-threshold-as-admin-chromium\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ..\test-results\perf-Performance-measureme-3a26a-ds-under-threshold-as-admin-chromium\trace.zip
+    Usage:
+
+        npx playwright show-trace ..\test-results\perf-Performance-measureme-3a26a-ds-under-threshold-as-admin-chromium\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  14 failed
+    [chromium] › admin.spec.js:65:5 › Admin role – functional happy path › Admin-only management › teacher edit form loads first teacher 
+    [chromium] › admin.spec.js:75:5 › Admin role – functional happy path › Admin-only management › activity logs render and CSV export streams 
+    [chromium] › admin.spec.js:87:5 › Admin role – functional happy path › Admin-only management › settings page loads and update form has CSRF 
+    [chromium] › admin.spec.js:105:5 › Admin role – functional happy path › Classes management › first class detail and edit pages 
+    [chromium] › admin.spec.js:150:5 › Admin role – functional happy path › Attendance › attendance index and first class attendance sheet 
+    [chromium] › negative-path.spec.js:29:3 › Negative path validation › login – empty fields show validation error 
+    [chromium] › negative-path.spec.js:47:3 › Negative path validation › forgot-password – empty email shows validation error 
+    [chromium] › negative-path.spec.js:55:3 › Negative path validation › forgot-password – malformed email shows validation error 
+    [chromium] › negative-path.spec.js:63:3 › Negative path validation › reset-password – empty/malformed fields show validation error 
+    [chromium] › negative-path.spec.js:73:3 › Negative path validation › change-password – empty fields show validation error 
+    [chromium] › negative-path.spec.js:84:3 › Negative path validation › change-password – mismatched new password shows error 
+    [chromium] › negative-path.spec.js:95:3 › Negative path validation › teacher-setup – empty fields show validation error 
+    [chromium] › perf.spec.js:39:3 › Performance measurements › /dashboard loads under threshold as admin 
+    [chromium] › perf.spec.js:61:3 › Performance measurements › reports index loads under threshold as admin 
+  57 passed (20.7m)

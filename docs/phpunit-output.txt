@@ -1,0 +1,114 @@
+PHPUnit 11.5.55 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.5.7
+Configuration: C:\Users\LENOVO\Desktop\Projectsss\StudentFlow\phpunit.xml
+
+................................................................. 65 / 75 ( 86%)
+..........                                                        75 / 75 (100%)
+
+Time: 00:03.738, Memory: 70.00 MB
+
+Dashboard Role Dispatch (Tests\Feature\DashboardRoleDispatch)
+ ✔ Admin sees admin dashboard view
+ ✔ Teacher sees teacher dashboard view
+ ✔ Student sees student dashboard view
+ ✔ Student dashboard shows four stat cards
+
+Student Announcement Web (Tests\Feature\StudentAnnouncementWeb)
+ ✔ Student sees only announcements for enrolled classes or global
+ ✔ Student does not see expired or future announcements
+ ✔ Student can view targeted announcement detail
+ ✔ Non targeted student gets 403 on show
+ ✔ Student can view global announcement detail
+
+Student Assignment Web (Tests\Feature\StudentAssignmentWeb)
+ ✔ Student sees assignments for enrolled classes
+ ✔ Student does not see other students submissions
+ ✔ Student sees assignment detail on show
+ ✔ Student can submit assignment and record is created
+ ✔ Student gets 403 for assignment not in enrolled class
+
+Student Attendance Web (Tests\Feature\StudentAttendanceWeb)
+ ✔ Student sees own attendance records
+ ✔ Student does not see other students attendance
+ ✔ Attendance index handles zero records
+ ✔ Overall summary counts present late
+
+Student Class Web (Tests\Feature\StudentClassWeb)
+ ✔ Student sees enrolled class on index
+ ✔ Student gets 403 on non enrolled class show
+ ✔ Student can view enrolled class show
+ ✔ Dropped enrollment returns 403
+
+Student Exam Web (Tests\Feature\StudentExamWeb)
+ ✔ Student sees published exams for enrolled classes
+ ✔ Student does not see exams for non enrolled or unpublished exams
+ ✔ Start creates exam attempt row and redirects to magic url
+ ✔ Start resumes existing attempt without creating duplicate
+ ✔ Student gets 403 starting exam for non enrolled class
+
+Student Flow Feature (Tests\Feature\StudentFlowFeature)
+ ✔ Starter dataset matches second semester programming context
+ ✔ Root redirects to dashboard
+ ✔ Login disabled account and password reset flow
+ ✔ Admin can manage teacher settings and logs
+ ✔ Teacher scoping and enrollment management
+ ✔ Grade assignment and report endpoints
+ ✔ Class announcement emails enrolled students
+ ✔ Student social login student api exam submission and teacher audit
+ ✔ Student can login with seeded username and password
+ ✔ Student can update own mobile profile
+ ✔ Verified student can request class and teacher can approve
+ ✔ Starter dataset matches second semester context
+ ✔ Student registration and new social login create student records
+ ✔ Student starts exam through authenticated attempt route
+ ✔ Disabled account cannot use existing api token
+ ✔ Disabled student cannot reactivate through social login
+ ✔ Google login requires configured client id
+ ✔ Teacher cannot reparent owned records to another teacher
+ ✔ Assignment and attendance reject unenrolled students and excess scores
+ ✔ Mobile github pkce start and verifier validation
+ ✔ Student portal hides dropped classes
+ ✔ Teacher can create and publish exam from web
+
+Student Grade Web (Tests\Feature\StudentGradeWeb)
+ ✔ Student sees enrolled classes with final grades on index
+ ✔ Student does not see other students grades
+ ✔ Student sees per category breakdown on show
+ ✔ Student gets 403 for non enrolled class show
+
+Student Module Routing (Tests\Feature\StudentModuleRouting)
+ ✔ All six student modules render 200 for an enrolled student
+ ✔ Student sidebar renders links to all six modules
+ ✔ Placeholder route still works for student
+
+Student Placeholder Route (Tests\Feature\StudentPlaceholderRoute)
+ ✔ Student can view placeholder route
+ ✔ Admin cannot view student route
+ ✔ Teacher cannot view student route
+
+Student Report Web (Tests\Feature\StudentReportWeb)
+ ✔ Student can view own profile report
+ ✔ Student can download own profile pdf
+ ✔ User without student profile gets 403 on reports
+ ✔ Admin and teacher cannot access student reports
+
+Teacher Report Api (Tests\Feature\TeacherReportApi)
+ ✔ Admin can download class attendance pdf
+ ✔ Teacher can download own class attendance pdf
+ ✔ Student gets 403 on pdf
+ ✔ Admin can download class csv
+ ✔ Teacher can download own class csv
+ ✔ Student gets 403 on csv
+ ✔ Invalid type returns 404 for pdf
+ ✔ Unauthenticated gets 401
+
+Web Role Guard (Tests\Feature\WebRoleGuard)
+ ✔ Cross role url access returns 403
+
+Web Sidebar Role Visibility (Tests\Feature\WebSidebarRoleVisibility)
+ ✔ Admin sidebar shows admin and teacher links not student
+ ✔ Teacher sidebar shows teacher links not admin nor student
+ ✔ Student sidebar section header renders when student routes missing
+
+OK (75 tests, 330 assertions)

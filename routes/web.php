@@ -87,9 +87,9 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::delete('/students/{student}', [StudentWebController::class, 'destroy']);
 
         Route::get('/attendance', [AttendanceWebController::class, 'index']);
-        Route::get('/attendance/{class}', [AttendanceWebController::class, 'show']);
-        Route::post('/attendance/{class}', [AttendanceWebController::class, 'save']);
-        Route::get('/attendance/{class}/history', [AttendanceWebController::class, 'history']);
+        Route::get('/attendance/{schoolClass}', [AttendanceWebController::class, 'show']);
+        Route::post('/attendance/{schoolClass}', [AttendanceWebController::class, 'save']);
+        Route::get('/attendance/{schoolClass}/history', [AttendanceWebController::class, 'history']);
 
         Route::get('/grades', [GradeWebController::class, 'index']);
         Route::get('/grades/{class}', [GradeWebController::class, 'show']);

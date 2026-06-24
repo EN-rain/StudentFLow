@@ -14,19 +14,19 @@
 
         <div class="card stat-card">
             <div class="card-body">
-                <form method="POST" action="/change-password">
+                <form method="POST" action="/change-password" novalidate>
                     @csrf
                     <div class="mb-3">
                         <label class="form-label">Current password</label>
-                        <input type="password" name="current_password" class="form-control" required>
+                        <input type="password" name="current_password" class="form-control" autocomplete="current-password">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">New password</label>
-                        <input type="password" name="new_password" class="form-control" required minlength="8">
+                        <input type="password" name="new_password" class="form-control" autocomplete="new-password">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Confirm new password</label>
-                        <input type="password" name="new_password_confirmation" class="form-control" required minlength="8">
+                        <input type="password" name="new_password_confirmation" class="form-control" autocomplete="new-password">
                     </div>
                     <button type="submit" class="btn btn-primary">Change password</button>
                 </form>

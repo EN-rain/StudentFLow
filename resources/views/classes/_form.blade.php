@@ -1,4 +1,3 @@
-@csrf
 <div class="row g-3">
     <div class="col-md-6">
         <label class="form-label">Class Name <span class="text-danger">*</span></label>

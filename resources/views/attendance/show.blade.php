@@ -4,10 +4,10 @@
     <div class="d-flex justify-content-between align-items-start mb-3">
         <div>
             <h2 class="mb-1"><i class="bi bi-pencil-square"></i> Mark Attendance</h2>
-            <p class="text-muted mb-0">{{ $class->class_name }} - {{ $class->subject }}</p>
+            <p class="text-muted mb-0">{{ $schoolClass->class_name }} - {{ $schoolClass->subject }}</p>
         </div>
         <div>
-            <a href="/attendance/{{ $class->id }}/history" class="btn btn-outline-secondary"><i class="bi bi-clock-history"></i> History</a>
+            <a href="/attendance/{{ $schoolClass->id }}/history" class="btn btn-outline-secondary"><i class="bi bi-clock-history"></i> History</a>
             <a href="/attendance" class="btn btn-outline-secondary">Back</a>
         </div>
     </div>
@@ -16,7 +16,7 @@
         <div class="alert alert-success">{{ session('status') }}</div>
     @endif
 
-    <form method="POST" action="/attendance/{{ $class->id }}">
+    <form method="POST" action="/attendance/{{ $schoolClass->id }}">
         @csrf
         <input type="hidden" name="attendance_date" value="{{ $date }}">
 

@@ -13,11 +13,11 @@
                 <div class="alert alert-danger">{{ $errors->first() }}</div>
             @endif
 
-            <form method="POST" action="/forgot-password">
+            <form method="POST" action="/forgot-password" novalidate>
                 @csrf
                 <div class="mb-3">
                     <label class="form-label">Email</label>
-                    <input type="email" name="email" class="form-control" required autofocus>
+                    <input type="email" name="email" class="form-control" autocomplete="email" autofocus>
                 </div>
                 <button type="submit" class="btn btn-primary w-100">Send reset link</button>
             </form>

@@ -15,15 +15,15 @@
                 </div>
             @endif
 
-            <form method="POST" action="/login" data-login-form>
+            <form method="POST" action="/login" data-login-form novalidate>
                 @csrf
                 <div class="mb-3">
                     <label class="form-label">Username or Email</label>
-                    <input type="text" name="username" class="form-control" value="{{ old('username') }}" required autofocus>
+                    <input type="text" name="username" class="form-control" value="{{ old('username') }}" autocomplete="username" autofocus>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Password</label>
-                    <input type="password" name="password" class="form-control" required>
+                    <input type="password" name="password" class="form-control" autocomplete="current-password">
                 </div>
                 <button type="submit" class="btn btn-primary w-100" data-login-submit>
                     <span data-login-label>Sign in</span>

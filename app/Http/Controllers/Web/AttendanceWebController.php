@@ -23,7 +23,7 @@ class AttendanceWebController extends Controller
                 $query->where('teacher_id', $teacher->id);
             }
         }
-        $classes = $query->orderBy('class_name')->get();
+        $classes = $query->with(['teacher', 'students'])->orderBy('class_name')->get();
 
         return view('attendance.index', compact('classes'));
     }
@@ -31,29 +31,29 @@ class AttendanceWebController extends Controller
     /**
      * Show the per-class per-date attendance form.
      */
-    public function show(Request $request, SchoolClass $class)
+    public function show(Request $request, SchoolClass $schoolClass)
     {
-        $this->authorizeClassAccess($request, $class);
+        $this->authorizeClassAccess($request, $schoolClass);
         $date = $request->query('date', date('Y-m-d'));
 
-        $students = $class->students()
+        $students = $schoolClass->students()
             ->wherePivot('status', 'enrolled')
             ->orderBy('last_name')
             ->get();
-        $existing = Attendance::where('class_id', $class->id)
+        $existing = Attendance::where('class_id', $schoolClass->id)
             ->where('attendance_date', $date)
             ->get()
             ->keyBy('student_id');
 
-        return view('attendance.show', compact('class', 'date', 'students', 'existing'));
+        return view('attendance.show', compact('schoolClass', 'date', 'students', 'existing'));
     }
 
     /**
      * Save attendance for a class + date (POST).
      */
-    public function save(Request $request, SchoolClass $class)
+    public function save(Request $request, SchoolClass $schoolClass)
     {
-        $this->authorizeClassAccess($request, $class);
+        $this->authorizeClassAccess($request, $schoolClass);
 
         $payload = $request->validate([
             'attendance_date' => 'required|date',
@@ -62,7 +62,7 @@ class AttendanceWebController extends Controller
             'records.*.remarks' => 'nullable|string|max:255',
         ]);
 
-        $enrolledStudentIds = $class->students()
+        $enrolledStudentIds = $schoolClass->students()
             ->wherePivot('status', 'enrolled')
             ->pluck('students.id')
             ->map(fn ($id) => (int) $id)
@@ -77,7 +77,7 @@ class AttendanceWebController extends Controller
             }
 
             $rows[] = [
-                'class_id' => $class->id,
+                'class_id' => $schoolClass->id,
                 'student_id' => (int) $studentId,
                 'attendance_date' => $payload['attendance_date'],
                 'status' => $r['status'],
@@ -96,21 +96,21 @@ class AttendanceWebController extends Controller
             );
         }
 
-        return redirect("/attendance/{$class->id}?date={$payload['attendance_date']}")
+        return redirect("/attendance/{$schoolClass->id}?date={$payload['attendance_date']}")
             ->with('status', 'Attendance saved.');
     }
 
     /**
      * History view with date filter.
      */
-    public function history(Request $request, SchoolClass $class)
+    public function history(Request $request, SchoolClass $schoolClass)
     {
-        $this->authorizeClassAccess($request, $class);
+        $this->authorizeClassAccess($request, $schoolClass);
         $from = $request->query('from', date('Y-m-d', strtotime('-30 days')));
         $to = $request->query('to', date('Y-m-d'));
 
         $records = Attendance::with('student')
-            ->where('class_id', $class->id)
+            ->where('class_id', $schoolClass->id)
             ->where('attendance_date', '>=', $from)
             ->where('attendance_date', '<=', $to)
             ->orderBy('attendance_date', 'desc')
@@ -118,7 +118,7 @@ class AttendanceWebController extends Controller
             ->get();
 
         // Per-student summary
-        $studentsById = $class->students()->get()->keyBy('id');
+        $studentsById = $schoolClass->students()->get()->keyBy('id');
         $recordsByStudent = $records->groupBy('student_id');
         $summary = [];
         foreach ($studentsById as $sid => $student) {
@@ -133,17 +133,17 @@ class AttendanceWebController extends Controller
             ];
         }
 
-        return view('attendance.history', compact('class', 'records', 'summary', 'from', 'to'));
+        return view('attendance.history', compact('schoolClass', 'records', 'summary', 'from', 'to'));
     }
 
-    private function authorizeClassAccess(Request $request, SchoolClass $class): void
+    private function authorizeClassAccess(Request $request, SchoolClass $schoolClass): void
     {
         $user = $request->user();
         if ($user->isAdmin()) {
             return;
         }
         $teacher = $user->teacher;
-        if (! $teacher || $class->teacher_id !== $teacher->id) {
+        if (! $teacher || $schoolClass->teacher_id !== $teacher->id) {
             abort(403);
         }
     }

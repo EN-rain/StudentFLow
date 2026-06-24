@@ -1,4 +1,3 @@
-@csrf
 <div class="row g-3">
     <div class="col-md-3">
         <label class="form-label">Student Number <span class="text-danger">*</span></label>

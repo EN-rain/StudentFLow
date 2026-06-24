@@ -4,15 +4,15 @@
     <div class="d-flex justify-content-between align-items-start mb-3">
         <div>
             <h2 class="mb-1"><i class="bi bi-clock-history"></i> Attendance History</h2>
-            <p class="text-muted mb-0">{{ $class->class_name }} - {{ $class->subject }}</p>
+            <p class="text-muted mb-0">{{ $schoolClass->class_name }} - {{ $schoolClass->subject }}</p>
         </div>
         <div>
-            <a href="/attendance/{{ $class->id }}" class="btn btn-primary"><i class="bi bi-pencil-square"></i> Mark Attendance</a>
+            <a href="/attendance/{{ $schoolClass->id }}" class="btn btn-primary"><i class="bi bi-pencil-square"></i> Mark Attendance</a>
             <a href="/attendance" class="btn btn-outline-secondary">Back</a>
         </div>
     </div>
 
-    <form method="GET" action="/attendance/{{ $class->id }}/history" class="row g-2 mb-3">
+    <form method="GET" action="/attendance/{{ $schoolClass->id }}/history" class="row g-2 mb-3">
         <div class="col-md-3">
             <label class="form-label">From</label>
             <input type="date" name="from" class="form-control" value="{{ $from }}">

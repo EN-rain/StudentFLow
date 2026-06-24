@@ -18,7 +18,7 @@ class ReportController extends Controller
      */
     public function index(Request $request)
     {
-        $query = SchoolClass::query();
+        $query = SchoolClass::query()->with('teacher');
         if ($request->user()->isTeacher()) {
             $teacher = $request->user()->teacher;
             if ($teacher) {
