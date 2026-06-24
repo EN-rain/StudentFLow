@@ -19,3 +19,26 @@ yarn-error.log
 /.idea
 /.vscode
 /NUL
+
+# Tests
+/tests-e2e/
+/test-results/
+/tests/Feature/
+/tests/Unit/
+*.chromium/
+*.last-run.json
+
+# Docs
+/docs/
+
+# Android
+/android/.gradle/
+/android/build/
+/android/local.properties
+
+# Build scripts & large files
+*.png
+sync-branding.*
+plan.md
+credentials.md
+studentflow-ui.xml
