@@ -66,7 +66,10 @@ test.describe('Admin role – functional happy path', () => {
       await page.goto('/admin/teachers');
       const firstEdit = page.locator('a[href*="/admin/teachers/"][href*="/edit"]').first();
       if (await firstEdit.count() > 0) {
-        await firstEdit.click();
+        await Promise.all([
+          page.waitForURL(/\/admin\/teachers\/\d+\/edit/),
+          firstEdit.click(),
+        ]);
         await expect(page.locator('form[action*="/admin/teachers/"]')).toBeVisible();
         await expectCsrfOnForms(page);
       }
@@ -77,9 +80,10 @@ test.describe('Admin role – functional happy path', () => {
       expectNo5xx(networkResponses);
       await expect(page.locator('body')).toContainText('Activity');
 
-      const downloadPromise = page.waitForEvent('download', { timeout: 5000 }).catch(() => null);
-      await page.goto('/admin/activity-logs/csv');
-      const download = await downloadPromise;
+      const [download] = await Promise.all([
+        page.waitForEvent('download'),
+        page.click('a[href*="/admin/activity-logs/csv"]'),
+      ]);
       if (download) {
         expect(download.suggestedFilename()).toMatch(/\.csv$/i);
       }
@@ -108,13 +112,19 @@ test.describe('Admin role – functional happy path', () => {
       await page.goto('/classes');
       const firstLink = page.locator('a[href^="/classes/"]:not([href*="/edit"]):not([href*="/create"])').first();
       if (await firstLink.count() > 0) {
-        await firstLink.click();
+        await Promise.all([
+          page.waitForURL(/\/classes\/\d+/),
+          firstLink.click(),
+        ]);
         await expect(page.locator('body')).toContainText('Class');
         await expectCsrfOnForms(page);
 
         const editLink = page.locator('a[href*="/edit"]').first();
         if (await editLink.count() > 0) {
-          await editLink.click();
+          await Promise.all([
+            page.waitForURL(/\/classes\/\d+\/edit/),
+            editLink.click(),
+          ]);
           await expectCsrfOnForms(page);
         }
       }
@@ -156,10 +166,13 @@ test.describe('Admin role – functional happy path', () => {
 
       const firstLink = page.locator('a[href^="/attendance/"]:not([href*="/history"])').first();
       if (await firstLink.count() > 0) {
-        await firstLink.click();
+        await Promise.all([
+          page.waitForURL(/\/attendance\/\d+/),
+          firstLink.click(),
+        ]);
         await expectCsrfOnForms(page);
 
-        await page.goto(await page.url() + '/history');
+        await page.goto(page.url() + '/history');
         expectNo5xx(networkResponses);
       }
     });

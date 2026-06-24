@@ -12,6 +12,7 @@
     <div class="card stat-card">
         <div class="card-body">
             <form method="POST" action="/assignments">
+                @csrf
                 @include('assignments._form')
             </form>
         </div>

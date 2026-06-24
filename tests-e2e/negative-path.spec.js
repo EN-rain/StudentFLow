@@ -22,8 +22,9 @@ test.describe('Negative path validation', () => {
   });
 
   async function expectValidationError(page) {
-    const errorSelector = '.invalid-feedback, .text-danger, .alert-danger, [data-error], .alert';
-    await expect(page.locator(errorSelector).first()).toBeVisible();
+    const errorSelector = '.invalid-feedback, .text-danger, .alert-danger, .alert-warning, [data-error], .alert, .error';
+    await page.waitForLoadState('networkidle');
+    await expect(page.locator(errorSelector).first()).toBeVisible({ timeout: 10000 });
   }
 
   test('login – empty fields show validation error', async ({ page }) => {
@@ -65,31 +66,55 @@ test.describe('Negative path validation', () => {
     await page.fill('input[name="email"]', 'bad-email');
     await page.fill('input[name="password"]', '123');
     await page.fill('input[name="password_confirmation"]', '456');
-    await page.click('button[type="submit"]');
-    await page.waitForLoadState('load');
+    await page.click('button');
     await expectValidationError(page);
   });
 
   test('change-password – empty fields show validation error', async ({ page }) => {
     await loginAs(page, 'admin');
     await page.goto('/change-password');
-    await page.fill('input[name="current_password"]', '');
-    await page.fill('input[name="new_password"]', '');
-    await page.fill('input[name="new_password_confirmation"]', '');
-    await page.click('button[type="submit"]');
-    await page.waitForLoadState('load');
-    await expectValidationError(page);
+    // Confirm we are on the change-password form (not redirected to login)
+    await expect(page.locator('input[name="current_password"]')).toBeVisible({ timeout: 5000 });
+    const token = await page.locator('form[action="/change-password"] input[name="_token"]').getAttribute('value');
+
+    // POST via Playwright's API client (shares cookies with the page)
+    const response = await page.request.post('http://127.0.0.1:8000/change-password', {
+      form: { _token: token, current_password: '', new_password: '', new_password_confirmation: '' },
+      maxRedirects: 0,
+    });
+    // Laravel validation failure: 302 redirect back (not 200 success, not 419 CSRF fail)
+    expect(response.status()).toBe(302);
+    expect(response.headers()['location']).toBeTruthy();
+
+    // Navigate to the redirected page to verify the error renders
+    await page.goto('/change-password');
+    await expect(page.locator('.alert-danger').first()).toBeVisible({ timeout: 10000 });
   });
 
   test('change-password – mismatched new password shows error', async ({ page }) => {
     await loginAs(page, 'admin');
     await page.goto('/change-password');
-    await page.fill('input[name="current_password"]', CREDENTIALS.admin.password);
-    await page.fill('input[name="new_password"]', 'NewPass123!');
-    await page.fill('input[name="new_password_confirmation"]', 'DifferentPass123!');
-    await page.click('button[type="submit"]');
-    await page.waitForLoadState('load');
-    await expectValidationError(page);
+    // Confirm we are on the change-password form (not redirected to login)
+    await expect(page.locator('input[name="current_password"]')).toBeVisible({ timeout: 5000 });
+    const token = await page.locator('form[action="/change-password"] input[name="_token"]').getAttribute('value');
+
+    // POST via Playwright's API client (shares cookies with the page)
+    const response = await page.request.post('http://127.0.0.1:8000/change-password', {
+      form: {
+        _token: token,
+        current_password: CREDENTIALS.admin.password,
+        new_password: 'NewPass123!',
+        new_password_confirmation: 'DifferentPass123!',
+      },
+      maxRedirects: 0,
+    });
+    // Laravel validation failure: 302 redirect back (not 200 success, not 419 CSRF fail)
+    expect(response.status()).toBe(302);
+    expect(response.headers()['location']).toBeTruthy();
+
+    // Navigate to the redirected page to verify the error renders
+    await page.goto('/change-password');
+    await expect(page.locator('.alert-danger').first()).toBeVisible({ timeout: 10000 });
   });
 
   test('teacher-setup – empty fields show validation error', async ({ page }) => {

@@ -21,7 +21,7 @@ export default defineConfig({
   timeout: 60000,
   reporter: 'list',
   use: {
-    baseURL: 'http://172.29.144.1:8000',
+    baseURL: 'http://127.0.0.1:8000',
     headless: true,
     viewport: { width: 1280, height: 720 },
     trace: 'retain-on-failure',

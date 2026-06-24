@@ -21,10 +21,10 @@ yarn-error.log
 /NUL
 
 # Tests
+/tests/
 /tests-e2e/
 /test-results/
-/tests/Feature/
-/tests/Unit/
+/playwright-report/
 *.chromium/
 *.last-run.json
 

@@ -29,7 +29,7 @@ export async function loginAs(page, role) {
     page.click('button[data-login-submit]'),
   ]);
 
-  await page.waitForLoadState('load');
+  await page.waitForURL('**/dashboard');
   return response;
 }
 

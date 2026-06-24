@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Attendance History - ' . $class->class_name)
+@section('title', 'Attendance History - ' . $schoolClass->class_name)
 @section('content')
     <div class="d-flex justify-content-between align-items-start mb-3">
         <div>
