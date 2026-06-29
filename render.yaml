@@ -60,3 +60,15 @@ services:
         sync: false
       - key: GITHUB_CLIENT_SECRET
         sync: false
+
+      # CORS / SPA
+      - key: FRONTEND_URL
+        sync: false
+      - key: SANCTUM_STATEFUL_DOMAINS
+        sync: false
+      - key: SESSION_DOMAIN
+        sync: false
+      - key: SESSION_SECURE_COOKIE
+        value: "true"
+      - key: SESSION_SAME_SITE
+        value: lax

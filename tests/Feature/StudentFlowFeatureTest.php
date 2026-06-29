@@ -126,6 +126,30 @@ class StudentFlowFeatureTest extends TestCase
             ->assertSee('/register', false);
     }
 
+    public function test_reset_password_route_redirects_to_frontend_when_configured(): void
+    {
+        $previous = getenv('FRONTEND_URL');
+        putenv('FRONTEND_URL=https://studentflow-web.vercel.app');
+        try {
+            $this->get('/reset-password/test-token?email=test@example.com')
+                ->assertRedirect('https://studentflow-web.vercel.app/reset-password?token=test-token&email=test%40example.com');
+        } finally {
+            putenv($previous === false ? 'FRONTEND_URL' : "FRONTEND_URL={$previous}");
+        }
+    }
+
+    public function test_teacher_setup_route_redirects_to_frontend_when_configured(): void
+    {
+        $previous = getenv('FRONTEND_URL');
+        putenv('FRONTEND_URL=https://studentflow-web.vercel.app');
+        try {
+            $this->get('/teacher/setup/test-token?email=teacher@example.com')
+                ->assertRedirect('https://studentflow-web.vercel.app/teacher/setup/test-token?email=teacher%40example.com');
+        } finally {
+            putenv($previous === false ? 'FRONTEND_URL' : "FRONTEND_URL={$previous}");
+        }
+    }
+
     public function test_admin_can_manage_teacher_settings_and_logs(): void
     {
         $admin = User::where('username', 'admin')->first();

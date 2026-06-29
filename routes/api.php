@@ -16,9 +16,21 @@ use App\Http\Controllers\Api\ExamController;
 use App\Http\Controllers\Api\GradeController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\StudentController;
+use App\Http\Controllers\Api\SessionAuthController;
 use App\Http\Controllers\Api\StudentPortalController;
 use App\Http\Controllers\Api\StudentSocialAuthController;
 use Illuminate\Support\Facades\Route;
+
+Route::prefix('session')->middleware('throttle:60,1')->group(function () {
+    Route::post('/register', [SessionAuthController::class, 'register'])->middleware('throttle:5,1');
+    Route::post('/login', [SessionAuthController::class, 'login'])->middleware('throttle:10,1');
+    Route::post('/google', [SessionAuthController::class, 'google'])->middleware('throttle:10,1');
+    Route::get('/github/redirect', [SessionAuthController::class, 'githubRedirect'])->middleware('throttle:10,1');
+    Route::get('/github/callback', [SessionAuthController::class, 'githubCallback'])->middleware('throttle:20,1');
+    Route::post('/teacher/setup', [SessionAuthController::class, 'completeTeacherSetup'])->middleware('throttle:5,1');
+    Route::post('/logout', [SessionAuthController::class, 'logout'])->middleware('auth:sanctum');
+    Route::get('/me', [SessionAuthController::class, 'me'])->middleware('auth:sanctum');
+});
 
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:5,1');
@@ -53,6 +65,8 @@ Route::middleware(['auth:sanctum', 'active'])->group(function () {
         Route::get('/grades', [StudentPortalController::class, 'grades']);
         Route::get('/attendance', [StudentPortalController::class, 'attendance']);
         Route::get('/exams', [StudentPortalController::class, 'exams']);
+        Route::get('/exams/{attempt}', [StudentPortalController::class, 'examDetail']);
+        Route::get('/assignments/{assignment}', [StudentPortalController::class, 'assignmentDetail']);
         Route::get('/join-requests', [ClassJoinRequestController::class, 'studentIndex']);
         Route::post('/join-requests', [ClassJoinRequestController::class, 'store']);
         Route::post('/exams/{attempt}/start', [ExamController::class, 'startAttempt']);

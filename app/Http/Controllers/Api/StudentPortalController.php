@@ -151,6 +151,36 @@ class StudentPortalController extends Controller
         return response()->json(ApiPagination::response($attempts));
     }
 
+    public function assignmentDetail(Request $request, Assignment $assignment): JsonResponse
+    {
+        $student = $this->student($request);
+        $enrolledClassIds = $student->classes()->wherePivot('status', 'enrolled')->pluck('classes.id');
+
+        if (! $enrolledClassIds->contains($assignment->class_id)) {
+            abort(403, 'You are not enrolled in the class for this assignment.');
+        }
+
+        $assignment->load([
+            'schoolClass',
+            'submissions' => fn ($query) => $query->where('student_id', $student->id),
+        ]);
+
+        return response()->json(['data' => $assignment]);
+    }
+
+    public function examDetail(Request $request, ExamAttempt $attempt): JsonResponse
+    {
+        $student = $this->student($request);
+
+        if ($attempt->student_id !== $student->id) {
+            abort(403, 'This exam attempt does not belong to you.');
+        }
+
+        $attempt->load('exam.schoolClass', 'exam.questions');
+
+        return response()->json(['data' => $attempt]);
+    }
+
     private function student(Request $request)
     {
         $student = $request->user()->student;

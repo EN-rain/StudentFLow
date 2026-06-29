@@ -104,6 +104,10 @@ class AdminTeacherController extends Controller
     private function teacherSetupUrl(User $user): string
     {
         $token = Password::broker()->createToken($user);
+        $frontend = trim((string) env('FRONTEND_URL', ''));
+        if ($frontend !== '') {
+            return rtrim($frontend, '/').'/teacher/setup/'.$token.'?email='.urlencode($user->email);
+        }
 
         return url('/teacher/setup/'.$token.'?email='.urlencode($user->email));
     }

@@ -173,11 +173,24 @@ class AuthWebController extends Controller
 
     public function showResetPassword(Request $request, string $token)
     {
+        if ($redirect = $this->frontendRedirectUrl('/reset-password', [
+            'token' => $token,
+            'email' => $request->query('email'),
+        ])) {
+            return redirect()->away($redirect);
+        }
+
         return view('auth.reset-password', ['token' => $token, 'email' => $request->query('email')]);
     }
 
     public function showTeacherSetup(Request $request, string $token)
     {
+        if ($redirect = $this->frontendRedirectUrl('/teacher/setup/'.$token, [
+            'email' => $request->query('email'),
+        ])) {
+            return redirect()->away($redirect);
+        }
+
         return view('auth.teacher-setup', ['token' => $token, 'email' => $request->query('email')]);
     }
 
@@ -266,5 +279,18 @@ class AuthWebController extends Controller
         $request->session()->regenerate();
 
         return back()->with('status', 'Password changed.');
+    }
+
+    private function frontendRedirectUrl(string $path, array $query = []): ?string
+    {
+        $frontend = trim((string) env('FRONTEND_URL', ''));
+        if ($frontend === '') {
+            return null;
+        }
+
+        $url = rtrim($frontend, '/').'/'.ltrim($path, '/');
+        $query = array_filter($query, fn ($value) => filled($value));
+
+        return $query ? $url.'?'.http_build_query($query) : $url;
     }
 }
