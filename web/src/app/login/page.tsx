@@ -36,13 +36,6 @@ export default function LoginPage() {
 
   return (
     <div className="auth-page auth-page-login">
-      <div className="auth-hero" aria-hidden="true">
-        <div className="auth-hero-panel">
-          <span className="auth-kicker">StudentFlow</span>
-          <h2>Stay on top of classes, grades, and school updates.</h2>
-          <p>One place for your academic flow, with the same visual tone as the mobile app.</p>
-        </div>
-      </div>
       <div className="auth-card">
         <h1>Sign in</h1>
         <p>Welcome back to StudentFlow</p>
@@ -59,6 +52,7 @@ export default function LoginPage() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
+              autoComplete="username"
               autoFocus
             />
           </div>
@@ -71,6 +65,7 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              autoComplete="current-password"
             />
           </div>
           <button type="submit" className="btn btn-primary w-100" disabled={busy}>

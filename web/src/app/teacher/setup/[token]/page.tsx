@@ -34,7 +34,7 @@ export default function TeacherSetupPage() {
         username,
         password,
         password_confirmation: confirm,
-      });
+      }, { bodyType: "form", timeoutMs: 15000 });
       setMessage(res.message);
       window.setTimeout(() => router.push("/login"), 1200);
     } catch (err: unknown) {

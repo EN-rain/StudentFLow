@@ -51,19 +51,19 @@ export default function RegisterPage() {
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label className="form-label">Full Name</label>
-            <input type="text" name="name" className="form-control" value={name} onChange={(e) => setName(e.target.value)} required autoFocus />
+            <input type="text" name="name" className="form-control" value={name} onChange={(e) => setName(e.target.value)} required autoComplete="name" autoFocus />
           </div>
           <div className="mb-3">
             <label className="form-label">Email</label>
-            <input type="email" name="email" className="form-control" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            <input type="email" name="email" className="form-control" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" />
           </div>
           <div className="mb-3">
             <label className="form-label">Password (min 8 characters)</label>
-            <input type="password" name="password" className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} />
+            <input type="password" name="password" className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} autoComplete="new-password" />
           </div>
           <div className="mb-3">
             <label className="form-label">Confirm Password</label>
-            <input type="password" name="password_confirmation" className="form-control" value={confirm} onChange={(e) => setConfirm(e.target.value)} required minLength={8} />
+            <input type="password" name="password_confirmation" className="form-control" value={confirm} onChange={(e) => setConfirm(e.target.value)} required minLength={8} autoComplete="new-password" />
           </div>
           <button type="submit" className="btn btn-primary w-100" disabled={busy}>
             {busy ? "Creating account..." : "Sign up"}

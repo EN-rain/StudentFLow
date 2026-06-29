@@ -24,6 +24,8 @@ interface RequestOptions {
   method?: string;
   body?: unknown;
   params?: Record<string, string>;
+  bodyType?: "json" | "form";
+  timeoutMs?: number;
 }
 
 interface ApiResponse<T = unknown> {
@@ -48,15 +50,44 @@ class ApiClient {
 
     const headers: Record<string, string> = {
       Accept: "application/json",
-      "Content-Type": "application/json",
     };
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), opts.timeoutMs ?? 15000);
+    const bodyType = opts.bodyType ?? "json";
+    let body: BodyInit | undefined;
 
-    const res = await fetch(url.toString(), {
-      method: opts.method || "GET",
-      headers,
-      credentials: "include",
-      body: opts.body ? JSON.stringify(opts.body) : undefined,
-    });
+    if (opts.body !== undefined) {
+      if (bodyType === "form") {
+        headers["Content-Type"] = "application/x-www-form-urlencoded";
+        const form = new URLSearchParams();
+        Object.entries(opts.body as Record<string, unknown>).forEach(([key, value]) => {
+          if (value === undefined || value === null) return;
+          form.append(key, String(value));
+        });
+        body = form.toString();
+      } else {
+        headers["Content-Type"] = "application/json";
+        body = JSON.stringify(opts.body);
+      }
+    }
+
+    let res: Response;
+    try {
+      res = await fetch(url.toString(), {
+        method: opts.method || "GET",
+        headers,
+        credentials: "include",
+        body,
+        signal: controller.signal,
+      });
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") {
+        throw new Error("Request timed out. Please try again.");
+      }
+      throw error;
+    } finally {
+      clearTimeout(timeout);
+    }
 
     if (res.status === 204) {
       return {} as T;
@@ -78,17 +109,29 @@ class ApiClient {
   }
 
   async csrf(): Promise<void> {
-    await fetch(buildAbsoluteUrl("/sanctum/csrf-cookie", this.baseUrl), {
-      credentials: "include",
-    });
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+    try {
+      await fetch(buildAbsoluteUrl("/sanctum/csrf-cookie", this.baseUrl), {
+        credentials: "include",
+        signal: controller.signal,
+      });
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") {
+        throw new Error("Session initialization timed out. Please try again.");
+      }
+      throw error;
+    } finally {
+      clearTimeout(timeout);
+    }
   }
 
   get<T>(path: string, params?: Record<string, string>): Promise<T> {
     return this.request<T>(path, { params });
   }
 
-  post<T>(path: string, body?: unknown): Promise<T> {
-    return this.request<T>(path, { method: "POST", body });
+  post<T>(path: string, body?: unknown, options: Omit<RequestOptions, "method" | "body" | "params"> = {}): Promise<T> {
+    return this.request<T>(path, { method: "POST", body, ...options });
   }
 
   put<T>(path: string, body?: unknown): Promise<T> {

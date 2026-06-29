@@ -76,7 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const res = await api.post<{ user: User; message: string }>("/api/session/login", {
       username,
       password,
-    });
+    }, { bodyType: "form", timeoutMs: 15000 });
     setUser(res.user);
   }, []);
 
@@ -88,7 +88,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         email,
         password,
         password_confirmation: passwordConfirmation,
-      });
+      }, { bodyType: "form", timeoutMs: 15000 });
       setUser(res.user);
     },
     []
@@ -96,7 +96,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(async () => {
     await api.csrf();
-    await api.post("/api/session/logout");
+    await api.post("/api/session/logout", undefined, { bodyType: "form", timeoutMs: 15000 });
     setUser(null);
   }, []);
 
