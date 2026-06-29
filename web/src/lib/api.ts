@@ -108,9 +108,9 @@ class ApiClient {
     return json;
   }
 
-  async csrf(): Promise<void> {
+  async csrf(timeoutMs = 15000): Promise<void> {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 15000);
+    const timeout = setTimeout(() => controller.abort(), timeoutMs);
     try {
       await fetch(buildAbsoluteUrl("/sanctum/csrf-cookie", this.baseUrl), {
         credentials: "include",

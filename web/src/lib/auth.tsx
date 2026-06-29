@@ -46,6 +46,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 const SESSION_BOOTSTRAP_TIMEOUT_MS = 8000;
+const AUTH_REQUEST_TIMEOUT_MS = 45000;
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -72,31 +73,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [refresh]);
 
   const login = useCallback(async (username: string, password: string) => {
-    await api.csrf();
+    await api.csrf(AUTH_REQUEST_TIMEOUT_MS);
     const res = await api.post<{ user: User; message: string }>("/api/session/login", {
       username,
       password,
-    }, { bodyType: "form", timeoutMs: 15000 });
+    }, { bodyType: "form", timeoutMs: AUTH_REQUEST_TIMEOUT_MS });
     setUser(res.user);
   }, []);
 
   const register = useCallback(
     async (name: string, email: string, password: string, passwordConfirmation: string) => {
-      await api.csrf();
+      await api.csrf(AUTH_REQUEST_TIMEOUT_MS);
       const res = await api.post<{ user: User; message: string }>("/api/session/register", {
         name,
         email,
         password,
         password_confirmation: passwordConfirmation,
-      }, { bodyType: "form", timeoutMs: 15000 });
+      }, { bodyType: "form", timeoutMs: AUTH_REQUEST_TIMEOUT_MS });
       setUser(res.user);
     },
     []
   );
 
   const logout = useCallback(async () => {
-    await api.csrf();
-    await api.post("/api/session/logout", undefined, { bodyType: "form", timeoutMs: 15000 });
+    await api.csrf(AUTH_REQUEST_TIMEOUT_MS);
+    await api.post("/api/session/logout", undefined, { bodyType: "form", timeoutMs: AUTH_REQUEST_TIMEOUT_MS });
     setUser(null);
   }, []);
 

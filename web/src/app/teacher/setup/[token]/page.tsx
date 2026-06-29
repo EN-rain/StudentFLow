@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useState, type FormEvent } from "react";
 
+const TEACHER_SETUP_TIMEOUT_MS = 45000;
+
 export default function TeacherSetupPage() {
   const params = useParams<{ token: string }>();
   const router = useRouter();
@@ -28,13 +30,14 @@ export default function TeacherSetupPage() {
 
     setBusy(true);
     try {
+      await api.csrf(TEACHER_SETUP_TIMEOUT_MS);
       const res = await api.post<{ message: string }>("/api/session/teacher/setup", {
         token: params.token,
         email,
         username,
         password,
         password_confirmation: confirm,
-      }, { bodyType: "form", timeoutMs: 15000 });
+      }, { bodyType: "form", timeoutMs: TEACHER_SETUP_TIMEOUT_MS });
       setMessage(res.message);
       window.setTimeout(() => router.push("/login"), 1200);
     } catch (err: unknown) {
