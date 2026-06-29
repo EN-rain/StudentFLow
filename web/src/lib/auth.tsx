@@ -45,6 +45,7 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
+const SESSION_BOOTSTRAP_TIMEOUT_MS = 8000;
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -52,7 +53,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const refresh = useCallback(async () => {
     try {
-      const res = await api.get<{ user: User }>("/api/session/me");
+      const res = await Promise.race([
+        api.get<{ user: User }>("/api/session/me"),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error("Session bootstrap timed out.")), SESSION_BOOTSTRAP_TIMEOUT_MS)
+        ),
+      ]);
       setUser(res.user);
     } catch {
       setUser(null);
