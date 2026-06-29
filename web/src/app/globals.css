@@ -15,11 +15,14 @@
   --sf-shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
   --sf-radius: 20px;
   --sf-sidebar-width: 260px;
+  --sf-motion-duration: 320ms;
+  --sf-motion-ease: cubic-bezier(.22, 1, .36, 1);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 html { min-height: 100%; background: var(--sf-surface); }
+html { scroll-behavior: smooth; }
 
 body {
   min-height: 100vh;
@@ -29,6 +32,11 @@ body {
     radial-gradient(circle at top left, rgba(15, 118, 110, 0.14), transparent 24rem),
     radial-gradient(circle at top right, rgba(14, 165, 233, 0.12), transparent 20rem),
     linear-gradient(180deg, #f8fbff 0%, var(--sf-surface) 100%);
+}
+
+.sf-page-transition {
+  animation: sf-page-enter var(--sf-motion-duration) var(--sf-motion-ease);
+  transform-origin: top center;
 }
 
 .sf-layout { display: flex; min-height: 100vh; }
@@ -113,6 +121,7 @@ body {
   position: sticky;
   top: 0;
   z-index: 50;
+  animation: sf-fade-down 460ms var(--sf-motion-ease);
 }
 
 .sf-topbar-user {
@@ -163,6 +172,60 @@ body {
     radial-gradient(circle at bottom right, rgba(14, 165, 233, 0.12), transparent 20rem),
     linear-gradient(180deg, #f8fbff 0%, var(--sf-surface) 100%);
 }
+
+.auth-page-login {
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+.auth-hero {
+  flex: 1;
+  min-height: 640px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  border-radius: 30px;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(2, 6, 23, 0.06), rgba(2, 6, 23, 0.78)),
+    url("/studentflow-login-bg.png") center/cover no-repeat;
+  box-shadow: 0 28px 70px rgba(15, 23, 42, 0.18);
+  animation: sf-fade-up 650ms var(--sf-motion-ease);
+}
+
+.auth-hero-panel {
+  width: min(100%, 34rem);
+  padding: 2rem;
+  color: #fff;
+}
+
+.auth-kicker {
+  display: inline-block;
+  margin-bottom: .9rem;
+  padding: .45rem .75rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.auth-hero-panel h2 {
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  line-height: 1.05;
+  letter-spacing: -.04em;
+}
+
+.auth-hero-panel p {
+  margin-top: 1rem;
+  max-width: 28rem;
+  color: rgba(255, 255, 255, 0.82);
+  line-height: 1.7;
+}
+
 .auth-card {
   background: rgba(255, 255, 255, 0.94);
   border: 1px solid rgba(203, 213, 225, 0.78);
@@ -171,6 +234,11 @@ body {
   padding: 2.5rem;
   width: 100%;
   max-width: 420px;
+  animation: sf-fade-up 520ms var(--sf-motion-ease);
+}
+
+.auth-page-login .auth-card {
+  flex: 0 0 min(100%, 430px);
 }
 .auth-card h1 { font-size: 1.9rem; margin-bottom: .25rem; letter-spacing: -.03em; }
 .auth-card p { color: var(--sf-text-muted); margin-bottom: 1.5rem; line-height: 1.6; }
@@ -315,6 +383,42 @@ hr { border: none; border-top: 1px solid rgba(203, 213, 225, 0.2); margin: 1rem 
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+@keyframes sf-page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes sf-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes sf-fade-down {
+  from {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .loading-screen {
   display: flex;
   flex-direction: column;
@@ -352,6 +456,17 @@ hr { border: none; border-top: 1px solid rgba(203, 213, 225, 0.2); margin: 1rem 
     flex-direction: column;
     gap: .75rem;
   }
+
+  .auth-page-login {
+    flex-direction: column;
+    justify-content: center;
+    padding: 1.25rem;
+  }
+
+  .auth-hero {
+    width: 100%;
+    min-height: 280px;
+  }
 }
 
 @media (max-width: 640px) {
@@ -361,6 +476,24 @@ hr { border: none; border-top: 1px solid rgba(203, 213, 225, 0.2); margin: 1rem 
   }
 
   .page-header h2 { font-size: 1.55rem; }
+
+  .auth-page-login {
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .auth-hero {
+    min-height: 220px;
+    border-radius: 22px;
+  }
+
+  .auth-hero-panel {
+    padding: 1.25rem;
+  }
+
+  .auth-hero-panel h2 {
+    font-size: 1.8rem;
+  }
 
   .col-md-3,
   .col-md-4,
@@ -372,5 +505,18 @@ hr { border: none; border-top: 1px solid rgba(203, 213, 225, 0.2); margin: 1rem 
   .col-sm-9 {
     flex: 0 0 100%;
     max-width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
   }
 }

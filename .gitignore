@@ -38,6 +38,7 @@ yarn-error.log
 
 # Build scripts & large files
 *.png
+!web/public/studentflow-login-bg.png
 sync-branding.*
 plan.md
 credentials.md

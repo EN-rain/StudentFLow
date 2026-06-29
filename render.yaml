@@ -71,4 +71,4 @@ services:
       - key: SESSION_SECURE_COOKIE
         value: "true"
       - key: SESSION_SAME_SITE
-        value: lax
+        value: none

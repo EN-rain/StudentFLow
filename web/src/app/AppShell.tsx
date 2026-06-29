@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@/lib/auth";
+import PageTransition from "./PageTransition";
 import Sidebar from "@/lib/components/Sidebar";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
@@ -31,7 +32,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
   }
 
   if (!user && isPublic) {
-    return <>{children}</>;
+    return <PageTransition>{children}</PageTransition>;
   }
 
   if (!user) {
@@ -55,7 +56,9 @@ export default function AppShell({ children }: { children: ReactNode }) {
             </span>
           </div>
         </div>
-        <div className="sf-content">{children}</div>
+        <div className="sf-content">
+          <PageTransition>{children}</PageTransition>
+        </div>
       </div>
     </div>
   );

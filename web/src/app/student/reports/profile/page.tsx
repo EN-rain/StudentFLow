@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { api } from "@/lib/api";
+import { api, buildAbsoluteUrl } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 
 export default function StudentProfileReportPage() {
@@ -28,7 +28,7 @@ export default function StudentProfileReportPage() {
           <h2>My Profile Report</h2>
           <p>Student information summary</p>
         </div>
-        <a href={`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/reports/student-profile/pdf?student_id=${user?.student?.id}`} className="btn btn-outline-primary" target="_blank" rel="noopener">
+        <a href={buildAbsoluteUrl(`/api/reports/student-profile/pdf?student_id=${user?.student?.id ?? ""}`)} className="btn btn-outline-primary" target="_blank" rel="noopener">
           Download PDF
         </a>
       </div>

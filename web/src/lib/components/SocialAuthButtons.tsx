@@ -1,6 +1,6 @@
 "use client";
 
-import { api } from "@/lib/api";
+import { api, buildAbsoluteUrl } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -68,7 +68,7 @@ export default function SocialAuthButtons() {
       <div className="auth-divider"><span>or continue with</span></div>
       <a
         className="btn btn-outline-secondary w-100 d-flex justify-content-center align-items-center gap-2"
-        href={`${process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000"}/api/session/github/redirect`}
+        href={buildAbsoluteUrl("/api/session/github/redirect")}
       >
         <i className="bi bi-github" />
         <span>Continue with GitHub</span>

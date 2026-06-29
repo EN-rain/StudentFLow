@@ -35,7 +35,14 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="auth-page">
+    <div className="auth-page auth-page-login">
+      <div className="auth-hero" aria-hidden="true">
+        <div className="auth-hero-panel">
+          <span className="auth-kicker">StudentFlow</span>
+          <h2>Stay on top of classes, grades, and school updates.</h2>
+          <p>One place for your academic flow, with the same visual tone as the mobile app.</p>
+        </div>
+      </div>
       <div className="auth-card">
         <h1>Sign in</h1>
         <p>Welcome back to StudentFlow</p>

@@ -1,4 +1,24 @@
-const API = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
+const FALLBACK_API_URL = "http://localhost:8000";
+
+export function normalizeBaseUrl(rawUrl?: string | null): string {
+  const trimmed = rawUrl?.trim();
+  if (!trimmed) {
+    return FALLBACK_API_URL;
+  }
+
+  if (/^https?:\/\//i.test(trimmed)) {
+    return trimmed.replace(/\/+$/, "");
+  }
+
+  return `https://${trimmed.replace(/^\/+|\/+$/g, "")}`;
+}
+
+export function buildAbsoluteUrl(path: string, rawBaseUrl?: string | null): string {
+  const baseUrl = normalizeBaseUrl(rawBaseUrl ?? process.env.NEXT_PUBLIC_API_BASE_URL);
+  return new URL(path, `${baseUrl}/`).toString();
+}
+
+const API = normalizeBaseUrl(process.env.NEXT_PUBLIC_API_BASE_URL);
 
 interface RequestOptions {
   method?: string;
@@ -21,7 +41,7 @@ class ApiClient {
   }
 
   private async request<T>(path: string, opts: RequestOptions = {}): Promise<T> {
-    const url = new URL(`${this.baseUrl}${path}`);
+    const url = new URL(path, `${this.baseUrl}/`);
     if (opts.params) {
       Object.entries(opts.params).forEach(([k, v]) => url.searchParams.set(k, v));
     }
@@ -58,7 +78,7 @@ class ApiClient {
   }
 
   async csrf(): Promise<void> {
-    await fetch(`${this.baseUrl}/sanctum/csrf-cookie`, {
+    await fetch(buildAbsoluteUrl("/sanctum/csrf-cookie", this.baseUrl), {
       credentials: "include",
     });
   }
