@@ -89,6 +89,43 @@ class StudentFlowFeatureTest extends TestCase
         Notification::assertSentTo($admin, ResetPassword::class);
     }
 
+    public function test_student_can_sign_in_on_web_and_land_on_student_portal(): void
+    {
+        $this->post('/login', [
+            'username' => 'aaronvillanueva001',
+            'password' => 'StudentPass123!',
+        ])->assertRedirect('/student');
+    }
+
+    public function test_student_can_register_from_web(): void
+    {
+        $response = $this->post('/register', [
+            'name' => 'Web Signup Student',
+            'email' => 'web.signup@studentflow.local',
+            'password' => 'StudentPass123!',
+            'password_confirmation' => 'StudentPass123!',
+        ]);
+
+        $response->assertRedirect('/student');
+        $this->assertDatabaseHas('users', [
+            'email' => 'web.signup@studentflow.local',
+            'role' => 'student',
+        ]);
+        $this->assertDatabaseHas('students', [
+            'email' => 'web.signup@studentflow.local',
+            'status' => 'active',
+        ]);
+    }
+
+    public function test_login_page_uses_public_favicon_assets(): void
+    {
+        $this->get('/login')
+            ->assertOk()
+            ->assertSee('favicon.ico', false)
+            ->assertSee('favicon.png', false)
+            ->assertSee('/register', false);
+    }
+
     public function test_admin_can_manage_teacher_settings_and_logs(): void
     {
         $admin = User::where('username', 'admin')->first();
@@ -145,6 +182,17 @@ class StudentFlowFeatureTest extends TestCase
         $johnClass = SchoolClass::where('class_name', 'BSIT 2A')->first();
         $angelaClass = SchoolClass::where('class_name', 'BSIT 1B')->first();
         $student = Student::where('student_number', '2026-0010')->first();
+        $gradeItem = GradeItem::where('class_id', $johnClass->id)->first();
+
+        $exam = Exam::create([
+            'class_id' => $johnClass->id,
+            'teacher_id' => $john->teacher->id,
+            'grade_item_id' => $gradeItem?->id,
+            'title' => 'Late Enrollment Backfill Quiz',
+            'instructions' => 'Backfill attempts for newly enrolled students.',
+            'maximum_score' => 20,
+            'status' => 'published',
+        ]);
 
         Sanctum::actingAs($angela);
         $this->getJson("/api/classes/{$johnClass->id}")->assertForbidden();
@@ -155,6 +203,11 @@ class StudentFlowFeatureTest extends TestCase
             'date_enrolled' => '2026-06-17',
         ])->assertCreated();
         $this->assertTrue($johnClass->students()->where('students.id', $student->id)->exists());
+        $this->assertDatabaseHas('exam_attempts', [
+            'exam_id' => $exam->id,
+            'student_id' => $student->id,
+            'status' => 'assigned',
+        ]);
 
         $this->postJson("/api/classes/{$johnClass->id}/enrollments", [
             'student_id' => $student->id,
@@ -163,6 +216,7 @@ class StudentFlowFeatureTest extends TestCase
 
         $this->deleteJson("/api/classes/{$johnClass->id}/enrollments/{$student->id}")->assertOk();
         $this->assertFalse($johnClass->students()->where('students.id', $student->id)->exists());
+        $this->deleteJson("/api/classes/{$johnClass->id}/enrollments/{$student->id}")->assertNotFound();
 
         $this->postJson("/api/classes/{$angelaClass->id}/enrollments", [
             'student_id' => $student->id,

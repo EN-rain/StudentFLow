@@ -26,7 +26,10 @@ class StudentPortalController extends Controller
             'classes_count' => $classIds->count(),
             'announcements_count' => Announcement::whereIn('class_id', $classIds)->count(),
             'assignments_count' => Assignment::whereIn('class_id', $classIds)->count(),
-            'pending_exams_count' => ExamAttempt::where('student_id', $student->id)->whereIn('status', ['assigned', 'in_progress'])->count(),
+            'pending_exams_count' => ExamAttempt::where('student_id', $student->id)
+                ->whereIn('status', ['assigned', 'in_progress'])
+                ->whereHas('exam', fn ($query) => $query->whereIn('class_id', $classIds))
+                ->count(),
         ]]);
     }
 
@@ -137,8 +140,11 @@ class StudentPortalController extends Controller
 
     public function exams(Request $request): JsonResponse
     {
+        $student = $this->student($request);
+        $classIds = $student->classes()->wherePivot('status', 'enrolled')->pluck('classes.id');
         $attempts = ExamAttempt::with('exam.schoolClass')
-            ->where('student_id', $this->student($request)->id)
+            ->where('student_id', $student->id)
+            ->whereHas('exam', fn ($query) => $query->whereIn('class_id', $classIds))
             ->orderByDesc('created_at')
             ->paginate(ApiPagination::perPage($request));
 

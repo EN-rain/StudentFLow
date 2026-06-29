@@ -9,6 +9,11 @@
                 <img src="/images/studentflow-logo-96.png" alt="" width="48" height="48" class="auth-logo mb-2" fetchpriority="high" decoding="async">
                 <h3 class="mb-0">StudentFlow</h3>
             </div>
+            @if (session('status'))
+                <div class="alert alert-success">
+                    {{ session('status') }}
+                </div>
+            @endif
             @if ($errors->any())
                 <div class="alert alert-danger">
                     {{ $errors->first() }}
@@ -32,6 +37,9 @@
 
             <div class="text-center mt-3">
                 <a href="/forgot-password" class="text-decoration-none">Forgot password?</a>
+            </div>
+            <div class="text-center mt-2">
+                <a href="/register" class="text-decoration-none">Create student account</a>
             </div>
         </div>
     </div>

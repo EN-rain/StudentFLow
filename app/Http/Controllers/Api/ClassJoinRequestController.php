@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\ClassJoinRequest;
+use App\Models\Exam;
 use App\Models\SchoolClass;
 use App\Support\ActivityLogger;
 use Illuminate\Http\JsonResponse;
@@ -79,6 +80,8 @@ class ClassJoinRequestController extends Controller
                     'status' => 'enrolled',
                 ],
             ]);
+
+            Exam::assignPublishedToStudent($joinRequest->schoolClass->id, $joinRequest->student_id);
         }
 
         ActivityLogger::log($request, 'class_join_request.'.$payload['decision'], $joinRequest);

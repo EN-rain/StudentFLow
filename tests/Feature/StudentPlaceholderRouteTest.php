@@ -13,7 +13,7 @@ class StudentPlaceholderRouteTest extends TestCase
 
     protected bool $seed = true;
 
-    public function test_student_can_view_placeholder_route(): void
+    public function test_student_can_open_student_dashboard_route(): void
     {
         $studentUser = User::factory()->create([
             'role' => 'student',
@@ -32,8 +32,8 @@ class StudentPlaceholderRouteTest extends TestCase
 
         $response = $this->actingAs($studentUser)->get('/student');
         $response->assertOk();
-        $response->assertSee('Student Portal', false);
-        $response->assertSee('coming soon', false);
+        $response->assertSee('Student Dashboard', false);
+        $response->assertSee('Enrolled Classes', false);
     }
 
     public function test_admin_cannot_view_student_route(): void

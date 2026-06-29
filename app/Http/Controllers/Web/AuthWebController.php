@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Models\Student;
 use App\Models\User;
+use App\Support\StudentUsername;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password;
@@ -18,6 +21,52 @@ class AuthWebController extends Controller
     public function showLogin()
     {
         return view('auth.login');
+    }
+
+    public function showRegister()
+    {
+        return view('auth.register');
+    }
+
+    public function register(Request $request)
+    {
+        $payload = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email|unique:students,email',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        [$firstName, $lastName] = $this->splitName($payload['name']);
+
+        $student = null;
+        $user = null;
+        DB::transaction(function () use (&$student, &$user, $payload, $firstName, $lastName) {
+            $student = Student::create([
+                'student_number' => 'pending-'.Str::uuid(),
+                'first_name' => $firstName,
+                'last_name' => $lastName,
+                'email' => strtolower($payload['email']),
+                'status' => 'active',
+            ]);
+            $student->forceFill([
+                'student_number' => sprintf('%s-%04d', now()->format('Y'), $student->id),
+            ])->save();
+
+            $user = User::create([
+                'username' => StudentUsername::fromStudent($student),
+                'name' => $student->full_name,
+                'email' => $student->email,
+                'password' => Hash::make($payload['password']),
+                'role' => 'student',
+                'status' => 'active',
+                'student_id' => $student->id,
+            ]);
+        }, 3);
+
+        Auth::login($user);
+        $request->session()->regenerate();
+
+        return redirect('/student')->with('status', 'Account created.');
     }
 
     public function login(Request $request)
@@ -56,13 +105,6 @@ class AuthWebController extends Controller
             ]);
         }
 
-        if ($user->isStudent()) {
-            $this->logAuthTiming($request, $startedAt, $marks, $outcome, $user);
-            throw ValidationException::withMessages([
-                'username' => 'Students must sign in through the StudentFlow mobile app.',
-            ]);
-        }
-
         $sessionStartedAt = microtime(true);
         Auth::login($user, $request->boolean('remember'));
         $request->session()->regenerate();
@@ -70,12 +112,19 @@ class AuthWebController extends Controller
         $outcome = 'success';
         $this->logAuthTiming($request, $startedAt, $marks, $outcome, $user);
 
-        return redirect()->intended('/dashboard');
+        return redirect()->intended($user->isStudent() ? '/student' : '/dashboard');
     }
 
     private function elapsedMs(float $startedAt): int
     {
         return (int) round((microtime(true) - $startedAt) * 1000);
+    }
+
+    private function splitName(string $name): array
+    {
+        $parts = preg_split('/\s+/', trim($name), 2);
+
+        return [$parts[0] ?: 'Student', $parts[1] ?? 'User'];
     }
 
     private function logAuthTiming(Request $request, float $startedAt, array $marks, string $outcome, ?User $user): void

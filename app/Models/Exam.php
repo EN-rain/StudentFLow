@@ -73,4 +73,28 @@ class Exam extends Model
             DB::table('exam_attempts')->insertOrIgnore($rows);
         }
     }
+
+    public static function assignPublishedToStudent(int $classId, int $studentId): void
+    {
+        $examIds = static::query()
+            ->where('class_id', $classId)
+            ->where('status', 'published')
+            ->pluck('id');
+
+        if ($examIds->isEmpty()) {
+            return;
+        }
+
+        $now = now();
+        $rows = $examIds->map(fn ($examId) => [
+            'exam_id' => $examId,
+            'student_id' => $studentId,
+            'magic_token' => Str::random(64),
+            'status' => 'assigned',
+            'created_at' => $now,
+            'updated_at' => $now,
+        ])->all();
+
+        DB::table('exam_attempts')->insertOrIgnore($rows);
+    }
 }

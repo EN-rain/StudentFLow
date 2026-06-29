@@ -37,6 +37,8 @@ Route::post('/exam/magic/{token}', [MagicExamWebController::class, 'submit'])->m
 // Public auth routes
 Route::get('/login', [AuthWebController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthWebController::class, 'login'])->middleware('throttle:10,1');
+Route::get('/register', [AuthWebController::class, 'showRegister']);
+Route::post('/register', [AuthWebController::class, 'register'])->middleware('throttle:5,1');
 Route::post('/logout', [AuthWebController::class, 'logout'])->name('logout');
 Route::get('/teacher/setup/{token}', [AuthWebController::class, 'showTeacherSetup'])->name('teacher.setup')->middleware('throttle:30,1');
 Route::post('/teacher/setup', [AuthWebController::class, 'completeTeacherSetup'])->middleware('throttle:5,1');
@@ -131,8 +133,7 @@ Route::middleware(['auth', 'active'])->group(function () {
     });
 
     Route::middleware('role:student')->prefix('student')->name('student.')->group(function () {
-        // Phase 1 placeholder — Phase 2 will add real student routes here.
-        Route::get('/', fn () => response()->view('student.placeholder', ['message' => 'Student portal coming soon — Phase 2 will wire this.']));
+        Route::get('/', [DashboardController::class, 'index']);
 
         // Classes (Phase 2 step 1)
         Route::get('/classes', [StudentClassController::class, 'index'])->name('classes.index');

@@ -108,11 +108,12 @@ class StudentModuleRoutingTest extends TestCase
         $this->assertSame([], $missing, 'Sidebar missing links: '.implode(', ', $missing));
     }
 
-    public function test_placeholder_route_still_works_for_student(): void
+    public function test_student_root_route_renders_dashboard(): void
     {
         $studentUser = $this->createStudentUser();
         $response = $this->actingAs($studentUser)->get('/student');
         $response->assertOk();
+        $response->assertSee('Student Dashboard', false);
     }
 
     private function createStudentUser(): User

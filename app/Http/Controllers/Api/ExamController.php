@@ -146,6 +146,7 @@ class ExamController extends Controller
         if (! $student || $attempt->student_id !== $student->id) {
             abort(403);
         }
+        $this->authorizeStudentAttempt($student->id, $attempt);
 
         $this->start($attempt);
         $attempt->refresh()->load('exam.questions', 'exam.schoolClass', 'student');
@@ -159,6 +160,7 @@ class ExamController extends Controller
         if (! $student || $attempt->student_id !== $student->id) {
             abort(403);
         }
+        $this->authorizeStudentAttempt($student->id, $attempt);
 
         return $this->submit($request, $attempt);
     }
@@ -304,6 +306,20 @@ class ExamController extends Controller
         $teacher = $user->teacher;
         if (! $teacher || $class->teacher_id !== $teacher->id) {
             abort(403);
+        }
+    }
+
+    private function authorizeStudentAttempt(int $studentId, ExamAttempt $attempt): void
+    {
+        $attempt->loadMissing('exam');
+        $enrolled = DB::table('class_students')
+            ->where('student_id', $studentId)
+            ->where('class_id', $attempt->exam->class_id)
+            ->where('status', 'enrolled')
+            ->exists();
+
+        if (! $enrolled) {
+            abort(403, 'You are not enrolled in this exam\'s class.');
         }
     }
 }

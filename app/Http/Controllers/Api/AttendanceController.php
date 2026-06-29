@@ -179,6 +179,10 @@ class AttendanceController extends Controller
     public function studentStats(Request $request, int $studentId): JsonResponse
     {
         $query = Attendance::where('student_id', $studentId);
+        if ($classId = $request->query('class_id')) {
+            $this->authorizeClassAccess($request, (int) $classId);
+            $query->where('class_id', $classId);
+        }
         if ($request->user()->isTeacher()) {
             $teacherId = $request->user()->teacher?->id;
             if (! $teacherId) {
