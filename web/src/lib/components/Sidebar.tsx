@@ -22,7 +22,10 @@ export default function Sidebar() {
   return (
     <aside className="sf-sidebar">
       <div className="sf-sidebar-brand">
-        <span>StudentFlow</span>
+        <div>
+          <strong>StudentFlow</strong>
+          <div className="sf-sidebar-brand-subtitle">Learning portal</div>
+        </div>
       </div>
       <nav className="sf-sidebar-nav">
         <Link href="/dashboard" className={linkFor("/dashboard", pathname)}>
@@ -102,11 +105,11 @@ export default function Sidebar() {
 
         <a
           href="#"
+          className="sf-logout-link"
           onClick={(e) => {
             e.preventDefault();
             logout();
           }}
-          style={{ color: "#dc3545" }}
         >
           Logout
         </a>

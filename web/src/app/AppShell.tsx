@@ -48,9 +48,12 @@ export default function AppShell({ children }: { children: ReactNode }) {
       <Sidebar />
       <div className="sf-main">
         <div className="sf-topbar">
-          <span>
-            <strong>{user.name}</strong> <span className="text-muted">({user.role})</span>
-          </span>
+          <div className="sf-topbar-user">
+            <span className="sf-topbar-label">StudentFlow Portal</span>
+            <span>
+              <strong>{user.name}</strong> <span className="text-muted">({user.role})</span>
+            </span>
+          </div>
         </div>
         <div className="sf-content">{children}</div>
       </div>
